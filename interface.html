@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <script type="text/javascript" charset="utf-8">
+      var app = Davis(function () {
+        this.get('/user/:id', function (req, res) {
+          // this === req
+          // res = responder object
+        })
+
+        this.post('/user', function (req, res) {
+          // this === req
+          // res = responder object
+        })
+      })
+    </script>
+
+    <script type="text/javascript" charset="utf-8">
+      // request object
+      req.params
+      req.path
+      req.method
+    </script>
+
+    <script type="text/javascript" charset="utf-8">
+      // calls the render method of userView with the
+      res.render(userView)
+    </script>
+  </head>
+</html>
