@@ -2,14 +2,17 @@
   <head>
     <script type="text/javascript" charset="utf-8">
       var app = Davis(function () {
-        this.get('/user/:id', function (req, res) {
+
+        this.get('/user/:id', function (req) {
           // this === req
-          // res = responder object
         })
 
-        this.post('/user', function (req, res) {
+        this.post('/user', function (req) {
           // this === req
-          // res = responder object
+        })
+
+        this.route('delete', '/user/:id', function (req) {
+          
         })
       })
     </script>
