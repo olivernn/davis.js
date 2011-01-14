@@ -3,15 +3,22 @@ Davis.Interceptor = (function () {
   var links
 
   var bindAllLinks = function () {
-    document.addEventListener('click', function (event) {
-      if (event.target.nodeName === "A") {
-        new Davis.Request
-      };
+    $(document).delegate('a', 'click', function (event) {
+      var request = new Davis.Request (event);
+      Davis.History.pushState(request, "asfd", request.path)
+      return false;
+    })
+  }
+
+  var bindAllForms = function () {
+    $(document).delegate('form', 'submit', function (event) {
+      // do stuff
     })
   }
 
   var enable = function () {
-    
+    bindAllForms();
+    bindAllLinks();
   }
 
   return {

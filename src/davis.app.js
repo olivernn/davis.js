@@ -1,11 +1,14 @@
 Davis.App = function () {
-  Davis.History.onChange(function (rawEvent) {
-    var route = Davis.Routes.lookup(rawEvent.path);
-    var request = new Davis.Request(rawEvent);
-    route.run(request);
-  })
+  this.foo = "bar"
 };
 
 Davis.App.prototype = {
-  
+  start: function () {
+    Davis.Interceptor.enable();
+    Davis.History.onChange(function (request) {
+      var route = Davis.Route.lookup(request.method, request.path);
+      if (route) route.run(request);
+      return false;
+    })
+  }
 }

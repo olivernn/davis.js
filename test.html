@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Davis tests</title>
+
+    <!-- dependencies -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+
+    <!-- davis -->
+    <script src="/src/davis.js"></script>
+    <script src="/src/davis.app.js"></script>
+    <script src="/src/davis.route.js"></script>
+    <script src="/src/davis.history.js"></script>
+    <script src="/src/davis.request.js"></script>
+    <script src="/src/davis.interceptor.js"></script>
+    <script src="/src/davis.router.js"></script>
+
+    <script type="text/javascript" charset="utf-8">
+      app = Davis(function () {
+        this.get('/foo', function () {
+          console.log('foo')
+        })
+
+        this.get('/bar', function () {
+          console.log('bar')
+        })
+      })
+
+      app.start();
+    </script>
+
+  </head>
+  <body>
+    <a href="/foo">foo</a>
+    <a href="/bar">bar</a>
+  </body>
+</html>

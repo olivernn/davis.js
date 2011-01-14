@@ -4,7 +4,7 @@ Davis.Router = (function () {
 
   var route = function (method, path, handler) {
     new Davis.Route (method, path, handler);
-  });
+  };
 
   ['get', 'post', 'put'].forEach(function (method) {
     router[method] = function (path, handler) {

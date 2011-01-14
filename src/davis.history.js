@@ -10,20 +10,24 @@ Davis.History = (function () {
     window.addEventListener('popstate', handler);
   };
 
+  var wrapped = function (handler) {
+    return function (event) {
+      if (event.state) {
+        handler(event.state)
+      };
+    }
+  }
+
   var onChange = function (handler) {
     onPushState(handler);
-    onPopState(handler);
-  };
-
-  var triggerPushState = function () {
-    pushStateHandlers.forEach(function (handler) {
-      handler();
-    });
+    onPopState(wrapped(handler));
   };
 
   var pushState = function (req, title, path) {
     history.pushState(req, title, path);
-    triggerPushState();
+    pushStateHandlers.forEach(function (handler) {
+      handler(req);
+    });
   };
 
   return {
