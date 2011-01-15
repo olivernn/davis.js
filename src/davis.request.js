@@ -4,6 +4,7 @@ Davis.Request = function (event) {
 
   this.path = $(event.target).attr('href')
   this.method = 'get'
+  this.params = {}
   // var clickRequest = function () {
   //   self.path = target.href.split(/\?/)[0];
   //   self.method = 'get';

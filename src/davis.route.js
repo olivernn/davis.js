@@ -29,8 +29,18 @@ Davis.Route = (function () {
       return (this.method == method) && (this.path.test(path))
     },
 
-    run: function (context) {
-      this.callback.call(context);
+    run: function (request) {
+      this.path.lastIndex = 0
+      var n = 0
+      var matches = this.path.exec(request.path);
+      if (matches) {
+        for (var i=1; i < matches.length; i++) {
+          request.params[this.paramNames[n]] = matches[i];
+          n++;
+        };
+      };
+      this.path.lastIndex = 0
+      this.callback.call(request);
     },
 
     toString: function () {
