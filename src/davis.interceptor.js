@@ -12,7 +12,9 @@ Davis.Interceptor = (function () {
 
   var bindAllForms = function () {
     $(document).delegate('form', 'submit', function (event) {
-      // do stuff
+      var request = new Davis.Request (event);
+      Davis.History.pushState(request, "form", request.path)
+      return false;
     })
   }
 
