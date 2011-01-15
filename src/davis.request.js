@@ -1,10 +1,10 @@
 Davis.Request = function (event) {
   var self = this;
   var target = event.target;
-  var fullPath = $(event.target).attr('href')
+  var fullPath = $(event.target).attr('href');
 
-  this.method = 'get'
-  this.params = {}
+  this.method = 'get';
+  this.params = {};
 
   var queryParams = fullPath.split("?")[1];
 
@@ -39,5 +39,5 @@ Davis.Request = function (event) {
 }
 
 Davis.Request.prototype = {
-  
+
 }

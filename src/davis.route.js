@@ -31,12 +31,11 @@ Davis.Route = (function () {
 
     run: function (request) {
       this.path.lastIndex = 0
-      var n = 0
       var matches = this.path.exec(request.path);
       if (matches) {
-        for (var i=1; i < matches.length; i++) {
-          request.params[this.paramNames[n]] = matches[i];
-          n++;
+        matches.shift();
+        for (var i=0; i < matches.length; i++) {
+          request.params[this.paramNames[i]] = matches[i];
         };
       };
       this.path.lastIndex = 0
