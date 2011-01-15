@@ -18,11 +18,16 @@
     <script type="text/javascript" charset="utf-8">
       app = Davis(function () {
         this.get('/foo/:id/blah/:bob', function () {
-          console.log('foo', this)
+          console.log(this.params)
         })
 
         this.get('/bar', function () {
           console.log('bar')
+        })
+
+        this.post('/baz/:id', function () {
+          console.log('form', this)
+          this.redirect('/bar')
         })
       })
 
@@ -31,8 +36,14 @@
 
   </head>
   <body>
-    <a href="/foo/hello/blah/asdfas">foo</a>
+    <a href="/foo/hello/blah/asdfas?blah=123">foo</a>
     <a href="/foo/goodbye/blah/asdfas">foo1</a>
     <a href="/bar">bar</a>
+
+    <form action="/baz/555" method="post">
+      <input type="text" name="name" value="" id="name">
+      <input type="submit" name="submit" value="Send" id="submit">
+    </form>
+
   </body>
 </html>

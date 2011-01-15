@@ -30,7 +30,15 @@ Davis.History = (function () {
     });
   };
 
+  var replaceState = function (req, title, path) {
+    history.replaceState(req, title, path);
+    pushStateHandlers.forEach(function (handler) {
+      handler(req);
+    });
+  };
+
   return {
+    replaceState: replaceState,
     pushState: pushState,
     onChange: onChange
   }
