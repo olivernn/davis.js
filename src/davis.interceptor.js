@@ -5,7 +5,7 @@ Davis.Interceptor = (function () {
   var handler = function (targetExtractor) {
     return function (event) {
       var request = new Davis.Request (targetExtractor.call($(event.target)));
-      Davis.History.pushState(request, "asfd", request.path)
+      Davis.History.pushState(request)
       return false;
     };
   };
@@ -13,14 +13,16 @@ Davis.Interceptor = (function () {
   var clickHandler = handler(function () {
     return {
       method: 'get',
-      fullPath: this.attr('href')
+      fullPath: this.attr('href'),
+      title: this.attr('title')
     };
   });
 
   var submitHandler = handler(function () {
     return {
       method: this.attr('method'),
-      fullPath: [this.attr('action'), "?", this.serialize()].join("")
+      fullPath: [this.attr('action'), "?", this.serialize()].join(""),
+      title: this.attr('title')
     };
   });
 

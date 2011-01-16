@@ -23,15 +23,15 @@ Davis.History = (function () {
     onPopState(wrapped(handler));
   };
 
-  var pushState = function (req, title, path) {
-    history.pushState(req, title, path);
+  var pushState = function (request) {
+    history.pushState(request, request.title, request.path);
     pushStateHandlers.forEach(function (handler) {
       handler(req);
     });
   };
 
-  var replaceState = function (req, title, path) {
-    history.replaceState(req, title, path);
+  var replaceState = function (request) {
+    history.replaceState(request, request.title, request.path);
     pushStateHandlers.forEach(function (handler) {
       handler(req);
     });
