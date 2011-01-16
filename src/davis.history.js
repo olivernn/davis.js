@@ -26,14 +26,14 @@ Davis.History = (function () {
   var pushState = function (request) {
     history.pushState(request, request.title, request.path);
     pushStateHandlers.forEach(function (handler) {
-      handler(req);
+      handler(request);
     });
   };
 
   var replaceState = function (request) {
     history.replaceState(request, request.title, request.path);
     pushStateHandlers.forEach(function (handler) {
-      handler(req);
+      handler(request);
     });
   };
 
