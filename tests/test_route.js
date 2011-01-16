@@ -1,15 +1,5 @@
 module('Davis.Route');
 
-test('adding a route', function () {
-  Davis.Route.clearAll();
-
-  equal(Davis.Route.collection.length, 0)
-
-  var route = new Davis.Route('get', '/foo');
-
-  equal(Davis.Route.collection.length, 1, "should keep a collection of every route added");
-})
-
 test("converting a string path into a regex", function () {
   var route = new Davis.Route('get', '/foo');
 
@@ -34,7 +24,9 @@ test('inoking a routes callback', function () {
     routeRan = true;
   })
 
-  route.run();
+  route.run({
+    path: '/foo'
+  });
 
   ok(routeRan, 'should run route callback when calling run');
 })

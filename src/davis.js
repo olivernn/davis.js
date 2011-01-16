@@ -1,5 +1,5 @@
 Davis = function (routes) {
   var app = new Davis.App ();
-  routes.call(Davis.Router);
+  routes.call(Davis.Route.drawer);
   return app
 };

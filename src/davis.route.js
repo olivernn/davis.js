@@ -2,7 +2,8 @@ Davis.Route = (function () {
 
   var pathNameRegex = /:([\w\d]+)/g;
   var pathNameReplacement = "([^\/]+)";
-  var routeCollection = []
+  var routeCollection = [];
+  var verbs = ['get', 'post', 'put', 'delete'];
 
   var klass = function (method, path, callback) {
     var convertPathToRegExp = function () {
@@ -47,6 +48,14 @@ Davis.Route = (function () {
       return [this.method, this.path].join(' ');
     }
   };
+
+  klass.drawer = {}
+
+  verbs.forEach(function (method) {
+    klass.drawer[method] = function (path, handler) {
+      new Davis.Route (method, path, handler);
+    };
+  });
 
   klass.lookup = function (method, path) {
     return routeCollection.filter(function (route) {
