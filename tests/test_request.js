@@ -1,27 +1,23 @@
 module("Request Module")
 
-test("creating a request object from simple link", function () {
+test("request without any params", function () {
+  var request = new Davis.Request ({
+    method: 'get',
+    fullPath: '/foo'
+  });
 
-  var request;
-  var e;
+  equal('get', request.method, "should store the request method");
+  equal('/foo', request.path, "should store the request path");
+  same({}, request.params, "should have no params");
+});
 
-  var fixtureHolder = $('#qunit-fixture')
+test("request with params", function () {
+  var request = new Davis.Request({
+    method: 'post',
+    fullPath: '/foo?bar=baz'
+  });
 
-  var link = $('<a>', {
-    'href': '/user'
-  }).bind('click', function () {
-    e = event;
-    request = new Davis.Request(event);
-    return false;
-  })
-
-  fixtureHolder.append(link);
-
-  link.click();
-
-  // equal(href, request.path, "path should be equal to the href of the link");
-  equal('get', request.method, "link clicks should be get requests");
-  equal(e, request.event, "request should contain the raw event that triggered the request");
-  equal({}, request.params, "params should be empty object");
-
-})
+  equal('post', request.method, "should store the request method");
+  equal('/foo', request.path, "should store the path without any of the query params");
+  same({bar: "baz"}, request.params, "should add any params to the request params object");
+});

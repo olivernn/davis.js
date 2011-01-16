@@ -11,7 +11,7 @@ Davis.Request = function (raw) {
     })
   };
 
-  this.path = raw.fullPath.replace(/\?.+/, "");
+  this.path = raw.fullPath.replace(/\?.+$/, "");
 }
 
 Davis.Request.prototype = {
