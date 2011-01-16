@@ -3,10 +3,10 @@ Davis.Request = function (raw) {
   this.method = raw.method;
   this.params = {};
 
-  var queryParams = raw.fullPath.split("?")[1];
+  this.queryString = raw.fullPath.split("?")[1];
 
-  if (queryParams) {
-    queryParams.split("&").forEach(function (keyval) {
+  if (this.queryString) {
+    this.queryString.split("&").forEach(function (keyval) {
       self.params[keyval.split("=")[0]] = keyval.split("=")[1]
     })
   };
