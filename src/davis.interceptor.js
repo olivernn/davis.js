@@ -5,7 +5,7 @@ Davis.Interceptor = (function () {
   var handler = function (targetExtractor) {
     return function (event) {
       var request = new Davis.Request (targetExtractor.call($(event.target)));
-      Davis.History.pushState(request)
+      Davis.History.pushState(request);
       return false;
     };
   };
@@ -26,9 +26,9 @@ Davis.Interceptor = (function () {
     };
   });
 
-  var enable = function () {
-    $(document).delegate('form', 'submit', submitHandler)
-    $(document).delegate('a', 'click', clickHandler)
+  var enable = function (settings) {
+    $(document).delegate(settings.formSelector, 'submit', submitHandler)
+    $(document).delegate(settings.linkSelector, 'click', clickHandler)
   }
 
   return {
