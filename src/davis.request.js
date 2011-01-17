@@ -21,5 +21,9 @@ Davis.Request.prototype = {
       fullPath: path,
       title: this.title
     }));
+  },
+
+  toString: function () {
+    return [this.method, this.path].join(" ")
   }
 };

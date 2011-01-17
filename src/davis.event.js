@@ -5,6 +5,7 @@ Davis.event = (function () {
   var bind = function (eventName, callback) {
     if (!callbacks[eventName]) callbacks[eventName] = [];
     callbacks[eventName].push(callback);
+    return this;
   }
 
   var trigger = function (eventName, data) {
@@ -13,6 +14,7 @@ Davis.event = (function () {
     callbacks[eventName].forEach(function (callback) {
       callback.call(self, data);
     }) 
+    return this;
   }
 
   return {

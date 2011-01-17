@@ -5,30 +5,47 @@ Davis.App = (function () {
   };
 
   klass.prototype = $.extend({
-
-    bind: function (eventName, callback) {
-
-    },
-
     settings: {
       linkSelector: 'a',
-      formSelector: 'form'
+      formSelector: 'form',
+      logger: function (message) {
+        if (console) {
+          console.log(message)
+        };
+      }
     },
 
     start: function () {
+      var self = this;
+
+      this
+        .bind('runRoute', function (request) {
+          self.settings.logger("run route: " + request.toString());
+        })
+        .bind('routeNotFound', function (request) {
+          self.settings.logger("route not found: " + request.toString());
+        })
+        .bind('start', function () {
+          self.settings.logger("application started")
+        });
+
       this.listen();
+      this.trigger('start')
+
       Davis.history.onChange(function (request) {
+        self.trigger('lookupRoute', request);
         var route = Davis.Route.lookup(request.method, request.path);
-        if (route) route.run(request);
+        if (route) {
+          self.trigger('runRoute', request);
+          route.run(request);
+        } else {
+          self.trigger('routeNotFound', request)
+        }
         return false;
       })
       this.running = true;
     },
-
-    trigger: function (eventName) {
-
-    }
-  }, Davis.listener);
+  }, Davis.listener, Davis.event);
 
   return klass;
 })()

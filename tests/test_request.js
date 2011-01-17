@@ -27,3 +27,13 @@ test("request with params", function () {
   equal('bar=baz', request.queryString, "should store the query string");
   same({bar: "baz"}, request.params, "should add any params to the request params object");
 });
+
+test("convert request to readable string", function () {
+  var request = new Davis.Request({
+    method: 'post',
+    fullPath: '/foo?bar=baz',
+    title: 'foo'
+  });
+
+  equal('POST: /foo', request.toString(), "should include the method and the fullPath")
+})

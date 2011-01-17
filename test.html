@@ -19,15 +19,12 @@
     <script type="text/javascript" charset="utf-8">
       app = Davis(function () {
         this.get('/foo/:id/blah/:bob', function () {
-          console.log(this.params)
         })
 
         this.get('/bar', function () {
-          console.log('bar')
         })
 
         this.post('/baz/:id', function () {
-          console.log('form', this)
           this.redirect('/bar')
         })
       })
