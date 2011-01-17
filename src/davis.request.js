@@ -24,6 +24,6 @@ Davis.Request.prototype = {
   },
 
   toString: function () {
-    return [this.method, this.path].join(" ")
+    return [this.method.toUpperCase(), this.path].join(" ")
   }
 };

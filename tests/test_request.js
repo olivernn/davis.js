@@ -35,5 +35,5 @@ test("convert request to readable string", function () {
     title: 'foo'
   });
 
-  equal('POST: /foo', request.toString(), "should include the method and the fullPath")
+  equal('POST /foo', request.toString(), "should include the method and the fullPath")
 })

@@ -8,11 +8,7 @@ Davis.App = (function () {
     settings: {
       linkSelector: 'a',
       formSelector: 'form',
-      logger: function (message) {
-        if (console) {
-          console.log(message)
-        };
-      }
+      logger: Davis.logger
     },
 
     start: function () {
@@ -20,13 +16,13 @@ Davis.App = (function () {
 
       this
         .bind('runRoute', function (request) {
-          self.settings.logger("run route: " + request.toString());
+          self.settings.logger.info("runRoute: " + request.toString());
         })
         .bind('routeNotFound', function (request) {
-          self.settings.logger("route not found: " + request.toString());
+          self.settings.logger.warn("routeNotFound: " + request.toString());
         })
         .bind('start', function () {
-          self.settings.logger("application started")
+          self.settings.logger.info("application started")
         });
 
       this.listen();
@@ -45,6 +41,11 @@ Davis.App = (function () {
       })
       this.running = true;
     },
+
+    stop: function () {
+      this.unlisten();
+      this.bind('stop')
+    }
   }, Davis.listener, Davis.event);
 
   return klass;
