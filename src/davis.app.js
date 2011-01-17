@@ -28,7 +28,7 @@ Davis.App = (function () {
     trigger: function (eventName) {
 
     }
-  }, Davis.Interceptor);
+  }, Davis.listener);
 
   return klass;
 })()

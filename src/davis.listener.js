@@ -1,4 +1,4 @@
-Davis.Interceptor = (function () {
+Davis.listener = (function () {
 
   var handler = function (targetExtractor) {
     return function (event) {
