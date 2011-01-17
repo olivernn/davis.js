@@ -29,7 +29,13 @@ Davis.listener = (function () {
     $(document).delegate(this.settings.linkSelector, 'click', clickHandler)
   }
 
+  var unlisten = function () {
+    $(document).undelegate(this.settings.linkSelector, 'click', clickHandler)
+    $(document).undelegate(this.settings.formSelector, 'submit', submitHandler)
+  }
+
   return {
-    listen: listen
+    listen: listen,
+    unlisten: unlisten
   }
 })()
