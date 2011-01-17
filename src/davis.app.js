@@ -5,6 +5,11 @@ Davis.App = (function () {
   };
 
   klass.prototype = $.extend({
+
+    configure: function (config) {
+      config.call(this.settings);
+    },
+
     settings: {
       linkSelector: 'a',
       formSelector: 'form',
@@ -35,9 +40,8 @@ Davis.App = (function () {
           self.trigger('runRoute', request);
           route.run(request);
         } else {
-          self.trigger('routeNotFound', request)
+          self.trigger('routeNotFound', request);
         }
-        return false;
       })
       this.running = true;
     },
