@@ -1,7 +1,5 @@
 Davis.Interceptor = (function () {
 
-  var links
-
   var handler = function (targetExtractor) {
     return function (event) {
       var request = new Davis.Request (targetExtractor.call($(event.target)));
@@ -26,12 +24,12 @@ Davis.Interceptor = (function () {
     };
   });
 
-  var enable = function (settings) {
-    $(document).delegate(settings.formSelector, 'submit', submitHandler)
-    $(document).delegate(settings.linkSelector, 'click', clickHandler)
+  var listen = function () {
+    $(document).delegate(this.settings.formSelector, 'submit', submitHandler)
+    $(document).delegate(this.settings.linkSelector, 'click', clickHandler)
   }
 
   return {
-    enable: enable
+    listen: listen
   }
 })()
