@@ -3,7 +3,7 @@ Davis.Interceptor = (function () {
   var handler = function (targetExtractor) {
     return function (event) {
       var request = new Davis.Request (targetExtractor.call($(event.target)));
-      Davis.History.pushState(request);
+      Davis.history.pushState(request);
       return false;
     };
   };

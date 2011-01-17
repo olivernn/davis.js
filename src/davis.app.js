@@ -17,7 +17,7 @@ Davis.App = (function () {
 
     start: function () {
       this.listen();
-      Davis.History.onChange(function (request) {
+      Davis.history.onChange(function (request) {
         var route = Davis.Route.lookup(request.method, request.path);
         if (route) route.run(request);
         return false;

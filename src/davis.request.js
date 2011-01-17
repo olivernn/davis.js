@@ -16,7 +16,7 @@ Davis.Request = function (raw) {
 
 Davis.Request.prototype = {
   redirect: function (path) {
-    Davis.History.replaceState(new Davis.Request ({
+    Davis.history.replaceState(new Davis.Request ({
       method: 'get',
       fullPath: path,
       title: this.title

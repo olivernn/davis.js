@@ -1,4 +1,4 @@
-Davis.History = (function () {
+Davis.history = (function () {
 
   var pushStateHandlers = [];
 

@@ -9,13 +9,13 @@ test("binding and triggering the push state event", function () {
 
   var callbackCalled = false;
 
-  Davis.History.onChange(function (data) {
+  Davis.history.onChange(function (data) {
     callbackCalled = true;
   })
 
   ok(!callbackCalled, "callback shouldn't have been called yet")
 
-  Davis.History.pushState({
+  Davis.history.pushState({
     title: 'foo',
     path: '/bar.html'
   });
@@ -28,12 +28,12 @@ test("binding and triggering the push state event", function () {
 asyncTest("binding and triggering the pop state event", function () {
   var callbackCalled = false;
 
-  Davis.History.pushState({
+  Davis.history.pushState({
     title: 'foo',
     path: '/bar.html'
   });
 
-  Davis.History.onChange(function () {
+  Davis.history.onChange(function () {
     callbackCalled = true;
     start();
   });
