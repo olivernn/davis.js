@@ -185,11 +185,17 @@ Davis.history = (function () {
   var onPopState = function (handler) {
     window.addEventListener('popstate', handler);
   };
-
+  
   var wrapped = function (handler) {
     return function (event) {
       if (event.state) {
         handler(event.state)
+      } else {
+        handler(new Davis.Request({
+          method: 'get',
+          fullPath: '/',
+          title: 'root'
+        }))
       };
     }
   }
@@ -221,7 +227,6 @@ Davis.history = (function () {
 })()
 Davis.Request = function (raw) {
   var self = this;
-  this.method = raw.method;
   this.params = {};
   this.title = raw.title;
   this.queryString = raw.fullPath.split("?")[1];
@@ -232,6 +237,7 @@ Davis.Request = function (raw) {
     });
   };
 
+  this.method = this.params._method || raw.method;
   this.path = raw.fullPath.replace(/\?.+$/, "");
 };
 
