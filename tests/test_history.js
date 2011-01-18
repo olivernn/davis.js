@@ -41,7 +41,7 @@ asyncTest("binding and triggering the pop state event", function () {
   ok(!callbackCalled, "callback shouldn't have been called yet")
 
   setTimeout(function () {
-    window.history.back(10);
+    window.history.back(1);
     ok(callbackCalled, "callback should have been called")
   }, 100)
 
