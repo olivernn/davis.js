@@ -9,11 +9,17 @@ Davis.history = (function () {
   var onPopState = function (handler) {
     window.addEventListener('popstate', handler);
   };
-
+  
   var wrapped = function (handler) {
     return function (event) {
       if (event.state) {
         handler(event.state)
+      } else {
+        handler(new Davis.Request({
+          method: 'get',
+          fullPath: '/',
+          title: 'root'
+        }))
       };
     }
   }
