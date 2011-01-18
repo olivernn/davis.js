@@ -1,6 +1,5 @@
 Davis.Request = function (raw) {
   var self = this;
-  this.method = raw.method;
   this.params = {};
   this.title = raw.title;
   this.queryString = raw.fullPath.split("?")[1];
@@ -11,6 +10,7 @@ Davis.Request = function (raw) {
     });
   };
 
+  this.method = this.params._method || raw.method;
   this.path = raw.fullPath.replace(/\?.+$/, "");
 };
 

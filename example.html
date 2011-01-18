@@ -36,6 +36,11 @@
           console.log('params:', this.params)
           this.redirect('/bar')
         })
+
+        this.post('/blah/:id', function () {
+          console.log('request', this)
+          this.redirect('/bar')
+        })
       })
 
       app.start();
@@ -50,6 +55,12 @@
     <form action="/baz/555" method="post">
       <input type="text" name="name" value="" id="name">
       <input type="submit" name="submit" value="Send" id="submit">
+    </form>
+
+    <form action="/blah/12" method="post">
+      <input type="hidden" name="_method" value="put">
+      <input type="text" name="name" value="">
+      <input type="submit" value="submit">
     </form>
 
   </body>

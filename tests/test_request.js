@@ -37,3 +37,13 @@ test("convert request to readable string", function () {
 
   equal('POST /foo', request.toString(), "should include the method and the fullPath")
 })
+
+test("using _method param will set the method of the request", function () {
+  var request = new Davis.Request({
+    method: 'post',
+    fullPath: '/foo?_method=put&name=bob',
+    title: 'foo'
+  });
+
+  equal('put', request.method, "should use the _method param to set the requests method")
+})
