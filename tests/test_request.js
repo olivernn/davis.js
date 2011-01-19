@@ -47,3 +47,16 @@ test("using _method param will set the method of the request", function () {
 
   equal('put', request.method, "should use the _method param to set the requests method")
 })
+
+test("parsing rails style nested params", function () {
+  var request = new Davis.Request({
+    method: 'post',
+    fullPath: '/foo?note%5Bname%5D=123&note%5Btitle%5D=asdf',
+    title: 'foo'
+  })
+
+  same({note: {
+    name: '123',
+    title: 'asdf'
+  }}, request.params, "should combine the nested params into a separate object under params")
+})

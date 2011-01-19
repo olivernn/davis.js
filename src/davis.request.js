@@ -6,7 +6,21 @@ Davis.Request = function (raw) {
 
   if (this.queryString) {
     this.queryString.split("&").forEach(function (keyval) {
-      self.params[keyval.split("=")[0]] = keyval.split("=")[1]
+      var paramName = keyval.split("=")[0],
+          paramValue = keyval.split("=")[1],
+          nestedParamRegex = /^(\w+)%5B(\w+)%5D/,
+          nested;
+
+      if (nested = nestedParamRegex.exec(paramName)) {
+        var paramParent = nested[1];
+        var paramName = nested[2];
+        var parentParams = self.params[paramParent] || {};
+        parentParams[paramName] = paramValue;
+        self.params[paramParent] = parentParams;
+      } else {
+        self.params[paramName] = paramValue;
+      };
+
     });
   };
 
