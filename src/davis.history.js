@@ -15,11 +15,7 @@ Davis.history = (function () {
       if (event.state) {
         handler(event.state)
       } else {
-        handler(new Davis.Request({
-          method: 'get',
-          fullPath: '/',
-          title: 'root'
-        }))
+        handler(Davis.Request.forPageLoad())
       };
     }
   }

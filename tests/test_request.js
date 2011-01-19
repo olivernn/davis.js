@@ -60,3 +60,11 @@ test("parsing rails style nested params", function () {
     title: 'asdf'
   }}, request.params, "should combine the nested params into a separate object under params")
 })
+
+test("generating a request for the initial page load", function () {
+  var request = Davis.Request.forPageLoad()
+
+  equal('get', request.method, "should have a method of get")
+  equal(window.location.pathname, request.path, "should have the current location path as the path")
+  equal(document.title, request.title, "should take the current page title as the title")
+})

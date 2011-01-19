@@ -41,3 +41,11 @@ Davis.Request.prototype = {
     return [this.method.toUpperCase(), this.path].join(" ")
   }
 };
+
+Davis.Request.forPageLoad = function () {
+  return new this ({
+    method: 'get',
+    fullPath: window.location.pathname,
+    title: document.title
+  });
+}
