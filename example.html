@@ -16,10 +16,10 @@
     <script src="/src/davis.request.js"></script>
     <script src="/src/davis.app.js"></script>
 
+<!--     <script src="/dist/davis-0.0.1.min.js" type="text/javascript" charset="utf-8"></script> -->
 
     <script type="text/javascript" charset="utf-8">
       app = Davis(function () {
-
         this.get('/', function () {
           console.log('root')
         })
@@ -37,7 +37,7 @@
           this.redirect('/bar')
         })
 
-        this.post('/blah/:id', function () {
+        this.put('/blah/:id', function () {
           console.log('request', this)
           this.redirect('/bar')
         })
@@ -59,7 +59,8 @@
 
     <form action="/blah/12" method="post">
       <input type="hidden" name="_method" value="put">
-      <input type="text" name="name" value="">
+      <input type="text" name="note[name]" value="">
+      <input type="text" name="note[title]" value="">
       <input type="submit" value="submit">
     </form>
 
