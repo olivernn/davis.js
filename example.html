@@ -20,6 +20,7 @@
 
     <script type="text/javascript" charset="utf-8">
       app = Davis(function () {
+
         this.get('/', function () {
           console.log('root')
         })
@@ -37,10 +38,22 @@
           this.redirect('/bar')
         })
 
-        this.put('/blah/:id', function () {
+        this.put('/blah/:id', function (req) {
           console.log('request', this)
           this.redirect('/bar')
         })
+
+        this.error('404', function () {
+          
+        })
+
+        this.error('500', function () {
+          
+        })
+      })
+
+      app.routeNotFound(function () {
+        
       })
 
       app.start();
