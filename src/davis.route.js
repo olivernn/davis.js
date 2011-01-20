@@ -2,15 +2,23 @@ Davis.Route = (function () {
 
   var pathNameRegex = /:([\w\d]+)/g;
   var pathNameReplacement = "([^\/]+)";
-  var routeCollection = [];
-  var verbs = ['get', 'post', 'put', 'delete'];
 
   var klass = function (method, path, callback) {
     var convertPathToRegExp = function () {
       if (!(path instanceof RegExp)) {
         return new RegExp("^" + path.replace(pathNameRegex, pathNameReplacement) + "$", "g");
+      } else {
+        return path;
       };
     };
+
+    var convertMethodToRegExp = function () {
+      if (!(method instanceof RegExp)) {
+        return new RegExp("^" + method + "$");
+      } else {
+        return method
+      };
+    }
 
     var capturePathParamNames = function () {
       var names = [], a;
@@ -20,14 +28,14 @@ Davis.Route = (function () {
 
     this.paramNames = capturePathParamNames();
     this.path = convertPathToRegExp();
-    this.method = method;
+    this.method = convertMethodToRegExp();
     this.callback = callback;
   }
 
   klass.prototype = {
 
     match: function (method, path) {
-      return (this.method == method) && (this.path.test(path))
+      return (this.method.test(method)) && (this.path.test(path))
     },
 
     run: function (request) {

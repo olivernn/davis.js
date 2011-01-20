@@ -29,10 +29,10 @@ test("shortcuts for verbs", function () {
   router.put('/foo', $.noop);
   router.delete('/foo', $.noop);
 
-  equal(router._routeCollection[0].method, 'get')
-  equal(router._routeCollection[1].method, 'post')
-  equal(router._routeCollection[2].method, 'put')
-  equal(router._routeCollection[3].method, 'delete')
+  same(router._routeCollection[0].method, /^get$/)
+  same(router._routeCollection[1].method, /^post$/)
+  same(router._routeCollection[2].method, /^put$/)
+  same(router._routeCollection[3].method, /^delete$/)
 })
 
 test("keeping a collection of before filters", function () {
