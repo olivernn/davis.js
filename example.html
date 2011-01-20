@@ -12,6 +12,7 @@
     <script src="/src/davis.event.js"></script>
     <script src="/src/davis.logger.js"></script>
     <script src="/src/davis.route.js"></script>
+    <script src="/src/davis.router.js"></script>
     <script src="/src/davis.history.js"></script>
     <script src="/src/davis.request.js"></script>
     <script src="/src/davis.app.js"></script>
@@ -42,18 +43,6 @@
           console.log('request', this)
           this.redirect('/bar')
         })
-
-        this.error('404', function () {
-          
-        })
-
-        this.error('500', function () {
-          
-        })
-      })
-
-      app.routeNotFound(function () {
-        
       })
 
       app.start();
