@@ -25,25 +25,23 @@ test("binding and triggering the push state event", function () {
   resetHistory();
 })
 
-asyncTest("binding and triggering the pop state event", function () {
+asynchTest("binding and triggering the pop state event", function () {
+  resetHistory();
   var callbackCalled = false;
-
-  Davis.history.pushState({
-    title: 'foo',
-    path: '/bar.html'
-  });
 
   Davis.history.onChange(function () {
     callbackCalled = true;
     start();
   });
 
+  window.history.pushState('foo', 'foo')
+
   ok(!callbackCalled, "callback shouldn't have been called yet")
 
   setTimeout(function () {
     window.history.back(1);
     ok(callbackCalled, "callback should have been called")
-  }, 100)
+  }, 101)
 
   resetHistory();
 })
