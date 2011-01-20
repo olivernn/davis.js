@@ -1,9 +1,13 @@
 module("Davis.router")
 
-test("looking up a route", function () {
-  var router = {}
-  Davis.router.call(router)
+var mockRouter = function () {
+  var router = {};
+  Davis.router.call(router);
+  return router;
+}
 
+test("looking up a route", function () {
+  var router = mockRouter();
   router._routeCollection = [];
 
   router.get('/foo')
@@ -17,21 +21,44 @@ test("looking up a route", function () {
 })
 
 test("shortcuts for verbs", function () {
-  var router = {}
-  Davis.router.call(router)
+  var router = mockRouter();
 
   router._routeCollection.length = 0;
-
-
   router.get('/foo', $.noop);
   router.post('/foo', $.noop);
   router.put('/foo', $.noop);
   router.delete('/foo', $.noop);
 
-
   equal(router._routeCollection[0].method, 'get')
   equal(router._routeCollection[1].method, 'post')
   equal(router._routeCollection[2].method, 'put')
   equal(router._routeCollection[3].method, 'delete')
+})
 
+test("keeping a collection of before filters", function () {
+  var router = mockRouter();
+
+  router.before($.noop)
+  equal(router._filterCollection.before.length, 1, "should keep a collection of every before filter")
+})
+
+test("keeping a collection of after filters", function () {
+  var router = mockRouter();
+
+  router.after($.noop)
+  equal(router._filterCollection.after.length, 1, "should keep a collection of every before filter")
+})
+
+test("looking up a before filter", function () {
+  var router = mockRouter();
+  var filters = router.lookupBeforeFilter('get', '/foo')
+  var callbackCalled = false;
+
+  equal(filters.length, 0, "should return an empty array if there are no filters")
+
+  router.before(function () {
+    callbackCalled = true;
+  });
+
+  
 })
