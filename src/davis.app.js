@@ -53,7 +53,9 @@ Davis.App = (function () {
       this.unlisten();
       this.bind('stop')
     }
-  }, Davis.listener, Davis.event, Davis.router);
+  }, Davis.listener, Davis.event);
+
+  Davis.router.call(klass.prototype)
 
   return klass;
 })()

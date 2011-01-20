@@ -1,26 +1,18 @@
-Davis.router = {
+Davis.router = function () {
+  var self = this
+  var verbs = ['get', 'post', 'put', 'delete'];
 
-  _routeCollection: [],
+  verbs.forEach(function (verb) {
+    self[verb] = function (path, handler) {
+      self._routeCollection.push(new Davis.Route (verb, path, handler));
+    }
+  })
 
-  lookupRoute: function (method, path) {
+  self._routeCollection = [];
+
+  self.lookupRoute = function (method, path) {
     return this._routeCollection.filter(function (route) {
       return route.match(method, path)
     })[0];
-  },
-
-  get: function (path, handler) {
-    this._routeCollection.push(new Davis.Route ('get', path, handler));
-  },
-
-  post: function (path, handler) {
-    this._routeCollection.push(new Davis.Route ('post', path, handler));
-  },
-
-  put: function (path, handler) {
-    this._routeCollection.push(new Davis.Route ('put', path, handler));
-  },
-
-  del: function (path, handler) {
-    this._routeCollection.push(new Davis.Route ('delete', path, handler));
-  }
+  };
 }
