@@ -22,7 +22,6 @@ Davis.Route = (function () {
     this.path = convertPathToRegExp();
     this.method = method;
     this.callback = callback;
-    routeCollection.push(this);
   }
 
   klass.prototype = {
@@ -48,24 +47,6 @@ Davis.Route = (function () {
       return [this.method, this.path].join(' ');
     }
   };
-
-  klass.drawer = {}
-
-  verbs.forEach(function (method) {
-    klass.drawer[method] = function (path, handler) {
-      new Davis.Route (method, path, handler);
-    };
-  });
-
-  klass.lookup = function (method, path) {
-    return routeCollection.filter(function (route) {
-      return route.match(method, path)
-    })[0];
-  }
-
-  klass.clearAll = function () {
-    routeCollection = []
-  }
 
   return klass;
 })()

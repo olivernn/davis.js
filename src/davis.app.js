@@ -1,6 +1,9 @@
 Davis.App = (function () {
+
+  var appCounter = 0;
+
   var klass = function () {
-    this.foo = "bar"
+    this.id = [new Date().valueOf(), appCounter++].join("-");
     this.running = false;
   };
 
@@ -35,7 +38,7 @@ Davis.App = (function () {
 
       Davis.history.onChange(function (request) {
         self.trigger('lookupRoute', request);
-        var route = Davis.Route.lookup(request.method, request.path);
+        var route = self.lookupRoute(request.method, request.path);
         if (route) {
           self.trigger('runRoute', request);
           route.run(request);
@@ -50,7 +53,7 @@ Davis.App = (function () {
       this.unlisten();
       this.bind('stop')
     }
-  }, Davis.listener, Davis.event);
+  }, Davis.listener, Davis.event, Davis.router);
 
   return klass;
 })()

@@ -30,22 +30,3 @@ test('inoking a routes callback', function () {
 
   ok(routeRan, 'should run route callback when calling run');
 })
-
-test("looking up a route", function () {
-  Davis.Route.clearAll();
-
-  var getRoute = new Davis.Route('get', '/foo');
-  var postRoute = new Davis.Route('post', '/foo');
-
-  equal(Davis.Route.lookup('get', '/foo'), getRoute, 'should match routes based on method and path')
-  equal(Davis.Route.lookup('post', '/foo'), postRoute, 'should match routes based on method and path')
-})
-
-test("duplicate routes", function () {
-  Davis.Route.clearAll();
-
-  var firstRoute = new Davis.Route('get', '/dup')
-  var secondRoute = new Davis.Route('get', '/dup')
-
-  equal(Davis.Route.lookup('get', '/dup'), firstRoute, 'will only ever find the first matching route')
-})
