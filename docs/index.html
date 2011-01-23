@@ -514,61 +514,132 @@ Used internally in Davis and available for use outside of Davis.</p>
 </td>
 </tr><tr class="filename"><td><h2 id="src/davis.request.js"><a href="#">davis.request</a></h2></td><td>src/davis.request.js</td></tr><tr class="code">
 <td class="docs">
-<p>Davis.Request = function (raw) {
-  var self = this;
-  this.params = {};
-  this.title = raw.title;
-  this.queryString = raw.fullPath.split("?")[1];</p>
+<p>Daivs.Requests are created from click and submit events.  Davis.Requests are passed to Davis.Routes
+and are stored in the history stack.  They are instantiated by Davis.listener.</p>
 
-<p>  if (this.queryString) {
-    this.queryString.split("&amp;").forEach(function (keyval) {
-      var paramName = keyval.split("=")[0],
-          paramValue = keyval.split("=")[1],
-          nestedParamRegex = /^(\w+)%5B(\w+)%5D/,
-          nested;</p>
+<ul><li><strong>constructo</strong>: <em>r</em></li></ul>
 
-<pre><code>  if (nested = nestedParamRegex.exec(paramName)) {
-    var paramParent = nested[1];
-    var paramName = nested[2];
-    var parentParams = self.params[paramParent] || {};
-    parentParams[paramName] = paramValue;
-    self.params[paramParent] = parentParams;
-  } else {
-    self.params[paramName] = paramValue;
-  };
+<h2></h2>
 
-});</code></pre>
+<ul><li><strong>param</strong>: <em>Object</em>  raw An object that at least contains a title, fullPath and method proprty.</li></ul>
 
-<p>  };</p>
+<h2>Example</h2>
 
-<p>  this.method = this.params._method || raw.method;
-  this.path = raw.fullPath.replace(/\?.+$/, "");
-};</p>
+<pre><code>var request = new Davis.Request({
+  title: "foo",
+  fullPath: "/foo/12",
+  method: "get"
+})</code></pre>
 
-<p>Davis.Request.prototype = {
-  redirect: function (path) {
-    Davis.history.replaceState(new Davis.Request ({
-      method: 'get',
-      fullPath: path,
-      title: this.title
-    }));
-  },</p>
-
-<p>  toString: function () {
-    return [this.method.toUpperCase(), this.path].join(" ")
-  }
-};</p>
-
-<p>Davis.Request.forPageLoad = function () {
-  return new this ({
-    method: 'get',
-    fullPath: window.location.pathname,
-    title: document.title
-  });
-}</p>
+<p> </p>
 </td>
 <td class="code">
+<pre><code><span class="class">Davis</span>.<span class="class">Request</span> = <span class="keyword">function</span> (<span class="variable">raw</span>) {
+  <span class="keyword">var</span> <span class="variable">self</span> = <span class="this">this</span>;
+  <span class="this">this</span>.<span class="variable">params</span> = {};
+  <span class="this">this</span>.<span class="variable">title</span> = <span class="variable">raw</span>.<span class="variable">title</span>;
+  <span class="this">this</span>.<span class="variable">queryString</span> = <span class="variable">raw</span>.<span class="variable">fullPath</span>.<span class="variable">split</span>(&<span class="variable">quot</span>;?&<span class="variable">quot</span>;)[<span class="number integer">1</span>];
 
+  <span class="keyword">if</span> (<span class="this">this</span>.<span class="variable">queryString</span>) {
+    <span class="this">this</span>.<span class="variable">queryString</span>.<span class="variable">split</span>(&<span class="variable">quot</span>;&<span class="variable">amp</span>;&<span class="variable">quot</span>;).<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">keyval</span>) {
+      <span class="keyword">var</span> <span class="variable">paramName</span> = <span class="variable">keyval</span>.<span class="variable">split</span>(&<span class="variable">quot</span>;=&<span class="variable">quot</span>;)[<span class="number integer">0</span>],
+          <span class="variable">paramValue</span> = <span class="variable">keyval</span>.<span class="variable">split</span>(&<span class="variable">quot</span>;=&<span class="variable">quot</span>;)[<span class="number integer">1</span>],
+          <span class="variable">nestedParamRegex</span> = <span class="regexp">/^(\w+)%5B(\w+)%5D/</span>,
+          <span class="variable">nested</span>;
+
+      <span class="keyword">if</span> (<span class="variable">nested</span> = <span class="variable">nestedParamRegex</span>.<span class="variable">exec</span>(<span class="variable">paramName</span>)) {
+        <span class="keyword">var</span> <span class="variable">paramParent</span> = <span class="variable">nested</span>[<span class="number integer">1</span>];
+        <span class="keyword">var</span> <span class="variable">paramName</span> = <span class="variable">nested</span>[<span class="number integer">2</span>];
+        <span class="keyword">var</span> <span class="variable">parentParams</span> = <span class="variable">self</span>.<span class="variable">params</span>[<span class="variable">paramParent</span>] || {};
+        <span class="variable">parentParams</span>[<span class="variable">paramName</span>] = <span class="variable">paramValue</span>;
+        <span class="variable">self</span>.<span class="variable">params</span>[<span class="variable">paramParent</span>] = <span class="variable">parentParams</span>;
+      } <span class="keyword">else</span> {
+        <span class="variable">self</span>.<span class="variable">params</span>[<span class="variable">paramName</span>] = <span class="variable">paramValue</span>;
+      };
+
+    });
+  };
+
+  <span class="this">this</span>.<span class="variable">method</span> = <span class="this">this</span>.<span class="variable">params</span>.<span class="variable">_method</span> || <span class="variable">raw</span>.<span class="variable">method</span>;
+  <span class="this">this</span>.<span class="variable">path</span> = <span class="variable">raw</span>.<span class="variable">fullPath</span>.<span class="variable">replace</span>(<span class="regexp">/\?.+$/</span>, &<span class="variable">quot</span>;&<span class="variable">quot</span>;);
+};</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>request.redirect('/foo')</h2>
+
+<p>Redirects the current request to a new location.  Calling redirect on an instance of
+Davis.Request will create a new request using the path param and the current requests title.
+Redirected requests always have a method of 'get'</p>
+
+<p>The request created will replace the current request in the history stack.  Redirect is most
+often useful inside a handler for a form submit, after succesfully handling the form the app
+can redirect to another path, this will mean that the current form will not be re-submitted if
+navigating with the back or forward buttons as the forms submit request will have been replaced
+in the browsers history stack.</p>
+
+<h2></h2>
+
+<ul><li><strong>param</strong>: <em>String</em>  path The path to redirect the current request to</li></ul>
+
+<h2>Example</h2>
+
+<pre><code>this.post('/foo', function (req) {
+  processFormRequest(req.params)  // do something with the form request
+  req.redirect('/bar');
+})</code></pre>
+
+<p> </p>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="class">Request</span>.<span class="variable">prototype</span>.<span class="variable">redirect</span> = <span class="keyword">function</span> (<span class="variable">path</span>) {
+  <span class="class">Davis</span>.<span class="variable">history</span>.<span class="variable">replaceState</span>(<span class="keyword">new</span> <span class="class">Davis</span>.<span class="class">Request</span> ({
+    <span class="variable">method</span>: <span class="string">'get'</span>,
+    <span class="variable">fullPath</span>: <span class="variable">path</span>,
+    <span class="variable">title</span>: <span class="this">this</span>.<span class="variable">title</span>
+  }));
+};</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>request.toString()</h2>
+
+<p>Converts the request to a string representation of itself by combining the method and path
+attributes.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>returns</strong>: <em>String</em>  string representation of the request</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="class">Request</span>.<span class="variable">prototype</span>.<span class="variable">toString</span> = <span class="keyword">function</span> () {
+  <span class="keyword">return</span> [<span class="this">this</span>.<span class="variable">method</span>.<span class="variable">toUpperCase</span>(), <span class="this">this</span>.<span class="variable">path</span>].<span class="variable">join</span>(&<span class="variable">quot</span>; &<span class="variable">quot</span>;)
+};</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.Request.forPageLoad();</h2>
+
+<p>Creates a new request for the page on page load.
+This is required because usually requests are generated from clicking links or submitting forms
+however this doesn't happen on a page load but should still be considered a request that the 
+JavaScript app should handle.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>returns</strong>: <em>Davis.Request</em>  A request representing the current page loading.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="class">Request</span>.<span class="variable">forPageLoad</span> = <span class="keyword">function</span> () {
+  <span class="keyword">return</span> <span class="keyword">new</span> <span class="this">this</span> ({
+    <span class="variable">method</span>: <span class="string">'get'</span>,
+    <span class="variable">fullPath</span>: <span class="variable">window</span>.<span class="variable">location</span>.<span class="variable">pathname</span>,
+    <span class="variable">title</span>: <span class="variable">document</span>.<span class="variable">title</span>
+  });
+}</code></pre>
 </td>
 </tr><tr class="filename"><td><h2 id="src/davis.route.js"><a href="#">davis.route</a></h2></td><td>src/davis.route.js</td></tr><tr class="code">
 <td class="docs">
