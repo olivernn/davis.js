@@ -643,71 +643,120 @@ JavaScript app should handle.</p>
 </td>
 </tr><tr class="filename"><td><h2 id="src/davis.route.js"><a href="#">davis.route</a></h2></td><td>src/davis.route.js</td></tr><tr class="code">
 <td class="docs">
-<p>Davis.Route = (function () {</p>
+<p>Davis.Routes are the main part of a Davis application.  They consist of a HTTP method, a path
+and a callback function.  When a link or a form that Davis has bound to are clicked or submitted
+a request is pushed on the history stack and a route that matches the path and method of the
+generated request is run.</p>
 
-<p>  var pathNameRegex = /:([\w\d]+)/g;
-  var pathNameReplacement = "([^\/]+)";</p>
+<p>Inside the callback function 'this' is bound to the request.</p>
 
-<p>  var klass = function (method, path, callback) {
-    var convertPathToRegExp = function () {
-      if (!(path instanceof RegExp)) {
-        return new RegExp("^" + path.replace(pathNameRegex, pathNameReplacement) + "$", "g");
-      } else {
-        return path;
-      };
-    };</p>
+<ul><li><strong>constructo</strong>: <em>r</em></li></ul>
 
-<pre><code>var convertMethodToRegExp = function () {
-  if (!(method instanceof RegExp)) {
-    return new RegExp("^" + method + "$");
-  } else {
-    return method
-  };
-}
+<h2></h2>
 
-var capturePathParamNames = function () {
-  var names = [], a;
-  while ((a = pathNameRegex.exec(path))) names.push(a[1]);
-  return names;
-};
+<ul><li><p><strong>param</strong>: <em>String</em>  method - This should be one of either 'get', 'post', 'put' or 'delete'</p></li><li><p><strong>param</strong>: <em>String</em>  path - This string can contain place holders for variables, e.g. '/user/:id'</p></li><li><p><strong>param</strong>: <em>Function</em>  callback - A callback that will be called when a request matching both the path and method is triggered.</p></li></ul>
 
-this.paramNames = capturePathParamNames();
-this.path = convertPathToRegExp();
-this.method = convertMethodToRegExp();
-this.callback = callback;</code></pre>
+<h2>Example</h2>
 
-<p>  }</p>
+<pre><code>var route = new Davis.Route ('get', '/foo/:id', function (req) {
+  var id = req.params['id']
+  // do something interesting!
+})</code></pre>
 
-<p>  klass.prototype = {</p>
-
-<pre><code>match: function (method, path) {
-  return (this.method.test(method)) &amp;&amp; (this.path.test(path))
-},
-
-run: function (request) {
-  this.path.lastIndex = 0
-  var matches = this.path.exec(request.path);
-  if (matches) {
-    matches.shift();
-    for (var i=0; i &lt; matches.length; i++) {
-      request.params[this.paramNames[i]] = matches[i];
-    };
-  };
-  this.path.lastIndex = 0
-  return this.callback.call(request, request);
-},
-
-toString: function () {
-  return [this.method, this.path].join(' ');
-}</code></pre>
-
-<p>  };</p>
-
-<p>  return klass;
-})()</p>
+<p> </p>
 </td>
 <td class="code">
+<pre><code><span class="keyword">var</span> <span class="class">Route</span> = <span class="keyword">function</span> (<span class="variable">method</span>, <span class="variable">path</span>, <span class="variable">callback</span>) {
+    <span class="keyword">var</span> <span class="variable">convertPathToRegExp</span> = <span class="keyword">function</span> () {
+      <span class="keyword">if</span> (!(<span class="variable">path</span> <span class="variable">instanceof</span> <span class="class">RegExp</span>)) {
+        <span class="keyword">return</span> <span class="keyword">new</span> <span class="class">RegExp</span>(&<span class="variable">quot</span>;^&<span class="variable">quot</span>; + <span class="variable">path</span>.<span class="variable">replace</span>(<span class="variable">pathNameRegex</span>, <span class="variable">pathNameReplacement</span>) + &<span class="variable">quot</span>;$&<span class="variable">quot</span>;, &<span class="variable">quot</span>;<span class="variable">g</span>&<span class="variable">quot</span>;);
+      } <span class="keyword">else</span> {
+        <span class="keyword">return</span> <span class="variable">path</span>;
+      };
+    };
 
+    <span class="keyword">var</span> <span class="variable">convertMethodToRegExp</span> = <span class="keyword">function</span> () {
+      <span class="keyword">if</span> (!(<span class="variable">method</span> <span class="variable">instanceof</span> <span class="class">RegExp</span>)) {
+        <span class="keyword">return</span> <span class="keyword">new</span> <span class="class">RegExp</span>(&<span class="variable">quot</span>;^&<span class="variable">quot</span>; + <span class="variable">method</span> + &<span class="variable">quot</span>;$&<span class="variable">quot</span>;);
+      } <span class="keyword">else</span> {
+        <span class="keyword">return</span> <span class="variable">method</span>
+      };
+    }
+
+    <span class="keyword">var</span> <span class="variable">capturePathParamNames</span> = <span class="keyword">function</span> () {
+      <span class="keyword">var</span> <span class="variable">names</span> = [], <span class="variable">a</span>;
+      <span class="keyword">while</span> ((<span class="variable">a</span> = <span class="variable">pathNameRegex</span>.<span class="variable">exec</span>(<span class="variable">path</span>))) <span class="variable">names</span>.<span class="variable">push</span>(<span class="variable">a</span>[<span class="number integer">1</span>]);
+      <span class="keyword">return</span> <span class="variable">names</span>;
+    };
+
+    <span class="this">this</span>.<span class="variable">paramNames</span> = <span class="variable">capturePathParamNames</span>();
+    <span class="this">this</span>.<span class="variable">path</span> = <span class="variable">convertPathToRegExp</span>();
+    <span class="this">this</span>.<span class="variable">method</span> = <span class="variable">convertMethodToRegExp</span>();
+    <span class="this">this</span>.<span class="variable">callback</span> = <span class="variable">callback</span>;
+  }
+
+  <span class="class">Route</span>.<span class="variable">prototype</span> = {</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>route.match('get', '/foo')</h2>
+
+<p>Tests whether or not a route matches a particular request.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>String</em>  method</p></li><li><p><strong>param</strong>: <em>String</em>  path</p></li><li><p><strong>returns</strong>: <em>Boolean</em> </p><p> </p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="variable">match</span>: <span class="keyword">function</span> (<span class="variable">method</span>, <span class="variable">path</span>) {
+      <span class="keyword">return</span> (<span class="this">this</span>.<span class="variable">method</span>.<span class="variable">test</span>(<span class="variable">method</span>)) &<span class="variable">amp</span>;&<span class="variable">amp</span>; (<span class="this">this</span>.<span class="variable">path</span>.<span class="variable">test</span>(<span class="variable">path</span>))
+    },</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>route.run(request)</h2>
+
+<p>Runs the callback associated with a particular route against the passed request.
+Any named params in the request path are extracted, as per the routes path, and
+added onto the requests params object.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>params</strong>: <em>Davis.Request</em>  request</p></li><li><p><strong>returns</strong>: <em>Object</em>  whatever the routes callback returns</p><p> </p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="variable">run</span>: <span class="keyword">function</span> (<span class="variable">request</span>) {
+      <span class="this">this</span>.<span class="variable">path</span>.<span class="variable">lastIndex</span> = <span class="number integer">0</span>
+      <span class="keyword">var</span> <span class="variable">matches</span> = <span class="this">this</span>.<span class="variable">path</span>.<span class="variable">exec</span>(<span class="variable">request</span>.<span class="variable">path</span>);
+      <span class="keyword">if</span> (<span class="variable">matches</span>) {
+        <span class="variable">matches</span>.<span class="variable">shift</span>();
+        <span class="keyword">for</span> (<span class="keyword">var</span> <span class="variable">i</span>=<span class="number integer">0</span>; <span class="variable">i</span> &<span class="variable">lt</span>; <span class="variable">matches</span>.<span class="variable">length</span>; <span class="variable">i</span>++) {
+          <span class="variable">request</span>.<span class="variable">params</span>[<span class="this">this</span>.<span class="variable">paramNames</span>[<span class="variable">i</span>]] = <span class="variable">matches</span>[<span class="variable">i</span>];
+        };
+      };
+      <span class="this">this</span>.<span class="variable">path</span>.<span class="variable">lastIndex</span> = <span class="number integer">0</span>
+      <span class="keyword">return</span> <span class="this">this</span>.<span class="variable">callback</span>.<span class="variable">call</span>(<span class="variable">request</span>, <span class="variable">request</span>);
+    },</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>route.toString()</h2>
+
+<p>Converts the route to a string representation of itself by combining the method and path
+attributes.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>returns</strong>: <em>String</em>  string representation of the route</p><p> </p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="variable">toString</span>: <span class="keyword">function</span> () {
+      <span class="keyword">return</span> [<span class="this">this</span>.<span class="variable">method</span>, <span class="this">this</span>.<span class="variable">path</span>].<span class="variable">join</span>(<span class="string">' '</span>);
+    }
+  };</code></pre>
 </td>
 </tr><tr class="filename"><td><h2 id="src/davis.router.js"><a href="#">davis.router</a></h2></td><td>src/davis.router.js</td></tr><tr class="code">
 <td class="docs">
