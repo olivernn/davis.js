@@ -36,11 +36,15 @@ Davis.App = (function () {
       this.listen();
       this.trigger('start')
 
-      var beforeFiltersPass = function (request) {
-        return self.lookupBeforeFilter(request.method, request.path).every(function (filter) {
+      var runFilterWith = function (request) {
+        return function (filter) {
           var result = filter.run(request, request);
           return (typeof result === "undefined" || result);
-        })
+        }
+      }
+
+      var beforeFiltersPass = function (request) {
+        return self.lookupBeforeFilter(request.method, request.path).every(runFilterWith(request))
       }
 
       Davis.history.onChange(function (request) {
@@ -49,10 +53,7 @@ Davis.App = (function () {
           if (route) {
             self.trigger('runRoute', request);
             route.run(request);
-            self.lookupAfterFilter(request.method, request.path).every(function (filter) {
-              var result = filter.run(request, request);
-              return (typeof result === "undefined" || result);
-            });
+            self.lookupAfterFilter(request.method, request.path).every(runFilterWith(request));
           } else {
             self.trigger('routeNotFound', request);
           }
