@@ -252,130 +252,6 @@ apps settings.
       <span class="this">this</span>.<span class="variable">trigger</span>(<span class="string">'stop'</span>)
     }</code></pre>
 </td>
-</tr><tr class="filename"><td><h2 id="src/davis.history.js"><a href="#">davis.history</a></h2></td><td>src/davis.history.js</td></tr><tr class="code">
-<td class="docs">
-<p>A module to normalize and enhance the window.pushState method and window.onpopstate event.
-Adds the ability to bind to whenever a new state is pushed onto the history stack and normalizes
-both of these events into an onChange event.</p>
-
-<p>Used internally by Davis.App
- </p>
-</td>
-<td class="code">
-<pre><code><span class="class">Davis</span>.<span class="variable">history</span> = (<span class="keyword">function</span> () {</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<p>Bind to the history on change event.  This is not a native event but is fired any time a new
-state is pushed onto the history stack or a state is popped off the history stack.</p>
-
-<h2></h2>
-
-<ul><li><strong>param</strong>: <em>Function</em>  handler</li></ul>
-
-<p>The handler function will be called with a request param which is an instance of Davis.Request.
- - <strong>see</strong>: <em>Davis</em>
-.Request
-   </p>
-</td>
-<td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">onChange</span> = <span class="keyword">function</span> (<span class="variable">handler</span>) {
-    <span class="variable">onPushState</span>(<span class="variable">handler</span>);
-    <span class="variable">onPopState</span>(<span class="variable">wrapped</span>(<span class="variable">handler</span>));
-  };</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<p>Push a request onto the history stack.  This is used internally by Davis to push a new request
-onto the history stack, it will also trigger the onpushstate event.</p>
-
-<h2></h2>
-
-<ul><li><strong>param</strong>: <em>Davis.Request</em>  request</li></ul>
-
-<p>An instance of Davis.Request is expected to be passed, however any object that has a title
-and a path property can be passed.
-   </p>
-</td>
-<td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">pushState</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
-    <span class="variable">history</span>.<span class="variable">pushState</span>(<span class="variable">request</span>, <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">path</span>);
-    <span class="variable">pushStateHandlers</span>.<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">handler</span>) {
-      <span class="variable">handler</span>(<span class="variable">request</span>);
-    });
-  };</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<p>Replace the current state on the history stack.  This is used internally by Davis when performing
-a redirect.  This will trigger an onpushstate event.</p>
-
-<h2></h2>
-
-<ul><li><strong>param</strong>: <em>Davis.Request</em>  request</li></ul>
-
-<p>An instance of Davis.Request is expected to be passed, however any object that has a title
-and a path property can be passed.
-   </p>
-</td>
-<td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">replaceState</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
-    <span class="variable">history</span>.<span class="variable">replaceState</span>(<span class="variable">request</span>, <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">path</span>);
-    <span class="variable">pushStateHandlers</span>.<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">handler</span>) {
-      <span class="variable">handler</span>(<span class="variable">request</span>);
-    });
-  };</code></pre>
-</td>
-</tr><tr class="filename"><td><h2 id="src/davis.listener.js"><a href="#">davis.listener</a></h2></td><td>src/davis.listener.js</td></tr><tr class="code">
-<td class="docs">
-<p>Davis.listener = (function () {</p>
-
-<p>  var handler = function (targetExtractor) {
-    return function (event) {
-      var request = new Davis.Request (targetExtractor.call($(event.target)));
-      Davis.history.pushState(request);
-      return false;
-    };
-  };</p>
-
-<p>  var clickHandler = handler(function () {
-    return {
-      method: 'get',
-      fullPath: this.attr('href'),
-      title: this.attr('title')
-    };
-  });</p>
-
-<p>  var submitHandler = handler(function () {
-    return {
-      method: this.attr('method'),
-      fullPath: [this.attr('action'), "?", this.serialize()].join(""),
-      title: this.attr('title')
-    };
-  });</p>
-
-<p>  var listen = function () {
-    $(document).delegate(this.settings.formSelector, 'submit', submitHandler)
-    $(document).delegate(this.settings.linkSelector, 'click', clickHandler)
-  }</p>
-
-<p>  var unlisten = function () {
-    $(document).undelegate(this.settings.linkSelector, 'click', clickHandler)
-    $(document).undelegate(this.settings.formSelector, 'submit', submitHandler)
-  }</p>
-
-<p>  return {
-    listen: listen,
-    unlisten: unlisten
-  }
-})()</p>
-</td>
-<td class="code">
-
-</td>
 </tr><tr class="filename"><td><h2 id="src/davis.event.js"><a href="#">davis.event</a></h2></td><td>src/davis.event.js</td></tr><tr class="code">
 <td class="docs">
 <p>A module that can be mixed into any object to provide basic event functionality.
@@ -458,41 +334,183 @@ app.trigger('bar', {baz: true})</code></pre>
 
 </code></pre>
 </td>
-</tr><tr class="filename"><td><h2 id="src/davis.logger.js"><a href="#">davis.logger</a></h2></td><td>src/davis.logger.js</td></tr><tr class="code">
+</tr><tr class="filename"><td><h2 id="src/davis.history.js"><a href="#">davis.history</a></h2></td><td>src/davis.history.js</td></tr><tr class="code">
 <td class="docs">
-<p>Davis.logger = (function () {</p>
-
-<p>  var timestamp = function (){
-    return "[" + Date() + "]";
-  }</p>
-
-<p>  var prepArgs = function (args) {
-    var a = Array.prototype.slice.call(args)
-    a.unshift(timestamp())
-    return a
-  }</p>
-
-<p>  var error = function () {
-    if (window.console) console.error.apply(console, prepArgs(arguments))
-  }</p>
-
-<p>  var info = function () {
-    if (window.console) console.info.apply(console, prepArgs(arguments))
-  }</p>
-
-<p>  var warn = function () {
-    if (window.console) console.warn.apply(console, prepArgs(arguments))
-  }</p>
-
-<p>  return {
-    error: error,
-    info: info,
-    warn: warn
-  }
-})()</p>
+<p>A module to normalize and enhance the window.pushState method and window.onpopstate event.
+Adds the ability to bind to whenever a new state is pushed onto the history stack and normalizes
+both of these events into an onChange event.
+ </p>
 </td>
 <td class="code">
+<pre><code><span class="class">Davis</span>.<span class="variable">history</span> = (<span class="keyword">function</span> () {</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Bind to the history on change event.  This is not a native event but is fired any time a new
+state is pushed onto the history stack or a state is popped off the history stack.</p>
 
+<h2></h2>
+
+<ul><li><strong>param</strong>: <em>Function</em>  handler</li></ul>
+
+<p>The handler function will be called with a request param which is an instance of Davis.Request.
+ - <strong>see</strong>: <em>Davis</em>
+.Request
+   </p>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">onChange</span> = <span class="keyword">function</span> (<span class="variable">handler</span>) {
+    <span class="variable">onPushState</span>(<span class="variable">handler</span>);
+    <span class="variable">onPopState</span>(<span class="variable">wrapped</span>(<span class="variable">handler</span>));
+  };</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Push a request onto the history stack.  This is used internally by Davis to push a new request
+onto the history stack, it will also trigger the onpushstate event.</p>
+
+<h2></h2>
+
+<ul><li><strong>param</strong>: <em>Davis.Request</em>  request</li></ul>
+
+<p>An instance of Davis.Request is expected to be passed, however any object that has a title
+and a path property can be passed.
+   </p>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">pushState</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
+    <span class="variable">history</span>.<span class="variable">pushState</span>(<span class="variable">request</span>, <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">path</span>);
+    <span class="variable">pushStateHandlers</span>.<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">handler</span>) {
+      <span class="variable">handler</span>(<span class="variable">request</span>);
+    });
+  };</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Replace the current state on the history stack.  This is used internally by Davis when performing
+a redirect.  This will trigger an onpushstate event.</p>
+
+<h2></h2>
+
+<ul><li><strong>param</strong>: <em>Davis.Request</em>  request</li></ul>
+
+<p>An instance of Davis.Request is expected to be passed, however any object that has a title
+and a path property can be passed.
+   </p>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">replaceState</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
+    <span class="variable">history</span>.<span class="variable">replaceState</span>(<span class="variable">request</span>, <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">path</span>);
+    <span class="variable">pushStateHandlers</span>.<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">handler</span>) {
+      <span class="variable">handler</span>(<span class="variable">request</span>);
+    });
+  };</code></pre>
+</td>
+</tr><tr class="filename"><td><h2 id="src/davis.listener.js"><a href="#">davis.listener</a></h2></td><td>src/davis.listener.js</td></tr><tr class="code">
+<td class="docs">
+<p>A module to bind to link clicks and form submits and turn what would normally be http requests
+into instances of Davis.Request and push these onto the history stack using the Davis.history
+module.</p>
+
+<p>This module is mixed into Davis.App prototype and accesses the Davis.App instances settings for
+the selectors to use when binding to links and forms.</p>
+
+<p>This module requires jQuery for its event binding and event object normalization.  To use Davis
+with any, or no, JavaScript framework this module should be replaced with one using your framework
+of choice.
+ </p>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="variable">listener</span> = (<span class="keyword">function</span> () {</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Binds to both link clicks and form submits using jquerys deleagate.  Will catch all current
+and future links and forms.  Uses the apps settings for the selector to use for links and forms</p>
+
+<ul><li><strong>see</strong>: <em>Davis</em>
+.App.settings</li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">listen</span> = <span class="keyword">function</span> () {
+    $(<span class="variable">document</span>).<span class="variable">delegate</span>(<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">formSelector</span>, <span class="string">'submit'</span>, <span class="variable">submitHandler</span>)
+    $(<span class="variable">document</span>).<span class="variable">delegate</span>(<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">linkSelector</span>, <span class="string">'click'</span>, <span class="variable">clickHandler</span>)
+  }</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Unbinds all click and submit handlers that were attatched with listen.  Will efectivley stop
+the current app from processing any requests and all links and forms will have their default
+behaviour restored.</p>
+
+<ul><li><strong>see</strong>: <em>Davis</em>
+.App.settings</li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">unlisten</span> = <span class="keyword">function</span> () {
+    $(<span class="variable">document</span>).<span class="variable">undelegate</span>(<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">linkSelector</span>, <span class="string">'click'</span>, <span class="variable">clickHandler</span>)
+    $(<span class="variable">document</span>).<span class="variable">undelegate</span>(<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">formSelector</span>, <span class="string">'submit'</span>, <span class="variable">submitHandler</span>)
+  }</code></pre>
+</td>
+</tr><tr class="filename"><td><h2 id="src/davis.logger.js"><a href="#">davis.logger</a></h2></td><td>src/davis.logger.js</td></tr><tr class="code">
+<td class="docs">
+<p>A module for enhancing the standard logging available through the console object.
+Used internally in Davis and available for use outside of Davis.</p>
+
+<p>Generates log messages of varying severity in the format:</p>
+
+<p><code>[Sun Jan 23 2011 16:15:21 GMT+0000 (GMT)] &lt;message&gt;</code>
+ </p>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="variable">logger</span> = (<span class="keyword">function</span> () {</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Prints an error message to the console if the console is available.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>params</strong>: <em>String</em>  All arguments are combined and logged to the console.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">error</span> = <span class="keyword">function</span> () {
+    <span class="keyword">if</span> (<span class="variable">window</span>.<span class="variable">console</span>) <span class="variable">console</span>.<span class="variable">error</span>.<span class="variable">apply</span>(<span class="variable">console</span>, <span class="variable">prepArgs</span>(<span class="variable">arguments</span>))
+  }</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Prints an info message to the console if the console is available.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>params</strong>: <em>String</em>  All arguments are combined and logged to the console.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">info</span> = <span class="keyword">function</span> () {
+    <span class="keyword">if</span> (<span class="variable">window</span>.<span class="variable">console</span>) <span class="variable">console</span>.<span class="variable">info</span>.<span class="variable">apply</span>(<span class="variable">console</span>, <span class="variable">prepArgs</span>(<span class="variable">arguments</span>))
+  }</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Prints a warning message to the console if the console is available.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>params</strong>: <em>String</em>  All arguments are combined and logged to the console.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">warn</span> = <span class="keyword">function</span> () {
+    <span class="keyword">if</span> (<span class="variable">window</span>.<span class="variable">console</span>) <span class="variable">console</span>.<span class="variable">warn</span>.<span class="variable">apply</span>(<span class="variable">console</span>, <span class="variable">prepArgs</span>(<span class="variable">arguments</span>))
+  }</code></pre>
 </td>
 </tr><tr class="filename"><td><h2 id="src/davis.request.js"><a href="#">davis.request</a></h2></td><td>src/davis.request.js</td></tr><tr class="code">
 <td class="docs">
