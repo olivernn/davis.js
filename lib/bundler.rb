@@ -33,6 +33,7 @@ class Bundler
           davis.event
           davis.logger
           davis.route
+          davis.router
           davis.history
           davis.request
           davis.app
