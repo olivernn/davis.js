@@ -1,38 +1,53 @@
-# davis.js
+# Davis.js
 
-A JavaScript library using html5 history.pushState that allows simple sinatra like routing for you JavaScript apps.
+## Description
 
-Allows heavy JavaScript apps to degrade more gracefully when accessed without JavaScript as all links and forms can still point to real server end points unlike location.hash based routing.
+Davis.js is a small JavaScript library using HTML5 history.pushState that allows simple Sinatra style routing for you JavaScript apps.
+
+## Why
+
+Using the history pustState and popstate events allows the links and forms in your app to have hrefs and actions that point to real end points on your server.  This allows complex JavaScript apps to degrade gracefully when JavaScript is unavailable and combining this with a template system that can be used both client and server side allows for large amounts of code reuse.
+
+Davis.js is heavily inspired by [Sammy.js](https://github.com/quirkey/sammy) (hence the name), it is however intentionally much lighter than Sammy.js because I never use any of the template rendering etc that it includes.  All Davis.js does is provide a simple routing layer, nothing more, nothing less.
+
+## Requirements
+
+Davis.js requires jQuery 1.4.2+ as well as a modern browser that supports HTML5 history.pushState and the onpopstate event.  At the moment that means FireFox 4+, Safari 5+, Chrome, iOS Safari 4+, Android Browser 2.2+.
+
+In all other browser Davis.js will currently fail pretty hard, fallback to hash location routing is a future possibility.
+
+## Installation
+
+Download davis.min.js and include it on your page after jquery.
 
 ## Example
 
-A simple example of a davis.js app:
+A very simple example of a Davis.js app:
 
     var app = Davis(function () {
-      this.get('/posts', function (req) {
-        var posts = Post.all();
-      })
-
-      this.get('/posts/:id', function (req) {
-        var post = Post.find(req.params['id'])
-      })
-
-      this.post('/posts', function (req) {
-        var post = new Post (req.params)
+      this.get('/welcome/:name', function (req) {
+        $('body').append('<h1>Hello there, ' + req.params['name'] + '!</h1>')
       })
     })
-      
-    app.start()
-
-By default davis binds itself to all links and forms on the page now, and in the future.  To be more selective over which links or forms davis binds to use the apps configure method before starting the app.
-
-    app.configure(function () {
-      this.linkSelector = 'a.davis-links';
-      this.formSelector = 'form.davis-forms'
-    });
     
-    app.start();
+    $(document).ready(function () {
+      // append a link to trigger the route
+      $('body').append('<a href="/welcome/bob">Greet</a>');
+      
+      app.start();
+    })
 
-## Dependencies
+We create a new instance of a Davis.App using the Davis.js function, passing in a function that will draw the routes for the application.  Inside this function `this` is the instance of our application.
 
-davis.js currently requires jQuery as well as a modern browser that supports both the history.pushState method and history.onpopstate event, currently this means the latest versions of Safari, Chrome and Firefox.
+We define a simple get route with a 'name' parameter and a callback that will append a message to the html body.  Inside the route callback `this` is set to the request that matches the route, this request is also passed as a parameter to the callback.
+
+Once the app is configure it needs to be started.  You start a Davis.js app by calling the `start` method, this must be done once the document is ready.  Now if you click on the link that we appended to the body our route should be called and a friendly greeting printed on the page.
+
+## More
+
+[API docs](http://olivernn.github.com/davis.js)
+[Example](https://github.com/olivernn/davis.js/example.html)
+
+## Feedback
+
+This is a very young library and any feedback or suggestions are welcome via [issues](https://github.com/olivernn/davis.js/issues).
