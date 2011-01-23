@@ -22,6 +22,20 @@
     <script type="text/javascript" charset="utf-8">
       app = Davis(function () {
 
+        this.before(function (req) {
+          console.log('before filter')
+          req.foo = "foo"
+        })
+        
+        this.before('/foo/:id/blah/:bob', function () {
+          console.log("halt!")
+          return false;
+        })
+
+        this.after(function () {
+          console.log('all done')
+        })
+
         this.get('/', function () {
           console.log('root')
         })
@@ -30,8 +44,8 @@
           console.log('params:', this.params)
         })
 
-        this.get('/bar', function () {
-          console.log('params:', this.params)
+        this.get('/bar', function (req) {
+          console.log('params:', req)
         })
 
         this.post('/baz/:id', function () {
