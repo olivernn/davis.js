@@ -2,12 +2,12 @@ Davis.App = (function () {
 
   var appCounter = 0;
 
-  var klass = function () {
+  var App = function () {
     this.id = [new Date().valueOf(), appCounter++].join("-");
     this.running = false;
   };
 
-  klass.prototype = $.extend({
+  App.prototype = $.extend({
 
     configure: function (config) {
       config.call(this.settings);
@@ -71,7 +71,7 @@ Davis.App = (function () {
     }
   }, Davis.listener, Davis.event);
 
-  Davis.router.call(klass.prototype)
+  Davis.router.call(App.prototype)
 
-  return klass;
+  return App;
 })()
