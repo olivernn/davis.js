@@ -13,3 +13,8 @@ task :test do
   exec 'node app.js'
   open 'localhost:8003'
 end
+
+desc 'Generate the documentation'
+task :docs do
+  exec "dox --title 'Davis' -i 'docs/intro.markdown' src/davis.*.js > docs/index.html"
+end
