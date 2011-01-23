@@ -98,6 +98,7 @@ Davis.App = (function () {
 
       Davis.history.onChange(function (request) {
         if (beforeFiltersPass(request)) {
+          self.trigger('lookupRoute', request)
           var route = self.lookupRoute(request.method, request.path);
           if (route) {
             self.trigger('runRoute', request);
