@@ -1,5 +1,29 @@
+/*!
+ * Davis - listener
+ * Copyright (C) 2011 Oliver Nightingale
+ * MIT Licensed
+ */
+
+/**
+ * A module to bind to link clicks and form submits and turn what would normally be http requests
+ * into instances of Davis.Request and push these onto the history stack using the Davis.history
+ * module.
+ *
+ * This module is mixed into Davis.App prototype and accesses the Davis.App instances settings for
+ * the selectors to use when binding to links and forms.
+ *
+ * This module requires jQuery for its event binding and event object normalization.  To use Davis
+ * with any, or no, JavaScript framework this module should be replaced with one using your framework
+ * of choice.
+ */
 Davis.listener = (function () {
 
+  /**
+   * A handler that creates a new Davis.Request and pushes it onto the history stack using Davis.history.
+   * 
+   * @param {Function} targetExtractor a function that will be called with the event target jquery object and should return an object with path, title and method.
+   * @private
+   */
   var handler = function (targetExtractor) {
     return function (event) {
       var request = new Davis.Request (targetExtractor.call($(event.target)));
@@ -8,6 +32,10 @@ Davis.listener = (function () {
     };
   };
 
+  /**
+   * A handler specialized for click events.  Gets the request details from a link elem
+   * @private
+   */
   var clickHandler = handler(function () {
     return {
       method: 'get',
@@ -16,6 +44,10 @@ Davis.listener = (function () {
     };
   });
 
+  /**
+   * A handler specialized for submit events.  Gets the request details from a form elem
+   * @private
+   */
   var submitHandler = handler(function () {
     return {
       method: this.attr('method'),
@@ -24,16 +56,33 @@ Davis.listener = (function () {
     };
   });
 
+  /**
+   * Binds to both link clicks and form submits using jquerys deleagate.  Will catch all current
+   * and future links and forms.  Uses the apps settings for the selector to use for links and forms
+   * 
+   * @see Davis.App.settings
+   */
   var listen = function () {
     $(document).delegate(this.settings.formSelector, 'submit', submitHandler)
     $(document).delegate(this.settings.linkSelector, 'click', clickHandler)
   }
 
+  /**
+   * Unbinds all click and submit handlers that were attatched with listen.  Will efectivley stop
+   * the current app from processing any requests and all links and forms will have their default
+   * behaviour restored.
+   *
+   * @see Davis.App.settings
+   */
   var unlisten = function () {
     $(document).undelegate(this.settings.linkSelector, 'click', clickHandler)
     $(document).undelegate(this.settings.formSelector, 'submit', submitHandler)
   }
 
+  /**
+   * exposing the public methods of the module
+   * @private
+   */
   return {
     listen: listen,
     unlisten: unlisten

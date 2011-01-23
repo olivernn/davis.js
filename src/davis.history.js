@@ -8,8 +8,6 @@
  * A module to normalize and enhance the window.pushState method and window.onpopstate event.
  * Adds the ability to bind to whenever a new state is pushed onto the history stack and normalizes
  * both of these events into an onChange event.
- *
- * Used internally by Davis.App
  */
 Davis.history = (function () {
 
