@@ -35,8 +35,14 @@ Davis.App = (function () {
      * A convinience function for changing the apps default settings.
      * Should be used before starting the app to ensure any new settings
      * are picked up and used.
-     * @param {Function} config This function will be executed with the context
-     * bound to the apps setting object
+     *
+     * @param {Function} config This function will be executed with the context bound to the apps setting object
+     *
+     * Example:
+     *     app.configure(function () {
+     *       this.linkSelector: 'a.davis'
+     *       this.formSelector: 'form.davis'
+     *     })
      */
     configure: function (config) {
       config.call(this.settings);
