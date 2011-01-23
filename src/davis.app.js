@@ -1,24 +1,72 @@
+/*!
+ * Davis - App
+ * Copyright (C) 2011 Oliver Nightingale
+ * MIT Licensed
+ */
+
+/**
+ * A private scope for the Davis.App constructor
+ */
 Davis.App = (function () {
 
+  /**
+   * counter for the apps created used in creating a uniqueish id for this app
+   * @private
+   */
   var appCounter = 0;
 
+  /**
+   * Constructor for Davis.App
+   * @constructor
+   * @returns {Davis.App}
+   */
   var App = function () {
     this.id = [new Date().valueOf(), appCounter++].join("-");
     this.running = false;
   };
 
+  /**
+   * creating the prototype for the app from modules listener and event
+   * @private
+   */
   App.prototype = $.extend({
 
+    /**
+     * A convinience function for changing the apps default settings.
+     * Should be used before starting the app to ensure any new settings
+     * are picked up and used.
+     * @param {Function} config This function will be executed with the context
+     * bound to the apps setting object
+     */
     configure: function (config) {
       config.call(this.settings);
     },
 
+    /**
+     * Settings for the app.  These may be overriden directly or by using the configure
+     * convinience method.
+     *
+     * `linkSelector` is the jquery selector for all the links on the page that you want
+     * Davis to respond to.  These links will not trigger a normal http request.
+     *
+     * `formSelector` is similar to link selector but for all the forms that davis will bind to
+     *
+     * `logger` is the object that the app will use to log through.
+     *
+     * @see #configure
+     */
     settings: {
       linkSelector: 'a',
       formSelector: 'form',
       logger: Davis.logger
     },
 
+    /**
+     * Starting the app does a number of things, it binds to all links and forms that are selected
+     * according to the settings.  It also starts listening to history pop and push events.
+     * The start method should be called after declaring all routes and after setting any configuration
+     * that you want.
+     */
     start: function () {
       var self = this;
 
@@ -44,7 +92,8 @@ Davis.App = (function () {
       }
 
       var beforeFiltersPass = function (request) {
-        return self.lookupBeforeFilter(request.method, request.path).every(runFilterWith(request))
+        return self.lookupBeforeFilter(request.method, request.path)
+                      .every(runFilterWith(request))
       }
 
       Davis.history.onChange(function (request) {
@@ -53,7 +102,8 @@ Davis.App = (function () {
           if (route) {
             self.trigger('runRoute', request);
             route.run(request);
-            self.lookupAfterFilter(request.method, request.path).every(runFilterWith(request));
+            self.lookupAfterFilter(request.method, request.path)
+                  .every(runFilterWith(request));
           } else {
             self.trigger('routeNotFound', request);
           }
@@ -65,12 +115,25 @@ Davis.App = (function () {
       this.running = true;
     },
 
+    /**
+     * Stops the app listening to clicks and submits on all forms and links found using the current
+     * apps settings.
+     */
     stop: function () {
       this.unlisten();
-      this.bind('stop')
+      this.trigger('stop')
     }
+
+  /**
+   * including listener and event modules
+   * @private
+   */
   }, Davis.listener, Davis.event);
 
+  /**
+   * decorate the prototype with routing methods
+   * @private
+   */
   Davis.router.call(App.prototype)
 
   return App;
