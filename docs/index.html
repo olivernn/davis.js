@@ -1,0 +1,648 @@
+<html>
+	<head>
+		<title>foo</title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+		<style>body {
+    margin: 0;
+    padding: 0;
+    font: 14px/1.5 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+    color: #252519;
+}
+a {
+    color: #252519;
+}
+a:hover {
+    text-decoration: underline;
+    color: #19469D;
+}
+p {
+    margin: 12px 0;
+}
+h1, h2, h3 {
+    margin: 0;
+    padding: 0;
+}
+table#source {
+    width: 100%;
+    border-collapse: collapse;
+}
+table#source td:first-child {
+    padding: 30px 40px 30px 40px;
+    vertical-align: top;
+}
+table#source td:first-child,
+table#source td:first-child pre {
+    width: 450px;
+}
+table#source td:last-child {
+    padding: 30px 0 30px 40px;
+    border-left: 1px solid #E5E5EE;
+    background: #F5F5FF;
+}
+table#source tr {
+    border-bottom: 1px solid #E5E5EE;
+}
+table#source tr.filename {
+    padding-top: 40px;
+    border-top: 1px solid #E5E5EE;
+}
+table#source tr.filename td:first-child {
+    text-transform: capitalize;
+}
+table#source tr.filename td:last-child {
+    font-size: 12px;
+}
+table#source tr.filename h2 {
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+}
+table#source tr.code h1,
+table#source tr.code h2,
+table#source tr.code h3 {
+    margin-top: 30px;
+    font-family: "Lucida Grande", "Helvetica Nueue", Arial, sans-serif;
+    font-size: 18px;
+}
+table#source tr.code h2 {
+    font-size: 16px;
+}
+table#source tr.code h3 {
+    font-size: 14px;
+}
+table#source tr.code ul {
+    margin: 15px 0 15px 35px;
+    padding: 0;
+}
+table#source tr.code ul li {
+    margin: 0;
+    padding: 1px 0;
+}
+table#source tr.code ul li p {
+    margin: 0;
+    padding: 0;
+}
+table#source tr.code td:first-child pre {
+    padding: 20px;
+}
+#ribbon {
+    position: fixed;
+    top: 0;
+    right: 0;
+}
+code .string { color: #219161; }
+code .regexp { color: #219161; }
+code .keyword { color: #954121; }
+code .number { color: #19469D; }
+code .comment { color: #bbb; }
+code .this { color: #19469D; }</style>
+		<script>
+			$(function(){
+				$('tr.code').hide();
+				$('tr.filename').toggle(function(){
+					$(this).nextUntil('.filename').fadeIn();
+				}, function(){
+					$(this).nextUntil('.filename').fadeOut();
+				});
+			});
+		</script>
+	</head>
+	<body>
+<table id="source"><tbody><tr><td><h1>foo</h1></td><td></td></tr><tr class="filename"><td><h2 id="src/davis.app.js"><a href="#">davis.app</a></h2></td><td>src/davis.app.js</td></tr><tr class="code">
+<td class="docs">
+<p>A private scope for the Davis.App constructor
+ </p>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="class">App</span> = (<span class="keyword">function</span> () {</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Constructor for Davis.App
+ - <strong>constructo</strong>: <em>r</em></p>
+
+<h2></h2>
+
+<ul><li><p><strong>returns</strong>: <em>Davis.App</em> </p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="class">App</span> = <span class="keyword">function</span> () {
+    <span class="this">this</span>.<span class="variable">id</span> = [<span class="keyword">new</span> <span class="class">Date</span>().<span class="variable">valueOf</span>(), <span class="variable">appCounter</span>++].<span class="variable">join</span>(&<span class="variable">quot</span>;-&<span class="variable">quot</span>;);
+    <span class="this">this</span>.<span class="variable">running</span> = <span class="variable">false</span>;
+  };</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>A convinience function for changing the apps default settings.
+Should be used before starting the app to ensure any new settings
+are picked up and used.
+## </p>
+
+<ul><li><strong>param</strong>: <em>Function</em>  config This function will be executed with the context</li></ul>
+
+<p>bound to the apps setting object
+     </p>
+</td>
+<td class="code">
+<pre><code><span class="variable">configure</span>: <span class="keyword">function</span> (<span class="variable">config</span>) {
+      <span class="variable">config</span>.<span class="variable">call</span>(<span class="this">this</span>.<span class="variable">settings</span>);
+    },</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Settings for the app.  These may be overriden directly or by using the configure
+convinience method.</p>
+
+<p><code>linkSelector</code> is the jquery selector for all the links on the page that you want
+Davis to respond to.  These links will not trigger a normal http request.</p>
+
+<p><code>formSelector</code> is similar to link selector but for all the forms that davis will bind to</p>
+
+<p><code>logger</code> is the object that the app will use to log through.</p>
+
+<ul><li><strong>se</strong>: <em>e</em>
+#configure
+ </li></ul>
+</td>
+<td class="code">
+<pre><code><span class="variable">settings</span>: {
+      <span class="variable">linkSelector</span>: <span class="string">'a'</span>,
+      <span class="variable">formSelector</span>: <span class="string">'form'</span>,
+      <span class="variable">logger</span>: <span class="class">Davis</span>.<span class="variable">logger</span>
+    },</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Starting the app does a number of things, it binds to all links and forms that are selected
+according to the settings.  It also starts listening to history pop and push events.
+The start method should be called after declaring all routes and after setting any configuration
+that you want.
+     </p>
+</td>
+<td class="code">
+<pre><code><span class="variable">start</span>: <span class="keyword">function</span> () {
+      <span class="keyword">var</span> <span class="variable">self</span> = <span class="this">this</span>;
+
+      <span class="this">this</span>
+        .<span class="variable">bind</span>(<span class="string">'runRoute'</span>, <span class="keyword">function</span> (<span class="variable">request</span>) {
+          <span class="variable">self</span>.<span class="variable">settings</span>.<span class="variable">logger</span>.<span class="variable">info</span>(&<span class="variable">quot</span>;<span class="variable">runRoute</span>: &<span class="variable">quot</span>; + <span class="variable">request</span>.<span class="variable">toString</span>());
+        })
+        .<span class="variable">bind</span>(<span class="string">'routeNotFound'</span>, <span class="keyword">function</span> (<span class="variable">request</span>) {
+          <span class="variable">self</span>.<span class="variable">settings</span>.<span class="variable">logger</span>.<span class="variable">warn</span>(&<span class="variable">quot</span>;<span class="variable">routeNotFound</span>: &<span class="variable">quot</span>; + <span class="variable">request</span>.<span class="variable">toString</span>());
+        })
+        .<span class="variable">bind</span>(<span class="string">'start'</span>, <span class="keyword">function</span> () {
+          <span class="variable">self</span>.<span class="variable">settings</span>.<span class="variable">logger</span>.<span class="variable">info</span>(&<span class="variable">quot</span>;<span class="variable">application</span> <span class="variable">started</span>&<span class="variable">quot</span>;)
+        });
+
+      <span class="this">this</span>.<span class="variable">listen</span>();
+      <span class="this">this</span>.<span class="variable">trigger</span>(<span class="string">'start'</span>)
+
+      <span class="keyword">var</span> <span class="variable">runFilterWith</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
+        <span class="keyword">return</span> <span class="keyword">function</span> (<span class="variable">filter</span>) {
+          <span class="keyword">var</span> <span class="variable">result</span> = <span class="variable">filter</span>.<span class="variable">run</span>(<span class="variable">request</span>, <span class="variable">request</span>);
+          <span class="keyword">return</span> (<span class="keyword">typeof</span> <span class="variable">result</span> === &<span class="variable">quot</span>;<span class="variable">undefined</span>&<span class="variable">quot</span>; || <span class="variable">result</span>);
+        }
+      }
+
+      <span class="keyword">var</span> <span class="variable">beforeFiltersPass</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
+        <span class="keyword">return</span> <span class="variable">self</span>.<span class="variable">lookupBeforeFilter</span>(<span class="variable">request</span>.<span class="variable">method</span>, <span class="variable">request</span>.<span class="variable">path</span>)
+                      .<span class="variable">every</span>(<span class="variable">runFilterWith</span>(<span class="variable">request</span>))
+      }
+
+      <span class="class">Davis</span>.<span class="variable">history</span>.<span class="variable">onChange</span>(<span class="keyword">function</span> (<span class="variable">request</span>) {
+        <span class="keyword">if</span> (<span class="variable">beforeFiltersPass</span>(<span class="variable">request</span>)) {
+          <span class="variable">self</span>.<span class="variable">trigger</span>(<span class="string">'lookupRoute'</span>, <span class="variable">request</span>)
+          <span class="keyword">var</span> <span class="variable">route</span> = <span class="variable">self</span>.<span class="variable">lookupRoute</span>(<span class="variable">request</span>.<span class="variable">method</span>, <span class="variable">request</span>.<span class="variable">path</span>);
+          <span class="keyword">if</span> (<span class="variable">route</span>) {
+            <span class="variable">self</span>.<span class="variable">trigger</span>(<span class="string">'runRoute'</span>, <span class="variable">request</span>);
+            <span class="variable">route</span>.<span class="variable">run</span>(<span class="variable">request</span>);
+            <span class="variable">self</span>.<span class="variable">lookupAfterFilter</span>(<span class="variable">request</span>.<span class="variable">method</span>, <span class="variable">request</span>.<span class="variable">path</span>)
+                  .<span class="variable">every</span>(<span class="variable">runFilterWith</span>(<span class="variable">request</span>));
+          } <span class="keyword">else</span> {
+            <span class="variable">self</span>.<span class="variable">trigger</span>(<span class="string">'routeNotFound'</span>, <span class="variable">request</span>);
+          }
+        } <span class="keyword">else</span> {
+          <span class="variable">self</span>.<span class="variable">trigger</span>(<span class="string">'requestHalted'</span>, <span class="variable">request</span>)
+        }
+      });
+
+      <span class="this">this</span>.<span class="variable">running</span> = <span class="variable">true</span>;
+    },</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Stops the app listening to clicks and submits on all forms and links found using the current
+apps settings.
+     </p>
+</td>
+<td class="code">
+<pre><code><span class="variable">stop</span>: <span class="keyword">function</span> () {
+      <span class="this">this</span>.<span class="variable">unlisten</span>();
+      <span class="this">this</span>.<span class="variable">trigger</span>(<span class="string">'stop'</span>)
+    }</code></pre>
+</td>
+</tr><tr class="filename"><td><h2 id="src/davis.event.js"><a href="#">davis.event</a></h2></td><td>src/davis.event.js</td></tr><tr class="code">
+<td class="docs">
+<p>A module that can be mixed into any object to provide basic event functionality.
+This module is mixed into the prototype of Davis.App.
+ </p>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="variable">event</span> = {</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Binds a callback to a named event.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>String</em>  eventName</p></li><li><p><strong>param</strong>: <em>Function</em>  callback</p></li></ul>
+
+<p>The callback will be called with its context set to which ever object this module
+has been mixed into.  Any data that is passed when triggering the event will be passed
+to the callback function as the first parameter.</p>
+
+<p>The following events are triggered internally by Davis and can be bound to:</p>
+
+<p> <strong>start</strong> : Triggered when the application is started</p>
+
+<p> <strong>lookupRoute</strong> : Triggered before looking up a route, the request being looked up is passed as an argument</p>
+
+<p> <strong>runRoute</strong> : Triggered before running a route, the request and route being run are passed as arguments</p>
+
+<p> <strong>routeNotFound</strong> : Triggered if no route for the current request can be found, the current request is passed as an arugment</p>
+
+<p> <strong>requestHalted</strong> : Triggered when a before filter halts the current request, the current request is passed as an argument</p>
+
+<h2>Example</h2>
+
+<pre><code>app.bind('runRoute', function () {
+  console.log('just about to run a route!')
+})</code></pre>
+
+<p>   </p>
+</td>
+<td class="code">
+<pre><code><span class="variable">bind</span>: <span class="keyword">function</span> (<span class="variable">eventName</span>, <span class="variable">callback</span>) {
+    <span class="keyword">if</span> (!<span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>]) <span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>] = [];
+    <span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>].<span class="variable">push</span>(<span class="variable">callback</span>);
+    <span class="keyword">return</span> <span class="this">this</span>;
+  },</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Triggers an event on the current object.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>String</em>  eventName</p></li><li><p><strong>param</strong>: <em>Object</em>  data (optional)</p></li></ul>
+
+<p>Triggers an event on the current object, all callbacks bound using bind will be called.
+An optional second param can be passed which will be passed as an argument to each callback
+bound to the named event.</p>
+
+<h2>Example</h2>
+
+<pre><code>app.triger('foo')
+app.trigger('bar', {baz: true})</code></pre>
+
+<p>   </p>
+</td>
+<td class="code">
+<pre><code><span class="variable">trigger</span>: <span class="keyword">function</span> (<span class="variable">eventName</span>, <span class="variable">data</span>) {
+    <span class="keyword">var</span> <span class="variable">self</span> = <span class="this">this</span>;
+    <span class="keyword">if</span> (!<span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>]) <span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>] = [];
+    <span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>].<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">callback</span>) {
+      <span class="variable">callback</span>.<span class="variable">call</span>(<span class="variable">self</span>, <span class="variable">data</span>);
+    }) 
+    <span class="keyword">return</span> <span class="this">this</span>;
+  }
+};
+
+</code></pre>
+</td>
+</tr><tr class="filename"><td><h2 id="src/davis.history.js"><a href="#">davis.history</a></h2></td><td>src/davis.history.js</td></tr><tr class="code">
+<td class="docs">
+<p>Davis.history = (function () {</p>
+
+<p>  var pushStateHandlers = [];</p>
+
+<p>  var onPushState = function (handler) {
+    pushStateHandlers.push(handler);
+  };</p>
+
+<p>  var onPopState = function (handler) {
+    window.addEventListener('popstate', handler);
+  };</p>
+
+<p>  var wrapped = function (handler) {
+    return function (event) {
+      if (event.state) {
+        handler(event.state)
+      } else {
+        handler(Davis.Request.forPageLoad())
+      };
+    }
+  }</p>
+
+<p>  var onChange = function (handler) {
+    onPushState(handler);
+    onPopState(wrapped(handler));
+  };</p>
+
+<p>  var pushState = function (request) {
+    history.pushState(request, request.title, request.path);
+    pushStateHandlers.forEach(function (handler) {
+      handler(request);
+    });
+  };</p>
+
+<p>  var replaceState = function (request) {
+    history.replaceState(request, request.title, request.path);
+    pushStateHandlers.forEach(function (handler) {
+      handler(request);
+    });
+  };</p>
+
+<p>  return {
+    replaceState: replaceState,
+    pushState: pushState,
+    onChange: onChange
+  }
+})()</p>
+</td>
+<td class="code">
+
+</td>
+</tr><tr class="filename"><td><h2 id="src/davis.listener.js"><a href="#">davis.listener</a></h2></td><td>src/davis.listener.js</td></tr><tr class="code">
+<td class="docs">
+<p>Davis.listener = (function () {</p>
+
+<p>  var handler = function (targetExtractor) {
+    return function (event) {
+      var request = new Davis.Request (targetExtractor.call($(event.target)));
+      Davis.history.pushState(request);
+      return false;
+    };
+  };</p>
+
+<p>  var clickHandler = handler(function () {
+    return {
+      method: 'get',
+      fullPath: this.attr('href'),
+      title: this.attr('title')
+    };
+  });</p>
+
+<p>  var submitHandler = handler(function () {
+    return {
+      method: this.attr('method'),
+      fullPath: [this.attr('action'), "?", this.serialize()].join(""),
+      title: this.attr('title')
+    };
+  });</p>
+
+<p>  var listen = function () {
+    $(document).delegate(this.settings.formSelector, 'submit', submitHandler)
+    $(document).delegate(this.settings.linkSelector, 'click', clickHandler)
+  }</p>
+
+<p>  var unlisten = function () {
+    $(document).undelegate(this.settings.linkSelector, 'click', clickHandler)
+    $(document).undelegate(this.settings.formSelector, 'submit', submitHandler)
+  }</p>
+
+<p>  return {
+    listen: listen,
+    unlisten: unlisten
+  }
+})()</p>
+</td>
+<td class="code">
+
+</td>
+</tr><tr class="filename"><td><h2 id="src/davis.logger.js"><a href="#">davis.logger</a></h2></td><td>src/davis.logger.js</td></tr><tr class="code">
+<td class="docs">
+<p>Davis.logger = (function () {</p>
+
+<p>  var timestamp = function (){
+    return "[" + Date() + "]";
+  }</p>
+
+<p>  var prepArgs = function (args) {
+    var a = Array.prototype.slice.call(args)
+    a.unshift(timestamp())
+    return a
+  }</p>
+
+<p>  var error = function () {
+    if (window.console) console.error.apply(console, prepArgs(arguments))
+  }</p>
+
+<p>  var info = function () {
+    if (window.console) console.info.apply(console, prepArgs(arguments))
+  }</p>
+
+<p>  var warn = function () {
+    if (window.console) console.warn.apply(console, prepArgs(arguments))
+  }</p>
+
+<p>  return {
+    error: error,
+    info: info,
+    warn: warn
+  }
+})()</p>
+</td>
+<td class="code">
+
+</td>
+</tr><tr class="filename"><td><h2 id="src/davis.request.js"><a href="#">davis.request</a></h2></td><td>src/davis.request.js</td></tr><tr class="code">
+<td class="docs">
+<p>Davis.Request = function (raw) {
+  var self = this;
+  this.params = {};
+  this.title = raw.title;
+  this.queryString = raw.fullPath.split("?")[1];</p>
+
+<p>  if (this.queryString) {
+    this.queryString.split("&amp;").forEach(function (keyval) {
+      var paramName = keyval.split("=")[0],
+          paramValue = keyval.split("=")[1],
+          nestedParamRegex = /^(\w+)%5B(\w+)%5D/,
+          nested;</p>
+
+<pre><code>  if (nested = nestedParamRegex.exec(paramName)) {
+    var paramParent = nested[1];
+    var paramName = nested[2];
+    var parentParams = self.params[paramParent] || {};
+    parentParams[paramName] = paramValue;
+    self.params[paramParent] = parentParams;
+  } else {
+    self.params[paramName] = paramValue;
+  };
+
+});</code></pre>
+
+<p>  };</p>
+
+<p>  this.method = this.params._method || raw.method;
+  this.path = raw.fullPath.replace(/\?.+$/, "");
+};</p>
+
+<p>Davis.Request.prototype = {
+  redirect: function (path) {
+    Davis.history.replaceState(new Davis.Request ({
+      method: 'get',
+      fullPath: path,
+      title: this.title
+    }));
+  },</p>
+
+<p>  toString: function () {
+    return [this.method.toUpperCase(), this.path].join(" ")
+  }
+};</p>
+
+<p>Davis.Request.forPageLoad = function () {
+  return new this ({
+    method: 'get',
+    fullPath: window.location.pathname,
+    title: document.title
+  });
+}</p>
+</td>
+<td class="code">
+
+</td>
+</tr><tr class="filename"><td><h2 id="src/davis.route.js"><a href="#">davis.route</a></h2></td><td>src/davis.route.js</td></tr><tr class="code">
+<td class="docs">
+<p>Davis.Route = (function () {</p>
+
+<p>  var pathNameRegex = /:([\w\d]+)/g;
+  var pathNameReplacement = "([^\/]+)";</p>
+
+<p>  var klass = function (method, path, callback) {
+    var convertPathToRegExp = function () {
+      if (!(path instanceof RegExp)) {
+        return new RegExp("^" + path.replace(pathNameRegex, pathNameReplacement) + "$", "g");
+      } else {
+        return path;
+      };
+    };</p>
+
+<pre><code>var convertMethodToRegExp = function () {
+  if (!(method instanceof RegExp)) {
+    return new RegExp("^" + method + "$");
+  } else {
+    return method
+  };
+}
+
+var capturePathParamNames = function () {
+  var names = [], a;
+  while ((a = pathNameRegex.exec(path))) names.push(a[1]);
+  return names;
+};
+
+this.paramNames = capturePathParamNames();
+this.path = convertPathToRegExp();
+this.method = convertMethodToRegExp();
+this.callback = callback;</code></pre>
+
+<p>  }</p>
+
+<p>  klass.prototype = {</p>
+
+<pre><code>match: function (method, path) {
+  return (this.method.test(method)) &amp;&amp; (this.path.test(path))
+},
+
+run: function (request) {
+  this.path.lastIndex = 0
+  var matches = this.path.exec(request.path);
+  if (matches) {
+    matches.shift();
+    for (var i=0; i &lt; matches.length; i++) {
+      request.params[this.paramNames[i]] = matches[i];
+    };
+  };
+  this.path.lastIndex = 0
+  return this.callback.call(request, request);
+},
+
+toString: function () {
+  return [this.method, this.path].join(' ');
+}</code></pre>
+
+<p>  };</p>
+
+<p>  return klass;
+})()</p>
+</td>
+<td class="code">
+
+</td>
+</tr><tr class="filename"><td><h2 id="src/davis.router.js"><a href="#">davis.router</a></h2></td><td>src/davis.router.js</td></tr><tr class="code">
+<td class="docs">
+<p>Davis.router = function () {
+  var self = this
+  var verbs = ['get', 'post', 'put', 'delete'];
+  var filters = ['before', 'after'];</p>
+
+<p>  verbs.forEach(function (verb) {
+    self[verb] = function (path, handler) {
+      self._routeCollection.push(new Davis.Route (verb, path, handler));
+    }
+  })</p>
+
+<p>  filters.forEach(function (filter) {
+    self[filter] = function () {
+      var method = /.+/;</p>
+
+<pre><code>  if (arguments.length == 1) {
+    var path = /.+/;
+    var handler = arguments[0];
+  } else if (arguments.length == 2) {
+    var path = arguments[0];
+    var handler = arguments[1];
+  };
+
+  self._filterCollection[filter].push(new Davis.Route (method, path, handler));
+}
+
+var lookupName = 'lookup' + filter.replace(/^\w/, function ($0) { return $0.toUpperCase()}) + 'Filter';
+
+self[lookupName] = function (method, path) {
+  return self._filterCollection[filter].filter(function (route) {
+    return route.match(method, path)
+  });
+}</code></pre>
+
+<p>  })</p>
+
+<p>  self.<em>routeCollection = [];
+  self.</em>filterCollection = {
+    before: [],
+    after: []
+  };</p>
+
+<p>  self.lookupRoute = function (method, path) {
+    return this._routeCollection.filter(function (route) {
+      return route.match(method, path)
+    })[0];
+  };
+}</p>
+</td>
+<td class="code">
+
+</td>
+</tr>	</body>
+</html></tbody></table>
