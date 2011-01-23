@@ -30,7 +30,7 @@ Davis.Route = (function () {
  * @param {String} path - This string can contain place holders for variables, e.g. '/user/:id'
  * @param {Function} callback - A callback that will be called when a request matching both the path and method is triggered.
  *
- * Example:
+ * ### Example:
  *     var route = new Davis.Route ('get', '/foo/:id', function (req) {
  *       var id = req.params['id']
  *       // do something interesting!
@@ -68,25 +68,33 @@ Davis.Route = (function () {
   Route.prototype = {
 
     /**
-     * ## route.match('get', '/foo')
+     * ## route.match
      * Tests whether or not a route matches a particular request.
      *
      * @param {String} method
      * @param {String} path
      * @returns {Boolean}
+     *
+     * ### Example:
+     *
+     *     route.match('get', '/foo/12')
      */
     match: function (method, path) {
       return (this.method.test(method)) && (this.path.test(path))
     },
 
     /**
-     * ## route.run(request)
+     * ## route.run
      * Runs the callback associated with a particular route against the passed request.
      * Any named params in the request path are extracted, as per the routes path, and
      * added onto the requests params object.
      *
      * @params {Davis.Request} request
      * @returns {Object} whatever the routes callback returns
+     *
+     * ### Example:
+     *
+     *     route.run(request)
      */
     run: function (request) {
       this.path.lastIndex = 0
@@ -102,7 +110,7 @@ Davis.Route = (function () {
     },
 
     /**
-     * ## route.toString()
+     * ## route.toString
      * Converts the route to a string representation of itself by combining the method and path
      * attributes.
      *

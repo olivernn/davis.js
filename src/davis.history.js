@@ -58,8 +58,10 @@ Davis.history = (function () {
   }
 
   /**
+   * ## Davis.history.onChange
    * Bind to the history on change event.  This is not a native event but is fired any time a new
-   * state is pushed onto the history stack or a state is popped off the history stack.
+   * state is pushed onto the history stack, the current history is replaced or a state is popped
+   * off the history stack.
    *
    * @param {Function} handler
    *
@@ -72,13 +74,15 @@ Davis.history = (function () {
   };
 
   /**
+   * ## Davis.history.pushState
    * Push a request onto the history stack.  This is used internally by Davis to push a new request
-   * onto the history stack, it will also trigger the onpushstate event.
+   * resulting from either a form submit or a link click onto the history stack, it will also trigger
+   * the onpushstate event.
    *
    * @param {Davis.Request} request
    *
    * An instance of Davis.Request is expected to be passed, however any object that has a title
-   * and a path property can be passed.
+   * and a path property will also be accepted.
    */
   var pushState = function (request) {
     history.pushState(request, request.title, request.path);
@@ -88,13 +92,14 @@ Davis.history = (function () {
   };
 
   /**
+   * ## Davis.history.replaceState
    * Replace the current state on the history stack.  This is used internally by Davis when performing
    * a redirect.  This will trigger an onpushstate event.
    *
    * @param {Davis.Request} request
    *
    * An instance of Davis.Request is expected to be passed, however any object that has a title
-   * and a path property can be passed.
+   * and a path property will also be accepted.
    */
   var replaceState = function (request) {
     history.replaceState(request, request.title, request.path);

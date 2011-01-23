@@ -6,11 +6,8 @@
 
 /**
  * A module to bind to link clicks and form submits and turn what would normally be http requests
- * into instances of Davis.Request and push these onto the history stack using the Davis.history
- * module.
- *
- * This module is mixed into Davis.App prototype and accesses the Davis.App instances settings for
- * the selectors to use when binding to links and forms.
+ * into instances of Davis.Request.  These request objects are then pushed onto the history stack
+ * using the Davis.history module.
  *
  * This module requires jQuery for its event binding and event object normalization.  To use Davis
  * with any, or no, JavaScript framework this module should be replaced with one using your framework
@@ -21,7 +18,7 @@ Davis.listener = (function () {
   /**
    * A handler that creates a new Davis.Request and pushes it onto the history stack using Davis.history.
    * 
-   * @param {Function} targetExtractor a function that will be called with the event target jquery object and should return an object with path, title and method.
+   * @param {Function} targetExtractor a function that will be called with the event target jQuery object and should return an object with path, title and method.
    * @private
    */
   var handler = function (targetExtractor) {
@@ -57,7 +54,8 @@ Davis.listener = (function () {
   });
 
   /**
-   * Binds to both link clicks and form submits using jquerys deleagate.  Will catch all current
+   * ## app.listen
+   * Binds to both link clicks and form submits using jQuery's deleagate.  Will catch all current
    * and future links and forms.  Uses the apps settings for the selector to use for links and forms
    * 
    * @see Davis.App.settings
@@ -68,6 +66,7 @@ Davis.listener = (function () {
   }
 
   /**
+   * ## app.unlisten
    * Unbinds all click and submit handlers that were attatched with listen.  Will efectivley stop
    * the current app from processing any requests and all links and forms will have their default
    * behaviour restored.

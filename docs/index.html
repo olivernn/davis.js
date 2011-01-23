@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>foo</title>
+		<title>Davis</title>
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 		<style>body {
     margin: 0;
@@ -108,16 +108,286 @@ code .this { color: #19469D; }</style>
 		</script>
 	</head>
 	<body>
-<table id="source"><tbody><tr><td><h1>foo</h1></td><td></td></tr><tr class="filename"><td><h2 id="src/davis.app.js"><a href="#">davis.app</a></h2></td><td>src/davis.app.js</td></tr><tr class="code">
+<table id="source"><tbody><tr><td><h1>Davis</h1><h1>Davis totally rocks!</h1></td><td></td></tr><tr class="filename"><td><h2 id="src/davis.event.js"><a href="#">davis.event</a></h2></td><td>src/davis.event.js</td></tr><tr class="code">
 <td class="docs">
-<p>A private scope for the Davis.App constructor
+<p>A module that can be mixed into any object to provide basic event functionality.
+This module is mixed into the prototype of Davis.App.
  </p>
 </td>
 <td class="code">
-<pre><code><span class="class">Davis</span>.<span class="class">App</span> = (<span class="keyword">function</span> () {</code></pre>
+<pre><code><span class="class">Davis</span>.<span class="variable">event</span> = {</code></pre>
 </td>
 </tr>
 <tr class="code">
+<td class="docs">
+<h2>app.bind</h2>
+
+<p>Binds a callback to a named event.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>String</em>  eventName</p></li><li><p><strong>param</strong>: <em>Function</em>  callback</p></li></ul>
+
+<p>The callback will be called with its context set to which ever object this module
+has been mixed into.  Any data that is passed when triggering the event will be passed
+to the callback function as the first parameter.</p>
+
+<p>The following events are triggered internally by Davis and can be bound to:</p>
+
+<p> <strong>start</strong> : Triggered when the application is started</p>
+
+<p> <strong>lookupRoute</strong> : Triggered before looking up a route, the request being looked up is passed as an argument</p>
+
+<p> <strong>runRoute</strong> : Triggered before running a route, the request and route being run are passed as arguments</p>
+
+<p> <strong>routeNotFound</strong> : Triggered if no route for the current request can be found, the current request is passed as an arugment</p>
+
+<p> <strong>requestHalted</strong> : Triggered when a before filter halts the current request, the current request is passed as an argument</p>
+
+<h3>Example:</h3>
+
+<pre><code>app.bind('runRoute', function () {
+  console.log('just about to run a route!')
+})</code></pre>
+
+<p>   </p>
+</td>
+<td class="code">
+<pre><code><span class="variable">bind</span>: <span class="keyword">function</span> (<span class="variable">eventName</span>, <span class="variable">callback</span>) {
+    <span class="keyword">if</span> (!<span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>]) <span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>] = [];
+    <span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>].<span class="variable">push</span>(<span class="variable">callback</span>);
+    <span class="keyword">return</span> <span class="this">this</span>;
+  },</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>app.trigger</h2>
+
+<p>Triggers an event on the current object.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>String</em>  eventName</p></li><li><p><strong>param</strong>: <em>Object</em>  data (optional)</p></li></ul>
+
+<p>Triggers an event on the current object, all callbacks bound using bind will be called.
+An optional second param can be passed which will be passed as an argument to each callback
+bound to the named event.</p>
+
+<h3>Example:</h3>
+
+<pre><code>app.triger('foo')
+app.trigger('bar', {baz: true})</code></pre>
+
+<p>   </p>
+</td>
+<td class="code">
+<pre><code><span class="variable">trigger</span>: <span class="keyword">function</span> (<span class="variable">eventName</span>, <span class="variable">data</span>) {
+    <span class="keyword">var</span> <span class="variable">self</span> = <span class="this">this</span>;
+    <span class="keyword">if</span> (!<span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>]) <span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>] = [];
+    <span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>].<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">callback</span>) {
+      <span class="variable">callback</span>.<span class="variable">call</span>(<span class="variable">self</span>, <span class="variable">data</span>);
+    }) 
+    <span class="keyword">return</span> <span class="this">this</span>;
+  }
+};
+
+</code></pre>
+</td>
+</tr><tr class="filename"><td><h2 id="src/davis.history.js"><a href="#">davis.history</a></h2></td><td>src/davis.history.js</td></tr><tr class="code">
+<td class="docs">
+<p>A module to normalize and enhance the window.pushState method and window.onpopstate event.
+Adds the ability to bind to whenever a new state is pushed onto the history stack and normalizes
+both of these events into an onChange event.
+ </p>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="variable">history</span> = (<span class="keyword">function</span> () {</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.history.onChange</h2>
+
+<p>Bind to the history on change event.  This is not a native event but is fired any time a new
+state is pushed onto the history stack, the current history is replaced or a state is popped
+off the history stack.</p>
+
+<h2></h2>
+
+<ul><li><strong>param</strong>: <em>Function</em>  handler</li></ul>
+
+<p>The handler function will be called with a request param which is an instance of Davis.Request.
+ - <strong>see</strong>: <em>Davis</em>
+.Request
+   </p>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">onChange</span> = <span class="keyword">function</span> (<span class="variable">handler</span>) {
+    <span class="variable">onPushState</span>(<span class="variable">handler</span>);
+    <span class="variable">onPopState</span>(<span class="variable">wrapped</span>(<span class="variable">handler</span>));
+  };</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.history.pushState</h2>
+
+<p>Push a request onto the history stack.  This is used internally by Davis to push a new request
+resulting from either a form submit or a link click onto the history stack, it will also trigger
+the onpushstate event.</p>
+
+<h2></h2>
+
+<ul><li><strong>param</strong>: <em>Davis.Request</em>  request</li></ul>
+
+<p>An instance of Davis.Request is expected to be passed, however any object that has a title
+and a path property will also be accepted.
+   </p>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">pushState</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
+    <span class="variable">history</span>.<span class="variable">pushState</span>(<span class="variable">request</span>, <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">path</span>);
+    <span class="variable">pushStateHandlers</span>.<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">handler</span>) {
+      <span class="variable">handler</span>(<span class="variable">request</span>);
+    });
+  };</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.history.replaceState</h2>
+
+<p>Replace the current state on the history stack.  This is used internally by Davis when performing
+a redirect.  This will trigger an onpushstate event.</p>
+
+<h2></h2>
+
+<ul><li><strong>param</strong>: <em>Davis.Request</em>  request</li></ul>
+
+<p>An instance of Davis.Request is expected to be passed, however any object that has a title
+and a path property will also be accepted.
+   </p>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">replaceState</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
+    <span class="variable">history</span>.<span class="variable">replaceState</span>(<span class="variable">request</span>, <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">path</span>);
+    <span class="variable">pushStateHandlers</span>.<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">handler</span>) {
+      <span class="variable">handler</span>(<span class="variable">request</span>);
+    });
+  };</code></pre>
+</td>
+</tr><tr class="filename"><td><h2 id="src/davis.listener.js"><a href="#">davis.listener</a></h2></td><td>src/davis.listener.js</td></tr><tr class="code">
+<td class="docs">
+<p>A module to bind to link clicks and form submits and turn what would normally be http requests
+into instances of Davis.Request.  These request objects are then pushed onto the history stack
+using the Davis.history module.</p>
+
+<p>This module requires jQuery for its event binding and event object normalization.  To use Davis
+with any, or no, JavaScript framework this module should be replaced with one using your framework
+of choice.
+ </p>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="variable">listener</span> = (<span class="keyword">function</span> () {</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>app.listen</h2>
+
+<p>Binds to both link clicks and form submits using jQuery's deleagate.  Will catch all current
+and future links and forms.  Uses the apps settings for the selector to use for links and forms</p>
+
+<ul><li><strong>see</strong>: <em>Davis</em>
+.App.settings</li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">listen</span> = <span class="keyword">function</span> () {
+    $(<span class="variable">document</span>).<span class="variable">delegate</span>(<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">formSelector</span>, <span class="string">'submit'</span>, <span class="variable">submitHandler</span>)
+    $(<span class="variable">document</span>).<span class="variable">delegate</span>(<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">linkSelector</span>, <span class="string">'click'</span>, <span class="variable">clickHandler</span>)
+  }</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>app.unlisten</h2>
+
+<p>Unbinds all click and submit handlers that were attatched with listen.  Will efectivley stop
+the current app from processing any requests and all links and forms will have their default
+behaviour restored.</p>
+
+<ul><li><strong>see</strong>: <em>Davis</em>
+.App.settings</li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">unlisten</span> = <span class="keyword">function</span> () {
+    $(<span class="variable">document</span>).<span class="variable">undelegate</span>(<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">linkSelector</span>, <span class="string">'click'</span>, <span class="variable">clickHandler</span>)
+    $(<span class="variable">document</span>).<span class="variable">undelegate</span>(<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">formSelector</span>, <span class="string">'submit'</span>, <span class="variable">submitHandler</span>)
+  }</code></pre>
+</td>
+</tr><tr class="filename"><td><h2 id="src/davis.logger.js"><a href="#">davis.logger</a></h2></td><td>src/davis.logger.js</td></tr><tr class="code">
+<td class="docs">
+<p>A module for enhancing the standard logging available through the console object.
+Used internally in Davis and available for use outside of Davis.</p>
+
+<p>Generates log messages of varying severity in the format:</p>
+
+<p><code>[Sun Jan 23 2011 16:15:21 GMT+0000 (GMT)] &lt;message&gt;</code>
+ </p>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="variable">logger</span> = (<span class="keyword">function</span> () {</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.logger.error</h2>
+
+<p>Prints an error message to the console if the console is available.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>params</strong>: <em>String</em>  All arguments are combined and logged to the console.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">error</span> = <span class="keyword">function</span> () {
+    <span class="keyword">if</span> (<span class="variable">window</span>.<span class="variable">console</span>) <span class="variable">console</span>.<span class="variable">error</span>.<span class="variable">apply</span>(<span class="variable">console</span>, <span class="variable">prepArgs</span>(<span class="variable">arguments</span>))
+  }</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.logger.info</h2>
+
+<p>Prints an info message to the console if the console is available.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>params</strong>: <em>String</em>  All arguments are combined and logged to the console.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">info</span> = <span class="keyword">function</span> () {
+    <span class="keyword">if</span> (<span class="variable">window</span>.<span class="variable">console</span>) <span class="variable">console</span>.<span class="variable">info</span>.<span class="variable">apply</span>(<span class="variable">console</span>, <span class="variable">prepArgs</span>(<span class="variable">arguments</span>))
+  }</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.logger.warn</h2>
+
+<p>Prints a warning message to the console if the console is available.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>params</strong>: <em>String</em>  All arguments are combined and logged to the console.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">warn</span> = <span class="keyword">function</span> () {
+    <span class="keyword">if</span> (<span class="variable">window</span>.<span class="variable">console</span>) <span class="variable">console</span>.<span class="variable">warn</span>.<span class="variable">apply</span>(<span class="variable">console</span>, <span class="variable">prepArgs</span>(<span class="variable">arguments</span>))
+  }</code></pre>
+</td>
+</tr><tr class="filename"><td><h2 id="src/davis.app.js"><a href="#">davis.app</a></h2></td><td>src/davis.app.js</td></tr><tr class="code">
 <td class="docs">
 <p>Constructor for Davis.App
  - <strong>constructo</strong>: <em>r</em></p>
@@ -135,15 +405,17 @@ code .this { color: #19469D; }</style>
 </tr>
 <tr class="code">
 <td class="docs">
+<h2>app.configure</h2>
+
 <p>A convinience function for changing the apps default settings.
 Should be used before starting the app to ensure any new settings
 are picked up and used.</p>
 
 <h2></h2>
 
-<ul><li><strong>param</strong>: <em>Function</em>  config This function will be executed with the context bound to the apps setting object</li></ul>
+<ul><li><strong>param</strong>: <em>Function</em>  config - This function will be executed with the context bound to the apps setting object</li></ul>
 
-<h2>Example</h2>
+<h3>Example:</h3>
 
 <pre><code>app.configure(function () {
   this.linkSelector: 'a.davis'
@@ -159,6 +431,8 @@ are picked up and used.</p>
 </tr>
 <tr class="code">
 <td class="docs">
+<h2>app.settings</h2>
+
 <p>Settings for the app.  These may be overriden directly or by using the configure
 convinience method.</p>
 
@@ -183,10 +457,15 @@ Davis to respond to.  These links will not trigger a normal http request.</p>
 </tr>
 <tr class="code">
 <td class="docs">
-<p>Starting the app does a number of things, it binds to all links and forms that are selected
-according to the settings.  It also starts listening to history pop and push events.
-The start method should be called after declaring all routes and after setting any configuration
-that you want.
+<h2>app.start</h2>
+
+<p>Once the app's routes have been defined and any additional configuration has happened the 
+start method should be called.</p>
+
+<p>Starting the app binds all links and forms, so clicks and submits
+create Davis requests that will be pushed onto the browsers history stack.  Browser history change
+events will be picked up and the request that caused the change will be matched against the apps
+routes and filters.
      </p>
 </td>
 <td class="code">
@@ -242,6 +521,8 @@ that you want.
 </tr>
 <tr class="code">
 <td class="docs">
+<h2>app.stop</h2>
+
 <p>Stops the app listening to clicks and submits on all forms and links found using the current
 apps settings.
      </p>
@@ -252,270 +533,10 @@ apps settings.
       <span class="this">this</span>.<span class="variable">trigger</span>(<span class="string">'stop'</span>)
     }</code></pre>
 </td>
-</tr><tr class="filename"><td><h2 id="src/davis.event.js"><a href="#">davis.event</a></h2></td><td>src/davis.event.js</td></tr><tr class="code">
-<td class="docs">
-<p>A module that can be mixed into any object to provide basic event functionality.
-This module is mixed into the prototype of Davis.App.
- </p>
-</td>
-<td class="code">
-<pre><code><span class="class">Davis</span>.<span class="variable">event</span> = {</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<p>Binds a callback to a named event.</p>
-
-<h2></h2>
-
-<ul><li><p><strong>param</strong>: <em>String</em>  eventName</p></li><li><p><strong>param</strong>: <em>Function</em>  callback</p></li></ul>
-
-<p>The callback will be called with its context set to which ever object this module
-has been mixed into.  Any data that is passed when triggering the event will be passed
-to the callback function as the first parameter.</p>
-
-<p>The following events are triggered internally by Davis and can be bound to:</p>
-
-<p> <strong>start</strong> : Triggered when the application is started</p>
-
-<p> <strong>lookupRoute</strong> : Triggered before looking up a route, the request being looked up is passed as an argument</p>
-
-<p> <strong>runRoute</strong> : Triggered before running a route, the request and route being run are passed as arguments</p>
-
-<p> <strong>routeNotFound</strong> : Triggered if no route for the current request can be found, the current request is passed as an arugment</p>
-
-<p> <strong>requestHalted</strong> : Triggered when a before filter halts the current request, the current request is passed as an argument</p>
-
-<h2>Example</h2>
-
-<pre><code>app.bind('runRoute', function () {
-  console.log('just about to run a route!')
-})</code></pre>
-
-<p>   </p>
-</td>
-<td class="code">
-<pre><code><span class="variable">bind</span>: <span class="keyword">function</span> (<span class="variable">eventName</span>, <span class="variable">callback</span>) {
-    <span class="keyword">if</span> (!<span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>]) <span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>] = [];
-    <span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>].<span class="variable">push</span>(<span class="variable">callback</span>);
-    <span class="keyword">return</span> <span class="this">this</span>;
-  },</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<p>Triggers an event on the current object.</p>
-
-<h2></h2>
-
-<ul><li><p><strong>param</strong>: <em>String</em>  eventName</p></li><li><p><strong>param</strong>: <em>Object</em>  data (optional)</p></li></ul>
-
-<p>Triggers an event on the current object, all callbacks bound using bind will be called.
-An optional second param can be passed which will be passed as an argument to each callback
-bound to the named event.</p>
-
-<h2>Example</h2>
-
-<pre><code>app.triger('foo')
-app.trigger('bar', {baz: true})</code></pre>
-
-<p>   </p>
-</td>
-<td class="code">
-<pre><code><span class="variable">trigger</span>: <span class="keyword">function</span> (<span class="variable">eventName</span>, <span class="variable">data</span>) {
-    <span class="keyword">var</span> <span class="variable">self</span> = <span class="this">this</span>;
-    <span class="keyword">if</span> (!<span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>]) <span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>] = [];
-    <span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>].<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">callback</span>) {
-      <span class="variable">callback</span>.<span class="variable">call</span>(<span class="variable">self</span>, <span class="variable">data</span>);
-    }) 
-    <span class="keyword">return</span> <span class="this">this</span>;
-  }
-};
-
-</code></pre>
-</td>
-</tr><tr class="filename"><td><h2 id="src/davis.history.js"><a href="#">davis.history</a></h2></td><td>src/davis.history.js</td></tr><tr class="code">
-<td class="docs">
-<p>A module to normalize and enhance the window.pushState method and window.onpopstate event.
-Adds the ability to bind to whenever a new state is pushed onto the history stack and normalizes
-both of these events into an onChange event.
- </p>
-</td>
-<td class="code">
-<pre><code><span class="class">Davis</span>.<span class="variable">history</span> = (<span class="keyword">function</span> () {</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<p>Bind to the history on change event.  This is not a native event but is fired any time a new
-state is pushed onto the history stack or a state is popped off the history stack.</p>
-
-<h2></h2>
-
-<ul><li><strong>param</strong>: <em>Function</em>  handler</li></ul>
-
-<p>The handler function will be called with a request param which is an instance of Davis.Request.
- - <strong>see</strong>: <em>Davis</em>
-.Request
-   </p>
-</td>
-<td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">onChange</span> = <span class="keyword">function</span> (<span class="variable">handler</span>) {
-    <span class="variable">onPushState</span>(<span class="variable">handler</span>);
-    <span class="variable">onPopState</span>(<span class="variable">wrapped</span>(<span class="variable">handler</span>));
-  };</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<p>Push a request onto the history stack.  This is used internally by Davis to push a new request
-onto the history stack, it will also trigger the onpushstate event.</p>
-
-<h2></h2>
-
-<ul><li><strong>param</strong>: <em>Davis.Request</em>  request</li></ul>
-
-<p>An instance of Davis.Request is expected to be passed, however any object that has a title
-and a path property can be passed.
-   </p>
-</td>
-<td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">pushState</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
-    <span class="variable">history</span>.<span class="variable">pushState</span>(<span class="variable">request</span>, <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">path</span>);
-    <span class="variable">pushStateHandlers</span>.<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">handler</span>) {
-      <span class="variable">handler</span>(<span class="variable">request</span>);
-    });
-  };</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<p>Replace the current state on the history stack.  This is used internally by Davis when performing
-a redirect.  This will trigger an onpushstate event.</p>
-
-<h2></h2>
-
-<ul><li><strong>param</strong>: <em>Davis.Request</em>  request</li></ul>
-
-<p>An instance of Davis.Request is expected to be passed, however any object that has a title
-and a path property can be passed.
-   </p>
-</td>
-<td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">replaceState</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
-    <span class="variable">history</span>.<span class="variable">replaceState</span>(<span class="variable">request</span>, <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">path</span>);
-    <span class="variable">pushStateHandlers</span>.<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">handler</span>) {
-      <span class="variable">handler</span>(<span class="variable">request</span>);
-    });
-  };</code></pre>
-</td>
-</tr><tr class="filename"><td><h2 id="src/davis.listener.js"><a href="#">davis.listener</a></h2></td><td>src/davis.listener.js</td></tr><tr class="code">
-<td class="docs">
-<p>A module to bind to link clicks and form submits and turn what would normally be http requests
-into instances of Davis.Request and push these onto the history stack using the Davis.history
-module.</p>
-
-<p>This module is mixed into Davis.App prototype and accesses the Davis.App instances settings for
-the selectors to use when binding to links and forms.</p>
-
-<p>This module requires jQuery for its event binding and event object normalization.  To use Davis
-with any, or no, JavaScript framework this module should be replaced with one using your framework
-of choice.
- </p>
-</td>
-<td class="code">
-<pre><code><span class="class">Davis</span>.<span class="variable">listener</span> = (<span class="keyword">function</span> () {</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<p>Binds to both link clicks and form submits using jquerys deleagate.  Will catch all current
-and future links and forms.  Uses the apps settings for the selector to use for links and forms</p>
-
-<ul><li><strong>see</strong>: <em>Davis</em>
-.App.settings</li></ul>
-</td>
-<td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">listen</span> = <span class="keyword">function</span> () {
-    $(<span class="variable">document</span>).<span class="variable">delegate</span>(<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">formSelector</span>, <span class="string">'submit'</span>, <span class="variable">submitHandler</span>)
-    $(<span class="variable">document</span>).<span class="variable">delegate</span>(<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">linkSelector</span>, <span class="string">'click'</span>, <span class="variable">clickHandler</span>)
-  }</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<p>Unbinds all click and submit handlers that were attatched with listen.  Will efectivley stop
-the current app from processing any requests and all links and forms will have their default
-behaviour restored.</p>
-
-<ul><li><strong>see</strong>: <em>Davis</em>
-.App.settings</li></ul>
-</td>
-<td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">unlisten</span> = <span class="keyword">function</span> () {
-    $(<span class="variable">document</span>).<span class="variable">undelegate</span>(<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">linkSelector</span>, <span class="string">'click'</span>, <span class="variable">clickHandler</span>)
-    $(<span class="variable">document</span>).<span class="variable">undelegate</span>(<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">formSelector</span>, <span class="string">'submit'</span>, <span class="variable">submitHandler</span>)
-  }</code></pre>
-</td>
-</tr><tr class="filename"><td><h2 id="src/davis.logger.js"><a href="#">davis.logger</a></h2></td><td>src/davis.logger.js</td></tr><tr class="code">
-<td class="docs">
-<p>A module for enhancing the standard logging available through the console object.
-Used internally in Davis and available for use outside of Davis.</p>
-
-<p>Generates log messages of varying severity in the format:</p>
-
-<p><code>[Sun Jan 23 2011 16:15:21 GMT+0000 (GMT)] &lt;message&gt;</code>
- </p>
-</td>
-<td class="code">
-<pre><code><span class="class">Davis</span>.<span class="variable">logger</span> = (<span class="keyword">function</span> () {</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<p>Prints an error message to the console if the console is available.</p>
-
-<h2></h2>
-
-<ul><li><p><strong>params</strong>: <em>String</em>  All arguments are combined and logged to the console.</p></li></ul>
-</td>
-<td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">error</span> = <span class="keyword">function</span> () {
-    <span class="keyword">if</span> (<span class="variable">window</span>.<span class="variable">console</span>) <span class="variable">console</span>.<span class="variable">error</span>.<span class="variable">apply</span>(<span class="variable">console</span>, <span class="variable">prepArgs</span>(<span class="variable">arguments</span>))
-  }</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<p>Prints an info message to the console if the console is available.</p>
-
-<h2></h2>
-
-<ul><li><p><strong>params</strong>: <em>String</em>  All arguments are combined and logged to the console.</p></li></ul>
-</td>
-<td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">info</span> = <span class="keyword">function</span> () {
-    <span class="keyword">if</span> (<span class="variable">window</span>.<span class="variable">console</span>) <span class="variable">console</span>.<span class="variable">info</span>.<span class="variable">apply</span>(<span class="variable">console</span>, <span class="variable">prepArgs</span>(<span class="variable">arguments</span>))
-  }</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<p>Prints a warning message to the console if the console is available.</p>
-
-<h2></h2>
-
-<ul><li><p><strong>params</strong>: <em>String</em>  All arguments are combined and logged to the console.</p></li></ul>
-</td>
-<td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">warn</span> = <span class="keyword">function</span> () {
-    <span class="keyword">if</span> (<span class="variable">window</span>.<span class="variable">console</span>) <span class="variable">console</span>.<span class="variable">warn</span>.<span class="variable">apply</span>(<span class="variable">console</span>, <span class="variable">prepArgs</span>(<span class="variable">arguments</span>))
-  }</code></pre>
-</td>
 </tr><tr class="filename"><td><h2 id="src/davis.request.js"><a href="#">davis.request</a></h2></td><td>src/davis.request.js</td></tr><tr class="code">
 <td class="docs">
 <p>Daivs.Requests are created from click and submit events.  Davis.Requests are passed to Davis.Routes
-and are stored in the history stack.  They are instantiated by Davis.listener.</p>
+and are stored in the history stack.  They are instantiated by the Davis.listener module.</p>
 
 <ul><li><strong>constructo</strong>: <em>r</em></li></ul>
 
@@ -523,7 +544,7 @@ and are stored in the history stack.  They are instantiated by Davis.listener.</
 
 <ul><li><strong>param</strong>: <em>Object</em>  raw An object that at least contains a title, fullPath and method proprty.</li></ul>
 
-<h2>Example</h2>
+<h3>Example:</h3>
 
 <pre><code>var request = new Davis.Request({
   title: "foo",
@@ -567,23 +588,23 @@ and are stored in the history stack.  They are instantiated by Davis.listener.</
 </tr>
 <tr class="code">
 <td class="docs">
-<h2>request.redirect('/foo')</h2>
+<h2>request.redirect</h2>
 
 <p>Redirects the current request to a new location.  Calling redirect on an instance of
-Davis.Request will create a new request using the path param and the current requests title.
+Davis.Request will create a new request using the path and title of the current request.
 Redirected requests always have a method of 'get'</p>
 
 <p>The request created will replace the current request in the history stack.  Redirect is most
-often useful inside a handler for a form submit, after succesfully handling the form the app
-can redirect to another path, this will mean that the current form will not be re-submitted if
-navigating with the back or forward buttons as the forms submit request will have been replaced
-in the browsers history stack.</p>
+often useful inside a handler for a form submit.  After succesfully handling the form the app
+can redirect to another path.  This means that the current form will not be re-submitted if
+navigating through the history with the back or forward buttons because the request that the
+submit generated has been replaced in the history stack.</p>
 
 <h2></h2>
 
 <ul><li><strong>param</strong>: <em>String</em>  path The path to redirect the current request to</li></ul>
 
-<h2>Example</h2>
+<h3>Example:</h3>
 
 <pre><code>this.post('/foo', function (req) {
   processFormRequest(req.params)  // do something with the form request
@@ -604,7 +625,7 @@ in the browsers history stack.</p>
 </tr>
 <tr class="code">
 <td class="docs">
-<h2>request.toString()</h2>
+<h2>request.toString</h2>
 
 <p>Converts the request to a string representation of itself by combining the method and path
 attributes.</p>
@@ -621,7 +642,7 @@ attributes.</p>
 </tr>
 <tr class="code">
 <td class="docs">
-<h2>Davis.Request.forPageLoad();</h2>
+<h2>Davis.Request.forPageLoad</h2>
 
 <p>Creates a new request for the page on page load.
 This is required because usually requests are generated from clicking links or submitting forms
@@ -641,6 +662,133 @@ JavaScript app should handle.</p>
   });
 }</code></pre>
 </td>
+</tr><tr class="filename"><td><h2 id="src/davis.route.js"><a href="#">davis.route</a></h2></td><td>src/davis.route.js</td></tr><tr class="code">
+<td class="docs">
+<p>Davis.Routes are the main part of a Davis application.  They consist of a HTTP method, a path
+and a callback function.  When a link or a form that Davis has bound to are clicked or submitted
+a request is pushed on the history stack and a route that matches the path and method of the
+generated request is run.</p>
+
+<p>Inside the callback function 'this' is bound to the request.</p>
+
+<ul><li><strong>constructo</strong>: <em>r</em></li></ul>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>String</em>  method - This should be one of either 'get', 'post', 'put' or 'delete'</p></li><li><p><strong>param</strong>: <em>String</em>  path - This string can contain place holders for variables, e.g. '/user/:id'</p></li><li><p><strong>param</strong>: <em>Function</em>  callback - A callback that will be called when a request matching both the path and method is triggered.</p></li></ul>
+
+<h3>Example:</h3>
+
+<pre><code>var route = new Davis.Route ('get', '/foo/:id', function (req) {
+  var id = req.params['id']
+  // do something interesting!
+})</code></pre>
+
+<p> </p>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="class">Route</span> = <span class="keyword">function</span> (<span class="variable">method</span>, <span class="variable">path</span>, <span class="variable">callback</span>) {
+    <span class="keyword">var</span> <span class="variable">convertPathToRegExp</span> = <span class="keyword">function</span> () {
+      <span class="keyword">if</span> (!(<span class="variable">path</span> <span class="variable">instanceof</span> <span class="class">RegExp</span>)) {
+        <span class="keyword">return</span> <span class="keyword">new</span> <span class="class">RegExp</span>(&<span class="variable">quot</span>;^&<span class="variable">quot</span>; + <span class="variable">path</span>.<span class="variable">replace</span>(<span class="variable">pathNameRegex</span>, <span class="variable">pathNameReplacement</span>) + &<span class="variable">quot</span>;$&<span class="variable">quot</span>;, &<span class="variable">quot</span>;<span class="variable">g</span>&<span class="variable">quot</span>;);
+      } <span class="keyword">else</span> {
+        <span class="keyword">return</span> <span class="variable">path</span>;
+      };
+    };
+
+    <span class="keyword">var</span> <span class="variable">convertMethodToRegExp</span> = <span class="keyword">function</span> () {
+      <span class="keyword">if</span> (!(<span class="variable">method</span> <span class="variable">instanceof</span> <span class="class">RegExp</span>)) {
+        <span class="keyword">return</span> <span class="keyword">new</span> <span class="class">RegExp</span>(&<span class="variable">quot</span>;^&<span class="variable">quot</span>; + <span class="variable">method</span> + &<span class="variable">quot</span>;$&<span class="variable">quot</span>;);
+      } <span class="keyword">else</span> {
+        <span class="keyword">return</span> <span class="variable">method</span>
+      };
+    }
+
+    <span class="keyword">var</span> <span class="variable">capturePathParamNames</span> = <span class="keyword">function</span> () {
+      <span class="keyword">var</span> <span class="variable">names</span> = [], <span class="variable">a</span>;
+      <span class="keyword">while</span> ((<span class="variable">a</span> = <span class="variable">pathNameRegex</span>.<span class="variable">exec</span>(<span class="variable">path</span>))) <span class="variable">names</span>.<span class="variable">push</span>(<span class="variable">a</span>[<span class="number integer">1</span>]);
+      <span class="keyword">return</span> <span class="variable">names</span>;
+    };
+
+    <span class="this">this</span>.<span class="variable">paramNames</span> = <span class="variable">capturePathParamNames</span>();
+    <span class="this">this</span>.<span class="variable">path</span> = <span class="variable">convertPathToRegExp</span>();
+    <span class="this">this</span>.<span class="variable">method</span> = <span class="variable">convertMethodToRegExp</span>();
+    <span class="this">this</span>.<span class="variable">callback</span> = <span class="variable">callback</span>;
+  }
+
+  <span class="class">Route</span>.<span class="variable">prototype</span> = {</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>route.match</h2>
+
+<p>Tests whether or not a route matches a particular request.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>String</em>  method</p></li><li><p><strong>param</strong>: <em>String</em>  path</p></li><li><p><strong>returns</strong>: <em>Boolean</em> </p></li></ul>
+
+<h3>Example:</h3>
+
+<pre><code>route.match('get', '/foo/12')
+ </code></pre>
+</td>
+<td class="code">
+<pre><code><span class="variable">match</span>: <span class="keyword">function</span> (<span class="variable">method</span>, <span class="variable">path</span>) {
+      <span class="keyword">return</span> (<span class="this">this</span>.<span class="variable">method</span>.<span class="variable">test</span>(<span class="variable">method</span>)) &<span class="variable">amp</span>;&<span class="variable">amp</span>; (<span class="this">this</span>.<span class="variable">path</span>.<span class="variable">test</span>(<span class="variable">path</span>))
+    },</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>route.run</h2>
+
+<p>Runs the callback associated with a particular route against the passed request.
+Any named params in the request path are extracted, as per the routes path, and
+added onto the requests params object.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>params</strong>: <em>Davis.Request</em>  request</p></li><li><p><strong>returns</strong>: <em>Object</em>  whatever the routes callback returns</p></li></ul>
+
+<h3>Example:</h3>
+
+<pre><code>route.run(request)
+ </code></pre>
+</td>
+<td class="code">
+<pre><code><span class="variable">run</span>: <span class="keyword">function</span> (<span class="variable">request</span>) {
+      <span class="this">this</span>.<span class="variable">path</span>.<span class="variable">lastIndex</span> = <span class="number integer">0</span>
+      <span class="keyword">var</span> <span class="variable">matches</span> = <span class="this">this</span>.<span class="variable">path</span>.<span class="variable">exec</span>(<span class="variable">request</span>.<span class="variable">path</span>);
+      <span class="keyword">if</span> (<span class="variable">matches</span>) {
+        <span class="variable">matches</span>.<span class="variable">shift</span>();
+        <span class="keyword">for</span> (<span class="keyword">var</span> <span class="variable">i</span>=<span class="number integer">0</span>; <span class="variable">i</span> &<span class="variable">lt</span>; <span class="variable">matches</span>.<span class="variable">length</span>; <span class="variable">i</span>++) {
+          <span class="variable">request</span>.<span class="variable">params</span>[<span class="this">this</span>.<span class="variable">paramNames</span>[<span class="variable">i</span>]] = <span class="variable">matches</span>[<span class="variable">i</span>];
+        };
+      };
+      <span class="this">this</span>.<span class="variable">path</span>.<span class="variable">lastIndex</span> = <span class="number integer">0</span>
+      <span class="keyword">return</span> <span class="this">this</span>.<span class="variable">callback</span>.<span class="variable">call</span>(<span class="variable">request</span>, <span class="variable">request</span>);
+    },</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>route.toString</h2>
+
+<p>Converts the route to a string representation of itself by combining the method and path
+attributes.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>returns</strong>: <em>String</em>  string representation of the route</p><p> </p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="variable">toString</span>: <span class="keyword">function</span> () {
+      <span class="keyword">return</span> [<span class="this">this</span>.<span class="variable">method</span>, <span class="this">this</span>.<span class="variable">path</span>].<span class="variable">join</span>(<span class="string">' '</span>);
+    }
+  };</code></pre>
+</td>
 </tr><tr class="filename"><td><h2 id="src/davis.router.js"><a href="#">davis.router</a></h2></td><td>src/davis.router.js</td></tr><tr class="code">
 <td class="docs">
 <p>A decorator that adds convinience methods to a Davis.App for easily creating instances
@@ -650,7 +798,7 @@ of Davis.Route and looking up routes for a particular request.</p>
 with the corresponding method.  This allows simple REST styled routing for a client side
 JavaScript application.</p>
 
-<p>Example</p>
+<h3>Example</h3>
 
 <pre><code>app.get('/foo/:id', function (req) {
   // get the foo with id = req.params['id']
@@ -675,7 +823,7 @@ A before filter can return false to halt the running of any matched routes or ot
 
 <p>A filter can take an optional path to match on, or without a path will match every request.</p>
 
-<p>Example</p>
+<h3>Example</h3>
 
 <pre><code>app.before('/foo/:id', function (req) {
   // will only run before request matching '/foo/:id'
@@ -749,7 +897,7 @@ lookup filters.
 </tr>
 <tr class="code">
 <td class="docs">
-<h2>app.lookupRoute('get', '/foo/12')</h2>
+<h2>app.lookupRoute</h2>
 
 <p>Looks for the first route that matches the method and path from a request.  Will only
 find and return the first matched route.</p>
@@ -765,123 +913,6 @@ find and return the first matched route.</p>
     })[<span class="number integer">0</span>];
   };
 }</code></pre>
-</td>
-</tr><tr class="filename"><td><h2 id="src/davis.route.js"><a href="#">davis.route</a></h2></td><td>src/davis.route.js</td></tr><tr class="code">
-<td class="docs">
-<p>Davis.Routes are the main part of a Davis application.  They consist of a HTTP method, a path
-and a callback function.  When a link or a form that Davis has bound to are clicked or submitted
-a request is pushed on the history stack and a route that matches the path and method of the
-generated request is run.</p>
-
-<p>Inside the callback function 'this' is bound to the request.</p>
-
-<ul><li><strong>constructo</strong>: <em>r</em></li></ul>
-
-<h2></h2>
-
-<ul><li><p><strong>param</strong>: <em>String</em>  method - This should be one of either 'get', 'post', 'put' or 'delete'</p></li><li><p><strong>param</strong>: <em>String</em>  path - This string can contain place holders for variables, e.g. '/user/:id'</p></li><li><p><strong>param</strong>: <em>Function</em>  callback - A callback that will be called when a request matching both the path and method is triggered.</p></li></ul>
-
-<h2>Example</h2>
-
-<pre><code>var route = new Davis.Route ('get', '/foo/:id', function (req) {
-  var id = req.params['id']
-  // do something interesting!
-})</code></pre>
-
-<p> </p>
-</td>
-<td class="code">
-<pre><code><span class="keyword">var</span> <span class="class">Route</span> = <span class="keyword">function</span> (<span class="variable">method</span>, <span class="variable">path</span>, <span class="variable">callback</span>) {
-    <span class="keyword">var</span> <span class="variable">convertPathToRegExp</span> = <span class="keyword">function</span> () {
-      <span class="keyword">if</span> (!(<span class="variable">path</span> <span class="variable">instanceof</span> <span class="class">RegExp</span>)) {
-        <span class="keyword">return</span> <span class="keyword">new</span> <span class="class">RegExp</span>(&<span class="variable">quot</span>;^&<span class="variable">quot</span>; + <span class="variable">path</span>.<span class="variable">replace</span>(<span class="variable">pathNameRegex</span>, <span class="variable">pathNameReplacement</span>) + &<span class="variable">quot</span>;$&<span class="variable">quot</span>;, &<span class="variable">quot</span>;<span class="variable">g</span>&<span class="variable">quot</span>;);
-      } <span class="keyword">else</span> {
-        <span class="keyword">return</span> <span class="variable">path</span>;
-      };
-    };
-
-    <span class="keyword">var</span> <span class="variable">convertMethodToRegExp</span> = <span class="keyword">function</span> () {
-      <span class="keyword">if</span> (!(<span class="variable">method</span> <span class="variable">instanceof</span> <span class="class">RegExp</span>)) {
-        <span class="keyword">return</span> <span class="keyword">new</span> <span class="class">RegExp</span>(&<span class="variable">quot</span>;^&<span class="variable">quot</span>; + <span class="variable">method</span> + &<span class="variable">quot</span>;$&<span class="variable">quot</span>;);
-      } <span class="keyword">else</span> {
-        <span class="keyword">return</span> <span class="variable">method</span>
-      };
-    }
-
-    <span class="keyword">var</span> <span class="variable">capturePathParamNames</span> = <span class="keyword">function</span> () {
-      <span class="keyword">var</span> <span class="variable">names</span> = [], <span class="variable">a</span>;
-      <span class="keyword">while</span> ((<span class="variable">a</span> = <span class="variable">pathNameRegex</span>.<span class="variable">exec</span>(<span class="variable">path</span>))) <span class="variable">names</span>.<span class="variable">push</span>(<span class="variable">a</span>[<span class="number integer">1</span>]);
-      <span class="keyword">return</span> <span class="variable">names</span>;
-    };
-
-    <span class="this">this</span>.<span class="variable">paramNames</span> = <span class="variable">capturePathParamNames</span>();
-    <span class="this">this</span>.<span class="variable">path</span> = <span class="variable">convertPathToRegExp</span>();
-    <span class="this">this</span>.<span class="variable">method</span> = <span class="variable">convertMethodToRegExp</span>();
-    <span class="this">this</span>.<span class="variable">callback</span> = <span class="variable">callback</span>;
-  }
-
-  <span class="class">Route</span>.<span class="variable">prototype</span> = {</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<h2>route.match('get', '/foo')</h2>
-
-<p>Tests whether or not a route matches a particular request.</p>
-
-<h2></h2>
-
-<ul><li><p><strong>param</strong>: <em>String</em>  method</p></li><li><p><strong>param</strong>: <em>String</em>  path</p></li><li><p><strong>returns</strong>: <em>Boolean</em> </p><p> </p></li></ul>
-</td>
-<td class="code">
-<pre><code><span class="variable">match</span>: <span class="keyword">function</span> (<span class="variable">method</span>, <span class="variable">path</span>) {
-      <span class="keyword">return</span> (<span class="this">this</span>.<span class="variable">method</span>.<span class="variable">test</span>(<span class="variable">method</span>)) &<span class="variable">amp</span>;&<span class="variable">amp</span>; (<span class="this">this</span>.<span class="variable">path</span>.<span class="variable">test</span>(<span class="variable">path</span>))
-    },</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<h2>route.run(request)</h2>
-
-<p>Runs the callback associated with a particular route against the passed request.
-Any named params in the request path are extracted, as per the routes path, and
-added onto the requests params object.</p>
-
-<h2></h2>
-
-<ul><li><p><strong>params</strong>: <em>Davis.Request</em>  request</p></li><li><p><strong>returns</strong>: <em>Object</em>  whatever the routes callback returns</p><p> </p></li></ul>
-</td>
-<td class="code">
-<pre><code><span class="variable">run</span>: <span class="keyword">function</span> (<span class="variable">request</span>) {
-      <span class="this">this</span>.<span class="variable">path</span>.<span class="variable">lastIndex</span> = <span class="number integer">0</span>
-      <span class="keyword">var</span> <span class="variable">matches</span> = <span class="this">this</span>.<span class="variable">path</span>.<span class="variable">exec</span>(<span class="variable">request</span>.<span class="variable">path</span>);
-      <span class="keyword">if</span> (<span class="variable">matches</span>) {
-        <span class="variable">matches</span>.<span class="variable">shift</span>();
-        <span class="keyword">for</span> (<span class="keyword">var</span> <span class="variable">i</span>=<span class="number integer">0</span>; <span class="variable">i</span> &<span class="variable">lt</span>; <span class="variable">matches</span>.<span class="variable">length</span>; <span class="variable">i</span>++) {
-          <span class="variable">request</span>.<span class="variable">params</span>[<span class="this">this</span>.<span class="variable">paramNames</span>[<span class="variable">i</span>]] = <span class="variable">matches</span>[<span class="variable">i</span>];
-        };
-      };
-      <span class="this">this</span>.<span class="variable">path</span>.<span class="variable">lastIndex</span> = <span class="number integer">0</span>
-      <span class="keyword">return</span> <span class="this">this</span>.<span class="variable">callback</span>.<span class="variable">call</span>(<span class="variable">request</span>, <span class="variable">request</span>);
-    },</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<h2>route.toString()</h2>
-
-<p>Converts the route to a string representation of itself by combining the method and path
-attributes.</p>
-
-<h2></h2>
-
-<ul><li><p><strong>returns</strong>: <em>String</em>  string representation of the route</p><p> </p></li></ul>
-</td>
-<td class="code">
-<pre><code><span class="variable">toString</span>: <span class="keyword">function</span> () {
-      <span class="keyword">return</span> [<span class="this">this</span>.<span class="variable">method</span>, <span class="this">this</span>.<span class="variable">path</span>].<span class="variable">join</span>(<span class="string">' '</span>);
-    }
-  };</code></pre>
 </td>
 </tr>	</body>
 </html></tbody></table>

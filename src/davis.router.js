@@ -12,7 +12,7 @@
  * with the corresponding method.  This allows simple REST styled routing for a client side
  * JavaScript application.
  *
- * Example
+ * ### Example
  *
  *     app.get('/foo/:id', function (req) {
  *       // get the foo with id = req.params['id']
@@ -37,7 +37,7 @@
  *
  * A filter can take an optional path to match on, or without a path will match every request.
  *
- * Example
+ * ### Example
  *
  *     app.before('/foo/:id', function (req) {
  *       // will only run before request matching '/foo/:id'
@@ -109,7 +109,7 @@ Davis.router = function () {
   };
 
   /**
-   * ## app.lookupRoute('get', '/foo/12')
+   * ## app.lookupRoute
    * Looks for the first route that matches the method and path from a request.  Will only
    * find and return the first matched route.
    *

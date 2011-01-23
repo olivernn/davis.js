@@ -6,6 +6,7 @@
 
 /**
  * A private scope for the Davis.App constructor
+ * @private
  */
 Davis.App = (function () {
 
@@ -32,13 +33,14 @@ Davis.App = (function () {
   App.prototype = $.extend({
 
     /**
+     * ## app.configure
      * A convinience function for changing the apps default settings.
      * Should be used before starting the app to ensure any new settings
      * are picked up and used.
      *
-     * @param {Function} config This function will be executed with the context bound to the apps setting object
+     * @param {Function} config - This function will be executed with the context bound to the apps setting object
      *
-     * Example:
+     * ### Example:
      *     app.configure(function () {
      *       this.linkSelector: 'a.davis'
      *       this.formSelector: 'form.davis'
@@ -49,6 +51,7 @@ Davis.App = (function () {
     },
 
     /**
+     * ## app.settings
      * Settings for the app.  These may be overriden directly or by using the configure
      * convinience method.
      *
@@ -68,10 +71,14 @@ Davis.App = (function () {
     },
 
     /**
-     * Starting the app does a number of things, it binds to all links and forms that are selected
-     * according to the settings.  It also starts listening to history pop and push events.
-     * The start method should be called after declaring all routes and after setting any configuration
-     * that you want.
+     * ## app.start
+     * Once the app's routes have been defined and any additional configuration has happened the 
+     * start method should be called.
+     *
+     * Starting the app binds all links and forms, so clicks and submits
+     * create Davis requests that will be pushed onto the browsers history stack.  Browser history change
+     * events will be picked up and the request that caused the change will be matched against the apps
+     * routes and filters.
      */
     start: function () {
       var self = this;
@@ -123,6 +130,7 @@ Davis.App = (function () {
     },
 
     /**
+     * ## app.stop
      * Stops the app listening to clicks and submits on all forms and links found using the current
      * apps settings.
      */

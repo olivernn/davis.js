@@ -6,12 +6,12 @@
 
 /**
  * Daivs.Requests are created from click and submit events.  Davis.Requests are passed to Davis.Routes
- * and are stored in the history stack.  They are instantiated by Davis.listener.
+ * and are stored in the history stack.  They are instantiated by the Davis.listener module.
  *
  * @constructor
  * @param {Object} raw An object that at least contains a title, fullPath and method proprty.
  *
- * Example:
+ * ### Example:
  *     var request = new Davis.Request({
  *       title: "foo",
  *       fullPath: "/foo/12",
@@ -49,20 +49,20 @@ Davis.Request = function (raw) {
 };
 
 /**
- * ## request.redirect('/foo')
+ * ## request.redirect
  * Redirects the current request to a new location.  Calling redirect on an instance of
- * Davis.Request will create a new request using the path param and the current requests title.
+ * Davis.Request will create a new request using the path and title of the current request.
  * Redirected requests always have a method of 'get'
  *
  * The request created will replace the current request in the history stack.  Redirect is most
- * often useful inside a handler for a form submit, after succesfully handling the form the app
- * can redirect to another path, this will mean that the current form will not be re-submitted if
- * navigating with the back or forward buttons as the forms submit request will have been replaced
- * in the browsers history stack.
+ * often useful inside a handler for a form submit.  After succesfully handling the form the app
+ * can redirect to another path.  This means that the current form will not be re-submitted if
+ * navigating through the history with the back or forward buttons because the request that the
+ * submit generated has been replaced in the history stack.
  *
  * @param {String} path The path to redirect the current request to
  *
- * Example:
+ * ### Example:
  *     this.post('/foo', function (req) {
  *       processFormRequest(req.params)  // do something with the form request
  *       req.redirect('/bar');
@@ -77,7 +77,7 @@ Davis.Request.prototype.redirect = function (path) {
 };
 
 /**
- * ## request.toString()
+ * ## request.toString
  * Converts the request to a string representation of itself by combining the method and path
  * attributes.
  *
@@ -88,7 +88,7 @@ Davis.Request.prototype.toString = function () {
 };
 
 /**
- * ## Davis.Request.forPageLoad();
+ * ## Davis.Request.forPageLoad
  * Creates a new request for the page on page load.
  * This is required because usually requests are generated from clicking links or submitting forms
  * however this doesn't happen on a page load but should still be considered a request that the 

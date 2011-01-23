@@ -33,6 +33,7 @@ Davis.logger = (function () {
   }
 
   /**
+   * ## Davis.logger.error
    * Prints an error message to the console if the console is available.
    *
    * @params {String} All arguments are combined and logged to the console.
@@ -42,6 +43,7 @@ Davis.logger = (function () {
   }
 
   /**
+   * ## Davis.logger.info
    * Prints an info message to the console if the console is available.
    *
    * @params {String} All arguments are combined and logged to the console.
@@ -51,6 +53,7 @@ Davis.logger = (function () {
   }
 
   /**
+   * ## Davis.logger.warn
    * Prints a warning message to the console if the console is available.
    *
    * @params {String} All arguments are combined and logged to the console.

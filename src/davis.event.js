@@ -17,6 +17,7 @@ Davis.event = {
   _callbacks: {},
 
   /**
+   * ## app.bind
    * Binds a callback to a named event.
    *
    * @param {String} eventName
@@ -38,7 +39,7 @@ Davis.event = {
    *
    *  __requestHalted__ : Triggered when a before filter halts the current request, the current request is passed as an argument
    *
-   * Example:
+   * ### Example:
    *     app.bind('runRoute', function () {
    *       console.log('just about to run a route!')
    *     })
@@ -49,6 +50,7 @@ Davis.event = {
     return this;
   },
   /**
+   * ## app.trigger
    * Triggers an event on the current object.
    *
    * @param {String} eventName
@@ -58,7 +60,7 @@ Davis.event = {
    * An optional second param can be passed which will be passed as an argument to each callback
    * bound to the named event.
    *
-   * Example:
+   * ### Example:
    *     app.triger('foo')
    *     app.trigger('bar', {baz: true})
    */
