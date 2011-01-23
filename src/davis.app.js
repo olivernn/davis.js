@@ -36,16 +36,31 @@ Davis.App = (function () {
       this.listen();
       this.trigger('start')
 
+      var beforeFiltersPass = function (request) {
+        return self.lookupBeforeFilter(request.method, request.path).every(function (filter) {
+          var result = filter.run(request, request);
+          return (typeof result === "undefined" || result);
+        })
+      }
+
       Davis.history.onChange(function (request) {
-        self.trigger('lookupRoute', request);
-        var route = self.lookupRoute(request.method, request.path);
-        if (route) {
-          self.trigger('runRoute', request);
-          route.run(request);
+        if (beforeFiltersPass(request)) {
+          var route = self.lookupRoute(request.method, request.path);
+          if (route) {
+            self.trigger('runRoute', request);
+            route.run(request);
+            self.lookupAfterFilter(request.method, request.path).every(function (filter) {
+              var result = filter.run(request, request);
+              return (typeof result === "undefined" || result);
+            });
+          } else {
+            self.trigger('routeNotFound', request);
+          }
         } else {
-          self.trigger('routeNotFound', request);
+          self.trigger('requestHalted', request)
         }
-      })
+      });
+
       this.running = true;
     },
 

@@ -49,7 +49,7 @@ test("keeping a collection of after filters", function () {
   equal(router._filterCollection.after.length, 1, "should keep a collection of every before filter")
 })
 
-test("looking up a before filter", function () {
+test("looking up a before filter with no path condition", function () {
   var router = mockRouter();
   var filters = router.lookupBeforeFilter('get', '/foo')
   var callbackCalled = false;
@@ -60,5 +60,82 @@ test("looking up a before filter", function () {
     callbackCalled = true;
   });
 
-  
+  var filters = router.lookupBeforeFilter('get', '/foo')
+
+  equal(filters.length, 1, "should have found the filter")
+  same(router._filterCollection.before[0], filters[0], "should return the filter that was added")
+
+  filters[0].run({path: ""})
+
+  ok(callbackCalled, "calling the route shoul invoke its callback")
 })
+
+test("looking up a before filter with a path condition", function () {
+  var router = mockRouter();
+  var filters = router.lookupBeforeFilter('get', '/foo')
+  var callbackCalled = false;
+
+  equal(filters.length, 0, "should return an empty array if there are no filters")
+
+  router.before('/foo', function () {
+    callbackCalled = true;
+  });
+
+  filters = router.lookupBeforeFilter('get', '/bar')
+  equal(filters.length, 0, "should return an empty array if the filter doesn't match")
+
+  filters = router.lookupBeforeFilter('get', '/foo')
+
+  equal(filters.length, 1, "should have found the filter")
+  same(router._filterCollection.before[0], filters[0], "should return the filter that was added")
+
+  filters[0].run({path: ""})
+
+  ok(callbackCalled, "calling the route should invoke its callback")
+})
+
+test("looking up a after filter with no path condition", function () {
+  var router = mockRouter();
+  var filters = router.lookupAfterFilter('get', '/foo')
+  var callbackCalled = false;
+
+  equal(filters.length, 0, "should return an empty array if there are no filters")
+
+  router.after(function () {
+    callbackCalled = true;
+  });
+
+  var filters = router.lookupAfterFilter('get', '/foo')
+
+  equal(filters.length, 1, "should have found the filter")
+  same(router._filterCollection.after[0], filters[0], "should return the filter that was added")
+
+  filters[0].run({path: ""})
+
+  ok(callbackCalled, "calling the route shoul invoke its callback")
+})
+
+test("looking up a before filter with a path condition", function () {
+  var router = mockRouter();
+  var filters = router.lookupAfterFilter('get', '/foo')
+  var callbackCalled = false;
+
+  equal(filters.length, 0, "should return an empty array if there are no filters")
+
+  router.after('/foo', function () {
+    callbackCalled = true;
+  });
+
+  filters = router.lookupAfterFilter('get', '/bar')
+  equal(filters.length, 0, "should return an empty array if the filter doesn't match")
+
+  filters = router.lookupAfterFilter('get', '/foo')
+
+  equal(filters.length, 1, "should have found the filter")
+  same(router._filterCollection.after[0], filters[0], "should return the filter that was added")
+
+  filters[0].run({path: ""})
+
+  ok(callbackCalled, "calling the route should invoke its callback")
+})
+
