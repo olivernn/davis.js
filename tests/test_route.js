@@ -22,11 +22,13 @@ test('inoking a routes callback', function () {
 
   var route = new Davis.Route('get', '/foo', function () {
     routeRan = true;
+    return "foo"
   })
 
-  route.run({
+  var response = route.run({
     path: '/foo'
   });
 
   ok(routeRan, 'should run route callback when calling run');
+  equal(response, "foo", "should return whatever the callback returns")
 })

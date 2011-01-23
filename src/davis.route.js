@@ -48,7 +48,7 @@ Davis.Route = (function () {
         };
       };
       this.path.lastIndex = 0
-      this.callback.call(request, request);
+      return this.callback.call(request, request);
     },
 
     toString: function () {
