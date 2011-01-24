@@ -43,6 +43,8 @@ We define a simple get route with a 'name' parameter and a callback that will ap
 
 Once the app is configure it needs to be started.  You start a Davis.js app by calling the `start` method, this must be done once the document is ready.  Now if you click on the link that we appended to the body our route should be called and a friendly greeting printed on the page.
 
+To use Davis your html file must be loaded from a server rather than just opening the file in your browser.
+
 ## More
 
 [API docs](http://olivernn.github.com/davis.js)

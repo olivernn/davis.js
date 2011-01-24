@@ -8,6 +8,14 @@
  * Daivs.Requests are created from click and submit events.  Davis.Requests are passed to Davis.Routes
  * and are stored in the history stack.  They are instantiated by the Davis.listener module.
  *
+ * A request will have a params object which will contain all query params and form params, any named
+ * params in a routes path will also be added to the requests params object.  Also included is support
+ * for rails style nested form params.
+ *
+ * By default the request method will be taken from the method attribute for forms or will be defaulted
+ * to 'get' for links, however there is support for using a hidden field called _method in your forms
+ * to set the correct reqeust method.
+ *
  * @constructor
  * @param {Object} raw An object that at least contains a title, fullPath and method proprty.
  *

@@ -108,59 +108,7 @@ code .this { color: #19469D; }</style>
 		</script>
 	</head>
 	<body>
-<table id="source"><tbody><tr><td><h1>Davis</h1><h1>Davis.js</h1>
-
-<h2>Description</h2>
-
-<p>Davis.js is a small JavaScript library using HTML5 history.pushState that allows simple Sinatra style routing for you JavaScript apps.</p>
-
-<h2>Why</h2>
-
-<p>Using the history pustState and popstate events allows the links and forms in your app to have hrefs and actions that point to real end points on your server.  This allows complex JavaScript apps to degrade gracefully when JavaScript is unavailable and combining this with a template system that can be used both client and server side allows for large amounts of code reuse.</p>
-
-<p>Davis.js is heavily inspired by <a href="https://github.com/quirkey/sammy">Sammy.js</a> (hence the name), it is however intentionally much lighter than Sammy.js because I never use any of the template rendering etc that it includes.  All Davis.js does is provide a simple routing layer, nothing more, nothing less.</p>
-
-<h2>Requirements</h2>
-
-<p>Davis.js requires jQuery 1.4.2+ as well as a modern browser that supports HTML5 history.pushState and the onpopstate event.  At the moment that means FireFox 4+, Safari 5+, Chrome, iOS Safari 4+, Android Browser 2.2+.</p>
-
-<p>In all other browser Davis.js will currently fail pretty hard, fallback to hash location routing is a future possibility.</p>
-
-<h2>Installation</h2>
-
-<p>Download davis.min.js and include it on your page after jquery.</p>
-
-<h2>Example</h2>
-
-<p>A very simple example of a Davis.js app:</p>
-
-<pre><code>var app = Davis(function () {
-  this.get('/welcome/:name', function (req) {
-    $('body').append('&lt;h1&gt;Hello there, ' + req.params['name'] + '!&lt;/h1&gt;')
-  })
-})
-
-$(document).ready(function () {
-  // append a link to trigger the route
-  $('body').append('&lt;a href="/welcome/bob"&gt;Greet&lt;/a&gt;');
-
-  app.start();
-})</code></pre>
-
-<p>We create a new instance of a Davis.App using the Davis.js function, passing in a function that will draw the routes for the application.  Inside this function <code>this</code> is the instance of our application.</p>
-
-<p>We define a simple get route with a 'name' parameter and a callback that will append a message to the html body.  Inside the route callback <code>this</code> is set to the request that matches the route, this request is also passed as a parameter to the callback.</p>
-
-<p>Once the app is configure it needs to be started.  You start a Davis.js app by calling the <code>start</code> method, this must be done once the document is ready.  Now if you click on the link that we appended to the body our route should be called and a friendly greeting printed on the page.</p>
-
-<h2>More</h2>
-
-<p><a href="http://olivernn.github.com/davis.js">API docs</a>
-<a href="https://github.com/olivernn/davis.js/example.html">Example</a></p>
-
-<h2>Feedback</h2>
-
-<p>This is a very young library and any feedback or suggestions are welcome via <a href="https://github.com/olivernn/davis.js/issues">issues</a>.</p></td><td></td></tr><tr class="filename"><td><h2 id="src/davis.app.js"><a href="#">davis.app</a></h2></td><td>src/davis.app.js</td></tr><tr class="code">
+<table id="source"><tbody><tr><td><h1>Davis</h1></td><td></td></tr><tr class="filename"><td><h2 id="src/davis.app.js"><a href="#">davis.app</a></h2></td><td>src/davis.app.js</td></tr><tr class="code">
 <td class="docs">
 <p>Constructor for Davis.App
  - <strong>constructo</strong>: <em>r</em></p>
@@ -589,6 +537,14 @@ Used internally in Davis and available for use outside of Davis.</p>
 <td class="docs">
 <p>Daivs.Requests are created from click and submit events.  Davis.Requests are passed to Davis.Routes
 and are stored in the history stack.  They are instantiated by the Davis.listener module.</p>
+
+<p>A request will have a params object which will contain all query params and form params, any named
+params in a routes path will also be added to the requests params object.  Also included is support
+for rails style nested form params.</p>
+
+<p>By default the request method will be taken from the method attribute for forms or will be defaulted
+to 'get' for links, however there is support for using a hidden field called _method in your forms
+to set the correct reqeust method.</p>
 
 <ul><li><strong>constructo</strong>: <em>r</em></li></ul>
 

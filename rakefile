@@ -16,5 +16,5 @@ end
 
 desc 'Generate the documentation'
 task :docs do
-  exec "dox --title 'Davis' -i 'README.markdown' src/davis.*.js > docs/index.html"
+  exec "dox --title 'Davis' src/davis.*.js > docs/index.html"
 end
