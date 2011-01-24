@@ -35,7 +35,7 @@ Davis.history = (function () {
    * @private
    */
   var onPopState = function (handler) {
-    window.addEventListener('popstate', handler);
+    window.addEventListener('popstate', handler, true);
   };
 
   /**

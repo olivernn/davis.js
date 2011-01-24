@@ -25,7 +25,7 @@ test("binding and triggering the push state event", function () {
   resetHistory();
 })
 
-asynchTest("binding and triggering the pop state event", function () {
+test("binding and triggering the pop state event", function () {
   resetHistory();
   var callbackCalled = false;
 
