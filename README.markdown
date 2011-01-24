@@ -47,7 +47,7 @@ To use Davis your html file must be loaded from a server rather than just openin
 
 ## More
 
-[API docs](http://olivernn.github.com/davis.js)
+[API docs](http://olivernn.github.com/davis.js/docs)
 [Example](https://github.com/olivernn/davis.js/example.html)
 
 ## Feedback
