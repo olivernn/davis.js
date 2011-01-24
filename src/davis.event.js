@@ -64,11 +64,12 @@ Davis.event = {
    *     app.triger('foo')
    *     app.trigger('bar', {baz: true})
    */
-  trigger: function (eventName, data) {
+  trigger: function (eventName) {
     var self = this;
+    var args = arguments;
     if (!this._callbacks[eventName]) this._callbacks[eventName] = [];
     this._callbacks[eventName].forEach(function (callback) {
-      callback.call(self, data);
+      callback.apply(self, Array.prototype.slice.call(args, 1));
     }) 
     return this;
   }
