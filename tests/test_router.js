@@ -27,7 +27,7 @@ test("shortcuts for verbs", function () {
   router.get('/foo', $.noop);
   router.post('/foo', $.noop);
   router.put('/foo', $.noop);
-  router.delete('/foo', $.noop);
+  router.del('/foo', $.noop);
 
   same(router._routeCollection[0].method, /^get$/)
   same(router._routeCollection[1].method, /^post$/)

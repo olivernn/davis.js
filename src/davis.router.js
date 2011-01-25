@@ -26,7 +26,7 @@
  *       // update the instance of foo with id = req.params['id']
  *     })
  *     
- *     app.delete('/foo/:id', function (req) {
+ *     app.del('/foo/:id', function (req) {
  *       // delete the instance of foo with id = req.params['id']
  *     })
  *
@@ -62,12 +62,20 @@ Davis.router = function () {
   /**
    * Generating convinience methods for creating Davis.Routes
    */
-  var verbs = ['get', 'post', 'put', 'delete'];
+  var verbs = ['get', 'post', 'put'];
   verbs.forEach(function (verb) {
     self[verb] = function (path, handler) {
       self._routeCollection.push(new Davis.Route (verb, path, handler));
     }
   })
+
+  /**
+   * delete is a reserved word in javascript so use the `del` method to
+   * creating a Davis.Route with a method of delete.
+   */
+  this.del = function (path, handler) {
+    self._routeCollection.push(new Davis.Route ('delete', path, handler))
+  }
 
   /**
    * Generating convinience methods for creating filters using Davis.Routes and methods to
