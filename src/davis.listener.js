@@ -46,9 +46,15 @@ Davis.listener = (function () {
    * @private
    */
   var submitHandler = handler(function () {
+    var extractFormParams = function (form) {
+      return form.serializeArray().map(function (attr) {
+        return [attr.name, attr.value].join('=')
+      }).join('&')
+    }
+
     return {
       method: this.attr('method'),
-      fullPath: [this.attr('action'), "?", this.serialize()].join(""),
+      fullPath: [this.attr('action'), extractFormParams(this)].join("?"),
       title: this.attr('title')
     };
   });

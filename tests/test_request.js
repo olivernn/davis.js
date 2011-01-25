@@ -51,7 +51,7 @@ test("using _method param will set the method of the request", function () {
 test("parsing rails style nested params", function () {
   var request = new Davis.Request({
     method: 'post',
-    fullPath: '/foo?note%5Bname%5D=123&note%5Btitle%5D=asdf',
+    fullPath: '/foo?note[name]=123&note[title]=asdf',
     title: 'foo'
   })
 

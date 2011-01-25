@@ -36,7 +36,7 @@ Davis.Request = function (raw) {
     this.queryString.split("&").forEach(function (keyval) {
       var paramName = keyval.split("=")[0],
           paramValue = keyval.split("=")[1],
-          nestedParamRegex = /^(\w+)%5B(\w+)%5D/,
+          nestedParamRegex = /^(\w+)\[(\w+)\]/,
           nested;
 
       if (nested = nestedParamRegex.exec(paramName)) {
