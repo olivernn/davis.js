@@ -80,8 +80,18 @@ Davis.Route = (function () {
      *     route.match('get', '/foo/12')
      */
     match: function (method, path) {
+      this.reset();
       return (this.method.test(method)) && (this.path.test(path))
     },
+
+    /**
+     * ## route.reset
+     * Resets the RegExps for method and path
+     */
+     reset: function () {
+       this.method.lastIndex = 0;
+       this.path.lastIndex = 0;
+     },
 
     /**
      * ## route.run
@@ -97,7 +107,7 @@ Davis.Route = (function () {
      *     route.run(request)
      */
     run: function (request) {
-      this.path.lastIndex = 0
+      this.reset();
       var matches = this.path.exec(request.path);
       if (matches) {
         matches.shift();
@@ -105,7 +115,6 @@ Davis.Route = (function () {
           request.params[this.paramNames[i]] = matches[i];
         };
       };
-      this.path.lastIndex = 0
       return this.callback.call(request, request);
     },
 
