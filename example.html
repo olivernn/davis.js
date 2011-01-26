@@ -7,7 +7,7 @@
     <script src="lib/jquery-1.4.4.min.js" type="text/javascript" charset="utf-8"></script>
 
     <!-- davis -->
-    <!-- <script src="/src/davis.js"></script>
+    <script src="/src/davis.js"></script>
     <script src="/src/davis.listener.js"></script>
     <script src="/src/davis.event.js"></script>
     <script src="/src/davis.logger.js"></script>
@@ -15,9 +15,9 @@
     <script src="/src/davis.router.js"></script>
     <script src="/src/davis.history.js"></script>
     <script src="/src/davis.request.js"></script>
-    <script src="/src/davis.app.js"></script> -->
+    <script src="/src/davis.app.js"></script>
 
-    <script src="/dist/davis-0.1.0.min.js" type="text/javascript" charset="utf-8"></script>
+<!--     <script src="/dist/davis-0.1.0.min.js" type="text/javascript" charset="utf-8"></script> -->
 
     <script type="text/javascript" charset="utf-8">
       app = Davis(function () {
@@ -26,7 +26,11 @@
           console.log('before filter')
           req.foo = "foo"
         })
-        
+
+        this.get('/example.html', function () {
+          console.log('page has loaded')
+        })
+
         this.before('/foo/:id/blah/:bob', function () {
           console.log("halt!")
           return false;
