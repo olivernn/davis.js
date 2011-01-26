@@ -193,6 +193,37 @@ routes and filters.
 <pre><code><span class="variable">start</span>: <span class="keyword">function</span> () {
       <span class="keyword">var</span> <span class="variable">self</span> = <span class="this">this</span>;
 
+      <span class="keyword">var</span> <span class="variable">runFilterWith</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
+        <span class="keyword">return</span> <span class="keyword">function</span> (<span class="variable">filter</span>) {
+          <span class="keyword">var</span> <span class="variable">result</span> = <span class="variable">filter</span>.<span class="variable">run</span>(<span class="variable">request</span>, <span class="variable">request</span>);
+          <span class="keyword">return</span> (<span class="keyword">typeof</span> <span class="variable">result</span> === &<span class="variable">quot</span>;<span class="variable">undefined</span>&<span class="variable">quot</span>; || <span class="variable">result</span>);
+        }
+      }
+
+      <span class="keyword">var</span> <span class="variable">beforeFiltersPass</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
+        <span class="keyword">return</span> <span class="variable">self</span>.<span class="variable">lookupBeforeFilter</span>(<span class="variable">request</span>.<span class="variable">method</span>, <span class="variable">request</span>.<span class="variable">path</span>)
+                      .<span class="variable">every</span>(<span class="variable">runFilterWith</span>(<span class="variable">request</span>))
+      }
+
+      <span class="keyword">var</span> <span class="variable">handleRequest</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
+        <span class="keyword">if</span> (<span class="variable">beforeFiltersPass</span>(<span class="variable">request</span>)) {
+          <span class="variable">self</span>.<span class="variable">trigger</span>(<span class="string">'lookupRoute'</span>, <span class="variable">request</span>)
+          <span class="keyword">var</span> <span class="variable">route</span> = <span class="variable">self</span>.<span class="variable">lookupRoute</span>(<span class="variable">request</span>.<span class="variable">method</span>, <span class="variable">request</span>.<span class="variable">path</span>);
+          <span class="keyword">if</span> (<span class="variable">route</span>) {
+            <span class="variable">self</span>.<span class="variable">trigger</span>(<span class="string">'runRoute'</span>, <span class="variable">request</span>, <span class="variable">route</span>);
+            <span class="variable">route</span>.<span class="variable">run</span>(<span class="variable">request</span>);
+            <span class="variable">self</span>.<span class="variable">lookupAfterFilter</span>(<span class="variable">request</span>.<span class="variable">method</span>, <span class="variable">request</span>.<span class="variable">path</span>)
+                  .<span class="variable">every</span>(<span class="variable">runFilterWith</span>(<span class="variable">request</span>));
+          } <span class="keyword">else</span> {
+            <span class="variable">self</span>.<span class="variable">trigger</span>(<span class="string">'routeNotFound'</span>, <span class="variable">request</span>);
+          }
+        } <span class="keyword">else</span> {
+          <span class="variable">self</span>.<span class="variable">trigger</span>(<span class="string">'requestHalted'</span>, <span class="variable">request</span>)
+        }
+      }
+
+      <span class="class">Davis</span>.<span class="variable">history</span>.<span class="variable">onChange</span>(<span class="variable">handleRequest</span>);
+
       <span class="this">this</span>
         .<span class="variable">bind</span>(<span class="string">'runRoute'</span>, <span class="keyword">function</span> (<span class="variable">request</span>) {
           <span class="variable">self</span>.<span class="variable">settings</span>.<span class="variable">logger</span>.<span class="variable">info</span>(&<span class="variable">quot</span>;<span class="variable">runRoute</span>: &<span class="variable">quot</span>; + <span class="variable">request</span>.<span class="variable">toString</span>());
@@ -206,37 +237,10 @@ routes and filters.
 
       <span class="this">this</span>.<span class="variable">listen</span>();
       <span class="this">this</span>.<span class="variable">trigger</span>(<span class="string">'start'</span>)
-
-      <span class="keyword">var</span> <span class="variable">runFilterWith</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
-        <span class="keyword">return</span> <span class="keyword">function</span> (<span class="variable">filter</span>) {
-          <span class="keyword">var</span> <span class="variable">result</span> = <span class="variable">filter</span>.<span class="variable">run</span>(<span class="variable">request</span>, <span class="variable">request</span>);
-          <span class="keyword">return</span> (<span class="keyword">typeof</span> <span class="variable">result</span> === &<span class="variable">quot</span>;<span class="variable">undefined</span>&<span class="variable">quot</span>; || <span class="variable">result</span>);
-        }
-      }
-
-      <span class="keyword">var</span> <span class="variable">beforeFiltersPass</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
-        <span class="keyword">return</span> <span class="variable">self</span>.<span class="variable">lookupBeforeFilter</span>(<span class="variable">request</span>.<span class="variable">method</span>, <span class="variable">request</span>.<span class="variable">path</span>)
-                      .<span class="variable">every</span>(<span class="variable">runFilterWith</span>(<span class="variable">request</span>))
-      }
-
-      <span class="class">Davis</span>.<span class="variable">history</span>.<span class="variable">onChange</span>(<span class="keyword">function</span> (<span class="variable">request</span>) {
-        <span class="keyword">if</span> (<span class="variable">beforeFiltersPass</span>(<span class="variable">request</span>)) {
-          <span class="variable">self</span>.<span class="variable">trigger</span>(<span class="string">'lookupRoute'</span>, <span class="variable">request</span>)
-          <span class="keyword">var</span> <span class="variable">route</span> = <span class="variable">self</span>.<span class="variable">lookupRoute</span>(<span class="variable">request</span>.<span class="variable">method</span>, <span class="variable">request</span>.<span class="variable">path</span>);
-          <span class="keyword">if</span> (<span class="variable">route</span>) {
-            <span class="variable">self</span>.<span class="variable">trigger</span>(<span class="string">'runRoute'</span>, <span class="variable">request</span>);
-            <span class="variable">route</span>.<span class="variable">run</span>(<span class="variable">request</span>);
-            <span class="variable">self</span>.<span class="variable">lookupAfterFilter</span>(<span class="variable">request</span>.<span class="variable">method</span>, <span class="variable">request</span>.<span class="variable">path</span>)
-                  .<span class="variable">every</span>(<span class="variable">runFilterWith</span>(<span class="variable">request</span>));
-          } <span class="keyword">else</span> {
-            <span class="variable">self</span>.<span class="variable">trigger</span>(<span class="string">'routeNotFound'</span>, <span class="variable">request</span>);
-          }
-        } <span class="keyword">else</span> {
-          <span class="variable">self</span>.<span class="variable">trigger</span>(<span class="string">'requestHalted'</span>, <span class="variable">request</span>)
-        }
-      });
-
       <span class="this">this</span>.<span class="variable">running</span> = <span class="variable">true</span>;
+
+      <span class="variable">handleRequest</span>(<span class="class">Davis</span>.<span class="class">Request</span>.<span class="variable">forPageLoad</span>())
+
     },</code></pre>
 </td>
 </tr>
@@ -328,11 +332,12 @@ app.trigger('bar', {baz: true})</code></pre>
 <p>   </p>
 </td>
 <td class="code">
-<pre><code><span class="variable">trigger</span>: <span class="keyword">function</span> (<span class="variable">eventName</span>, <span class="variable">data</span>) {
+<pre><code><span class="variable">trigger</span>: <span class="keyword">function</span> (<span class="variable">eventName</span>) {
     <span class="keyword">var</span> <span class="variable">self</span> = <span class="this">this</span>;
+    <span class="keyword">var</span> <span class="variable">args</span> = <span class="variable">arguments</span>;
     <span class="keyword">if</span> (!<span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>]) <span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>] = [];
     <span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>].<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">callback</span>) {
-      <span class="variable">callback</span>.<span class="variable">call</span>(<span class="variable">self</span>, <span class="variable">data</span>);
+      <span class="variable">callback</span>.<span class="variable">apply</span>(<span class="variable">self</span>, <span class="class">Array</span>.<span class="variable">prototype</span>.<span class="variable">slice</span>.<span class="variable">call</span>(<span class="variable">args</span>, <span class="number integer">1</span>));
     }) 
     <span class="keyword">return</span> <span class="this">this</span>;
   }
@@ -573,7 +578,7 @@ to set the correct reqeust method.</p>
     <span class="this">this</span>.<span class="variable">queryString</span>.<span class="variable">split</span>(&<span class="variable">quot</span>;&<span class="variable">amp</span>;&<span class="variable">quot</span>;).<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">keyval</span>) {
       <span class="keyword">var</span> <span class="variable">paramName</span> = <span class="variable">keyval</span>.<span class="variable">split</span>(&<span class="variable">quot</span>;=&<span class="variable">quot</span>;)[<span class="number integer">0</span>],
           <span class="variable">paramValue</span> = <span class="variable">keyval</span>.<span class="variable">split</span>(&<span class="variable">quot</span>;=&<span class="variable">quot</span>;)[<span class="number integer">1</span>],
-          <span class="variable">nestedParamRegex</span> = <span class="regexp">/^(\w+)%5B(\w+)%5D/</span>,
+          <span class="variable">nestedParamRegex</span> = <span class="regexp">/^(\w+)\[(\w+)\]/</span>,
           <span class="variable">nested</span>;
 
       <span class="keyword">if</span> (<span class="variable">nested</span> = <span class="variable">nestedParamRegex</span>.<span class="variable">exec</span>(<span class="variable">paramName</span>)) {
@@ -744,8 +749,23 @@ generated request is run.</p>
 </td>
 <td class="code">
 <pre><code><span class="variable">match</span>: <span class="keyword">function</span> (<span class="variable">method</span>, <span class="variable">path</span>) {
+      <span class="this">this</span>.<span class="variable">reset</span>();
       <span class="keyword">return</span> (<span class="this">this</span>.<span class="variable">method</span>.<span class="variable">test</span>(<span class="variable">method</span>)) &<span class="variable">amp</span>;&<span class="variable">amp</span>; (<span class="this">this</span>.<span class="variable">path</span>.<span class="variable">test</span>(<span class="variable">path</span>))
     },</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>route.reset</h2>
+
+<p>Resets the RegExps for method and path
+     </p>
+</td>
+<td class="code">
+<pre><code><span class="variable">reset</span>: <span class="keyword">function</span> () {
+       <span class="this">this</span>.<span class="variable">method</span>.<span class="variable">lastIndex</span> = <span class="number integer">0</span>;
+       <span class="this">this</span>.<span class="variable">path</span>.<span class="variable">lastIndex</span> = <span class="number integer">0</span>;
+     },</code></pre>
 </td>
 </tr>
 <tr class="code">
@@ -767,7 +787,7 @@ added onto the requests params object.</p>
 </td>
 <td class="code">
 <pre><code><span class="variable">run</span>: <span class="keyword">function</span> (<span class="variable">request</span>) {
-      <span class="this">this</span>.<span class="variable">path</span>.<span class="variable">lastIndex</span> = <span class="number integer">0</span>
+      <span class="this">this</span>.<span class="variable">reset</span>();
       <span class="keyword">var</span> <span class="variable">matches</span> = <span class="this">this</span>.<span class="variable">path</span>.<span class="variable">exec</span>(<span class="variable">request</span>.<span class="variable">path</span>);
       <span class="keyword">if</span> (<span class="variable">matches</span>) {
         <span class="variable">matches</span>.<span class="variable">shift</span>();
@@ -775,7 +795,6 @@ added onto the requests params object.</p>
           <span class="variable">request</span>.<span class="variable">params</span>[<span class="this">this</span>.<span class="variable">paramNames</span>[<span class="variable">i</span>]] = <span class="variable">matches</span>[<span class="variable">i</span>];
         };
       };
-      <span class="this">this</span>.<span class="variable">path</span>.<span class="variable">lastIndex</span> = <span class="number integer">0</span>
       <span class="keyword">return</span> <span class="this">this</span>.<span class="variable">callback</span>.<span class="variable">call</span>(<span class="variable">request</span>, <span class="variable">request</span>);
     },</code></pre>
 </td>
@@ -820,7 +839,7 @@ app.put('/foo/:id', function (req) {
   // update the instance of foo with id = req.params['id']
 })
 
-app.delete('/foo/:id', function (req) {
+app.del('/foo/:id', function (req) {
   // delete the instance of foo with id = req.params['id']
 })</code></pre>
 
@@ -862,12 +881,24 @@ app.after(function (req) {
    </p>
 </td>
 <td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">verbs</span> = [<span class="string">'get'</span>, <span class="string">'post'</span>, <span class="string">'put'</span>, <span class="string">'delete'</span>];
+<pre><code><span class="keyword">var</span> <span class="variable">verbs</span> = [<span class="string">'get'</span>, <span class="string">'post'</span>, <span class="string">'put'</span>];
   <span class="variable">verbs</span>.<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">verb</span>) {
     <span class="variable">self</span>[<span class="variable">verb</span>] = <span class="keyword">function</span> (<span class="variable">path</span>, <span class="variable">handler</span>) {
       <span class="variable">self</span>.<span class="variable">_routeCollection</span>.<span class="variable">push</span>(<span class="keyword">new</span> <span class="class">Davis</span>.<span class="class">Route</span> (<span class="variable">verb</span>, <span class="variable">path</span>, <span class="variable">handler</span>));
     }
   })</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>delete is a reserved word in javascript so use the <code>del</code> method to
+creating a Davis.Route with a method of delete.
+   </p>
+</td>
+<td class="code">
+<pre><code><span class="this">this</span>.<span class="variable">del</span> = <span class="keyword">function</span> (<span class="variable">path</span>, <span class="variable">handler</span>) {
+    <span class="variable">self</span>.<span class="variable">_routeCollection</span>.<span class="variable">push</span>(<span class="keyword">new</span> <span class="class">Davis</span>.<span class="class">Route</span> (<span class="string">'delete'</span>, <span class="variable">path</span>, <span class="variable">handler</span>))
+  }</code></pre>
 </td>
 </tr>
 <tr class="code">
@@ -923,17 +954,4 @@ find and return the first matched route.</p>
 }</code></pre>
 </td>
 </tr>	</body>
-<script type="text/javascript">
-
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-6178997-4']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
-</script>
 </html></tbody></table>
