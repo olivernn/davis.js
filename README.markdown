@@ -48,7 +48,10 @@ To use Davis your html file must be loaded from a server rather than just openin
 ## More
 
 [API docs](http://olivernn.github.com/davis.js/docs)
-[Example](https://github.com/olivernn/davis.js/example.html)
+
+[Example](http://davis-example.heroku.com/notes) using davis.js and a mustache templates shared between the client and the server, [code](http://github.com/olivernn/notepad)
+
+
 
 ## Feedback
 
