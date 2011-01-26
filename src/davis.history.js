@@ -50,7 +50,10 @@ Davis.history = (function () {
   var wrapped = function (handler) {
     return function (event) {
       if (event.state) {
-        handler(event.state)
+        // the request that is pushed into the browser history looses its __proto__
+        var req = event.state
+        req.__proto__ = Davis.Request.prototype
+        handler(req)
       } else {
         handler(Davis.Request.forPageLoad())
       };
