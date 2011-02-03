@@ -68,3 +68,31 @@ test("generating a request for the initial page load", function () {
   equal(window.location.pathname, request.path, "should have the current location path as the path")
   equal(document.title, request.title, "should take the current page title as the title")
 })
+
+test("adding a whenStale callback", function () {
+  var request = new Davis.Request ({
+    method: 'get',
+    fullPath: '/foo',
+    title: 'foo'
+  });
+
+  var staleCallback = function () {};
+  request.whenStale(staleCallback)
+  same(staleCallback, request._staleCallback)
+})
+
+test("marking a request as stale", function () {
+  var request = new Davis.Request ({
+    method: 'get',
+    fullPath: '/foo',
+    title: 'foo'
+  });
+  var callbackCalled = false;
+
+  request.whenStale(function () {
+    callbackCalled = true
+  })
+  request.makeStale();
+
+  ok(callbackCalled, "marking a request as stale should call the whenStale callback")
+})

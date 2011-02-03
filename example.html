@@ -59,6 +59,9 @@
 
         this.put('/blah/:id', function (req) {
           console.log('request', this)
+          req.whenStale(function () {
+            console.log(req.toString(), " is now stale")
+          })
           this.redirect('/bar')
         })
       })
