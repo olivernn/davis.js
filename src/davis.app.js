@@ -112,7 +112,19 @@ Davis.App = (function () {
         }
       }
 
-      Davis.history.onChange(handleRequest);
+      var handleEvent = function (event) {
+        self.lookupSubscriptions(event.name).forEach(function (subscriber) {
+          subscriber.call(event, event)
+        })
+      }
+
+      Davis.history.onChange(function (obj) {
+        if (obj.type === 'event') {
+          handleEvent(obj)
+        } else {
+          handleRequest(obj)
+        };
+      });
 
       this
         .bind('runRoute', function (request) {
@@ -147,7 +159,7 @@ Davis.App = (function () {
    * including listener and event modules
    * @private
    */
-  }, Davis.listener, Davis.event);
+  }, Davis.listener, Davis.event, Davis.pubsub);
 
   /**
    * decorate the prototype with routing methods

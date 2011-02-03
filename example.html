@@ -10,6 +10,7 @@
     <script src="/src/davis.js"></script>
     <script src="/src/davis.listener.js"></script>
     <script src="/src/davis.event.js"></script>
+    <script src="/src/davis.pubsub.js"></script>
     <script src="/src/davis.logger.js"></script>
     <script src="/src/davis.route.js"></script>
     <script src="/src/davis.router.js"></script>
@@ -61,9 +62,18 @@
           console.log('request', this)
           this.redirect('/bar')
         })
+
+        this.subscribe('blah', function (event) {
+          console.log('asdfkjasd', event)
+        })
+
+        this.subscribe('next.photoScroll', function () {
+          
+        })
       })
 
       app.start();
+
     </script>
 
   </head>
