@@ -1,10 +1,5 @@
 module('History Module');
 
-var resetHistory = function () {
-  // I go back, way back, back in the day
-  window.history.back(Infinity)
-}
-
 test("binding and triggering the push state event", function () {
 
   var callbackCalled = false;
@@ -21,12 +16,9 @@ test("binding and triggering the push state event", function () {
   });
 
   ok(callbackCalled, "callback should have been called")
-
-  resetHistory();
 })
 
 test("binding and triggering the pop state event", function () {
-  resetHistory();
   var callbackCalled = false;
 
   Davis.history.onChange(function () {
@@ -42,6 +34,4 @@ test("binding and triggering the pop state event", function () {
     window.history.back(1);
     ok(callbackCalled, "callback should have been called")
   }, 101)
-
-  resetHistory();
 })
