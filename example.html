@@ -32,16 +32,11 @@
         })
 
         this.before('/foo/:id/blah/:bob', function () {
-          console.log("halt!")
           return false;
         })
 
         this.after(function () {
-          console.log('all done')
-        })
-
-        this.get('/', function () {
-          console.log('root')
+          console.log('after callback')
         })
 
         this.get('/foo/:id/blah/:bob', function () {
