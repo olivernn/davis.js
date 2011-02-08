@@ -50,14 +50,10 @@ Davis.history = (function () {
   var wrapped = function (handler) {
     return function (event) {
       if (event.state) {
-        // the request that is pushed into the browser history looses its __proto__
-        var req = event.state
-        if (req.type == 'request') {
-          req.__proto__ = Davis.Request.prototype
-        } else {
-          req.__proto__ = Davis.Message.prototype
-        };
-        handler(req)
+        // the object that is pushed into the browser history looses its __proto__
+        var obj = event.state
+        obj.__proto__ = Davis[obj.type.replace(/^\w/, function($0) { return $0.toUpperCase(); })].prototype
+        handler(obj)
       } else {
         handler(Davis.Request.forPageLoad())
       };
