@@ -6,29 +6,36 @@
 
 Davis.pubsub = {
 
-  _subscriptions: {},
+  _subs: {},
 
-  lookupSubscriptions: function (name) {
-    return this._subscriptions[name]
+  lookupSubscribers: function (message) {
+    if (!this._subs[message.namespace]) this._subs[message.namespace] = {}
+    if (!this._subs[message.namespace][message.name]) this._subs[message.namespace][message.name] = []
+    return this._subs[message.namespace][message.name]
   },
 
   subscribe: function (eventName, handler) {
-    var handlers = this._subscriptions[eventName] || []
+    var self = this
+    var message = new Davis.Message(eventName)
+
+    var handlers = this.lookupSubscribers(message)
     handlers.push(handler)
-    this._subscriptions[eventName] = handlers;
+    this._subs[message.namespace][message.name] = handlers
+
+    return this
+  },
+
+  unsubscribe: function (eventName, handler) {
+    var message = new Davis.Message(eventName)
+    if (this._subs[message.namespace]) {
+      this._subs[message.namespace][message.name] = []
+    };
   },
 
   publish: function (name, data) {
-    var event = {
-      type: 'ev'
-      name: name,
-      data: data,
-      title: name,
-      path: ''
-    }
-
-    Davis.history.pushState(event)
+    var message = new Davis.Message(name, data)
+    Davis.history.pushState(message)
+    return this
   }
 
 };
-
