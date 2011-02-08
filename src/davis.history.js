@@ -52,7 +52,11 @@ Davis.history = (function () {
       if (event.state) {
         // the request that is pushed into the browser history looses its __proto__
         var req = event.state
-        req.__proto__ = Davis.Request.prototype
+        if (req.type == 'request') {
+          req.__proto__ = Davis.Request.prototype
+        } else {
+          req.__proto__ = Davis.Message.prototype
+        };
         handler(req)
       } else {
         handler(Davis.Request.forPageLoad())
