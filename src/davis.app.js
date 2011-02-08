@@ -112,21 +112,25 @@ Davis.App = (function () {
         }
       }
 
-      var handleEvent = function (event) {
-        self.lookupSubscriptions(event.name).forEach(function (subscriber) {
-          subscriber.call(event, event)
+      var handleMessage = function (message) {
+        self.trigger('lookupSubscriber', message)
+        self.lookupSubscribers(message).forEach(function (subscriber) {
+          subscriber.call(message, message)
         })
       }
 
       Davis.history.onChange(function (obj) {
-        if (obj.type === 'event') {
-          handleEvent(obj)
+        if (obj.type === 'message') {
+          handleMessage(obj)
         } else {
           handleRequest(obj)
         };
       });
 
       this
+        .bind('lookupSubscriber', function (message) {
+          self.settings.logger.info("published: " + message.toString());
+        })
         .bind('runRoute', function (request) {
           self.settings.logger.info("runRoute: " + request.toString());
         })
