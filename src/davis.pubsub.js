@@ -27,8 +27,12 @@ Davis.pubsub = {
 
   unsubscribe: function (eventName, handler) {
     var message = new Davis.Message(eventName)
-    if (this._subs[message.namespace]) {
-      this._subs[message.namespace][message.name] = []
+    if (message.name) {
+      if (this._subs[message.namespace]) {
+        this._subs[message.namespace][message.name] = []
+      };
+    } else {
+      delete this._subs[message.namespace]
     };
   },
 

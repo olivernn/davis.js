@@ -55,6 +55,19 @@ test("unsubscribing from a namespaced event", function () {
   
 })
 
+test("unsubscribing an entire namespace", function () {
+  reset()
+
+  Davis.pubsub.subscribe('foo', $.noop)
+  Davis.pubsub.subscribe('foo.bar', $.noop)
+  Davis.pubsub.subscribe('baz.bar', $.noop)
+
+  Davis.pubsub.unsubscribe('.bar')
+
+  equal(1, Davis.pubsub._subs.global.foo.length, "shouldn't unsubscrive from messages in other namespaces")
+  equal(undefined, Davis.pubsub._subs.bar, "should remove the whole namespace")
+})
+
 test("unsubscribe from a message that noone has subscribed to", function () {
   reset()
 
