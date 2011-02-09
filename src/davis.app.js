@@ -95,24 +95,35 @@ Davis.App = (function () {
                       .every(runFilterWith(request))
       }
 
-      var handleRequest = function (request) {
-        if (beforeFiltersPass(request)) {
-          self.trigger('lookupRoute', request)
-          var route = self.lookupRoute(request.method, request.path);
-          if (route) {
-            self.trigger('runRoute', request, route);
-            route.run(request);
-            self.lookupAfterFilter(request.method, request.path)
-                  .every(runFilterWith(request));
+      var handle = {
+        request: function (request) {
+          if (beforeFiltersPass(request)) {
+            self.trigger('lookupRoute', request)
+            var route = self.lookupRoute(request.method, request.path);
+            if (route) {
+              self.trigger('runRoute', request, route);
+              route.run(request);
+              self.lookupAfterFilter(request.method, request.path)
+                    .every(runFilterWith(request));
+            } else {
+              self.trigger('routeNotFound', request);
+            }
           } else {
-            self.trigger('routeNotFound', request);
+            self.trigger('requestHalted', request)
           }
-        } else {
-          self.trigger('requestHalted', request)
+        },
+
+        message: function (message) {
+          self.trigger('lookupSubscriber', message)
+          self.lookupSubscribers(message).forEach(function (subscriber) {
+            subscriber.call(message, message)
+          })
         }
       }
 
-      Davis.history.onChange(handleRequest);
+      Davis.history.onChange(function (obj) {
+        handle[obj.type](obj)
+      });
 
       this
         .bind('runRoute', function (request) {
@@ -129,7 +140,7 @@ Davis.App = (function () {
       this.trigger('start')
       this.running = true;
 
-      handleRequest(Davis.Request.forPageLoad())
+      handle.request(Davis.Request.forPageLoad())
 
     },
 
@@ -147,7 +158,7 @@ Davis.App = (function () {
    * including listener and event modules
    * @private
    */
-  }, Davis.listener, Davis.event);
+  }, Davis.listener, Davis.event, Davis.pubsub);
 
   /**
    * decorate the prototype with routing methods

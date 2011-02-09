@@ -31,6 +31,7 @@ Davis.Request = function (raw) {
   this.params = {};
   this.title = raw.title;
   this.queryString = raw.fullPath.split("?")[1];
+  this.type = 'request';
   this._staleCallback = function () {};
 
   if (this.queryString) {

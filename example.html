@@ -10,11 +10,13 @@
     <script src="/src/davis.js"></script>
     <script src="/src/davis.listener.js"></script>
     <script src="/src/davis.event.js"></script>
+    <script src="/src/davis.pubsub.js"></script>
     <script src="/src/davis.logger.js"></script>
     <script src="/src/davis.route.js"></script>
     <script src="/src/davis.router.js"></script>
     <script src="/src/davis.history.js"></script>
     <script src="/src/davis.request.js"></script>
+    <script src="/src/davis.message.js"></script>
     <script src="/src/davis.app.js"></script>
 
 <!--     <script src="/dist/davis-0.1.0.min.js" type="text/javascript" charset="utf-8"></script> -->
@@ -59,9 +61,18 @@
           })
           this.redirect('/bar')
         })
+
+        this.subscribe('blah', function (event) {
+          console.log('blah event', event)
+        })
+
+        this.subscribe('next.photoScroll', function (event) {
+          console.log('photoscroll', event)
+        })
       })
 
       app.start();
+
     </script>
 
   </head>
