@@ -11,7 +11,7 @@
  * @param {Function} config A function that will be run with a newly created Davis.App as its context,
  * should be used to set up app routes, subscriptions and settings etc.
  */
-Davis = function (confg) {
+Davis = function (config) {
   var app = new Davis.App ();
   config.call(app);
   return app
