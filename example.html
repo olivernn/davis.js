@@ -71,6 +71,10 @@
         })
       })
 
+      app.bind('unsupported', function () {
+        console.log('sucks to be you!')
+      })
+
       app.start();
 
     </script>

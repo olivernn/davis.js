@@ -39,6 +39,8 @@ Davis.event = {
    *
    *  __requestHalted__ : Triggered when a before filter halts the current request, the current request is passed as an argument
    *
+   *  __unsupported__ : Triggered when starting a Davis app in a browser that doesn't support html5 pushState
+   *
    * ### Example:
    *     app.bind('runRoute', function () {
    *       console.log('just about to run a route!')
