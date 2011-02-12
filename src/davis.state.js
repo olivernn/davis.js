@@ -29,12 +29,12 @@
  *     var message = new Davis.Message('foo.bar')
  *
  */
-Davis.Message = function (name, data) {
+Davis.State = function (name, data) {
   this.display = name;
   this.name = name.split('.')[0]
   this.namespace = name.split('.')[1] || 'global'
   this.data = data
-  this.type = 'message'
+  this.type = 'state'
 }
 
 /**
@@ -43,6 +43,6 @@ Davis.Message = function (name, data) {
  *
  * @returns {String} string representation of the request
  */
-Davis.Message.prototype.toString = function () {
-  return ["MESSAGE", this.display].join(' ')
+Davis.State.prototype.toString = function () {
+  return ["STATE", this.display].join(' ')
 }

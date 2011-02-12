@@ -8,23 +8,23 @@
 /**
  * Provides back button enabled publish subscribe functionality to a Davis.App.
  */
-Davis.pubsub = {
+Davis.stateMapper = {
 
   /**
    * Stores all subscription handlers
    * @private
    */
-  _subs: {},
+  _actions: {},
 
   /** ## app.lookupSubscribers
    * looks up and returns all handlers subscribed to the passed message.
    * @param {Davis.Message} message The message that you want to lookup subscribed handlers for
    * @returns {Array} handlers An array of handlers for the passed message, may be empty.
    */
-  lookupSubscribers: function (message) {
-    if (!this._subs[message.namespace]) this._subs[message.namespace] = {}
-    if (!this._subs[message.namespace][message.name]) this._subs[message.namespace][message.name] = []
-    return this._subs[message.namespace][message.name]
+  lookupStates: function (state) {
+    if (!this._actions[state.namespace]) this._actions[state.namespace] = {}
+    if (!this._actions[state.namespace][state.name]) this._actions[state.namespace][state.name] = []
+    return this._actions[state.namespace][state.name]
   },
 
   /**
@@ -38,22 +38,22 @@ Davis.pubsub = {
    *
    * ### Example
    *
-   *     app.subscribe('foo', function (msg) {
+   *     app.state('foo', function (msg) {
    *       // subscribed to the global message 'foo'
    *     })
    *     
-   *     app.subscribe('foo.bar', function (msg) {
+   *     app.state('foo.bar', function (msg) {
    *       // subscribe to the foo message in the bar namespace
    *     })
    *     
    */
-  subscribe: function (eventName, handler) {
+  state: function (stateName, entryAction) {
     var self = this
-    var message = new Davis.Message(eventName)
+    var state = new Davis.State(stateName)
 
-    var handlers = this.lookupSubscribers(message)
-    handlers.push(handler)
-    this._subs[message.namespace][message.name] = handlers
+    var actions = this.lookupStates(state)
+    actions.push(entryAction)
+    this._actions[state.namespace][state.name] = actions
 
     return this
   },
@@ -77,14 +77,14 @@ Davis.pubsub = {
    *     // unsubscribe from the whole bar message namespace
    *     app.unsubscribe('.bar')
    */
-  unsubscribe: function (eventName) {
-    var message = new Davis.Message(eventName)
-    if (message.name) {
-      if (this._subs[message.namespace]) {
-        this._subs[message.namespace][message.name] = []
+  clearState: function (stateName) {
+    var state = new Davis.State(stateName)
+    if (state.name) {
+      if (this._actions[state.namespace]) {
+        this._actions[state.namespace][state.name] = []
       };
     } else {
-      delete this._subs[message.namespace]
+      delete this._actions[state.namespace]
     };
   },
 
@@ -107,9 +107,9 @@ Davis.pubsub = {
    *     // publish a message with some associated dataeve
    *     app.publish('foo.bar', {"foo": "bar"})
    */
-  publish: function (name, data) {
-    var message = new Davis.Message(name, data)
-    Davis.history.pushState(message)
+  trans: function (stateName, data) {
+    var state = new Davis.State(stateName, data)
+    Davis.history.pushState(state)
     return this
   }
 

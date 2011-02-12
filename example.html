@@ -69,6 +69,16 @@
         this.subscribe('next.photoScroll', function (event) {
           console.log('photoscroll', event)
         })
+
+        this.state('show.photoScroll', function (state) {
+          state.replace('')
+        })
+
+        this.clearState('show.photoScroll')
+      })
+
+      app.trans('show.photoScroll', {
+        "id": 1
       })
 
       app.bind('unsupported', function () {

@@ -118,10 +118,10 @@ Davis.App = (function () {
           }
         },
 
-        message: function (message) {
-          self.trigger('lookupSubscriber', message)
-          self.lookupSubscribers(message).forEach(function (subscriber) {
-            subscriber.call(message, message)
+        state: function (state) {
+          self.trigger('lookupState', state)
+          self.lookupStates(state).forEach(function (action) {
+            action.call(state, state)
           })
         }
       }
@@ -163,7 +163,7 @@ Davis.App = (function () {
    * including listener and event modules
    * @private
    */
-  }, Davis.listener, Davis.event, Davis.pubsub);
+  }, Davis.listener, Davis.event, Davis.stateMapper);
 
   /**
    * decorate the prototype with routing methods
