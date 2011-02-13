@@ -10,13 +10,11 @@
     <script src="/src/davis.js"></script>
     <script src="/src/davis.listener.js"></script>
     <script src="/src/davis.event.js"></script>
-    <script src="/src/davis.pubsub.js"></script>
     <script src="/src/davis.logger.js"></script>
     <script src="/src/davis.route.js"></script>
     <script src="/src/davis.router.js"></script>
     <script src="/src/davis.history.js"></script>
     <script src="/src/davis.request.js"></script>
-    <script src="/src/davis.message.js"></script>
     <script src="/src/davis.app.js"></script>
 
 <!--     <script src="/dist/davis-0.1.0.min.js" type="text/javascript" charset="utf-8"></script> -->
@@ -45,8 +43,8 @@
           console.log('params:', this.params)
         })
 
-        this.get('/bar', function (req) {
-          console.log('params:', req)
+        this.get('/bar/:id', function (req) {
+          console.log(req)
         })
 
         this.post('/baz/:id', function () {
@@ -62,23 +60,9 @@
           this.redirect('/bar')
         })
 
-        this.subscribe('blah', function (event) {
-          console.log('blah event', event)
+        this.state('/photoscroll/:id', function (req) {
+          console.log(req)
         })
-
-        this.subscribe('next.photoScroll', function (event) {
-          console.log('photoscroll', event)
-        })
-
-        this.state('show.photoScroll', function (state) {
-          state.replace('')
-        })
-
-        this.clearState('show.photoScroll')
-      })
-
-      app.trans('show.photoScroll', {
-        "id": 1
       })
 
       app.bind('unsupported', function () {
@@ -93,7 +77,7 @@
   <body>
     <a href="/foo/hello/blah/asdfas?blah=123">foo</a>
     <a href="/foo/goodbye/blah/asdfas">foo1</a>
-    <a href="/bar">bar</a>
+    <a href="/bar/55">bar</a>
 
     <form action="/baz/555" method="post">
       <input type="text" name="name" value="" id="name">

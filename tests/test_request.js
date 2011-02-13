@@ -96,3 +96,20 @@ test("marking a request as stale", function () {
 
   ok(callbackCalled, "marking a request as stale should call the whenStale callback")
 })
+
+test("request has a location that the page url is changed too", function () {
+  var reloadableRequest = new Davis.Request ({
+    method: 'get',
+    fullPath: '/foo',
+    title: 'foo'
+  })
+
+  var nonReloadableRequest = new Davis.Request ({
+    method: 'state',
+    fullPath: '/bar',
+    title: 'bar'
+  })
+
+  equal(reloadableRequest.path, reloadableRequest.location(), "reloadable (GET, POST, PUT, DELETE) request location should match the path")
+  equal('', nonReloadableRequest.location(), "non reloadable requests should have a blank location")
+})

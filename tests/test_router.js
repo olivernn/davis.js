@@ -139,3 +139,27 @@ test("looking up a before filter with a path condition", function () {
   ok(callbackCalled, "calling the route should invoke its callback")
 })
 
+test("registering a state", function () {
+  var router = mockRouter()
+
+  router._routeCollection = []
+
+  router.state('/foo/:id', $.noop)
+
+  var state = router._routeCollection[0]
+  same(state, router.lookupRoute('state', '/foo/1'), "should store states as routes")
+})
+
+test("transitioning to a state", function () {
+  var router = mockRouter(),
+      req
+
+  Davis.history.onChange(function (r) {
+    req = r
+    start()
+  })
+
+  stop()
+  router.trans('/blah/2')
+  equal("/blah/2", req.path)
+})

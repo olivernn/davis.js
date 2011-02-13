@@ -12,7 +12,10 @@ test("binding and triggering the push state event", function () {
 
   Davis.history.pushState({
     title: 'foo',
-    path: '/bar.html'
+    path: '/bar.html',
+    location: function () {
+      return '/bar'
+    }
   });
 
   ok(callbackCalled, "callback should have been called")

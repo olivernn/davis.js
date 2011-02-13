@@ -52,7 +52,7 @@ Davis.history = (function () {
       if (event.state) {
         // the object that is pushed into the browser history looses its __proto__
         var obj = event.state
-        obj.__proto__ = Davis[obj.type.replace(/^\w/, function($0) { return $0.toUpperCase(); })].prototype
+        obj.__proto__ = Davis.Request.prototype
         handler(obj)
       } else {
         handler(Davis.Request.forPageLoad())
@@ -88,7 +88,7 @@ Davis.history = (function () {
    * and a path property will also be accepted.
    */
   var pushState = function (request) {
-    history.pushState(request, request.title, request.path);
+    history.pushState(request, request.title, request.location());
     pushStateHandlers.forEach(function (handler) {
       handler(request);
     });
@@ -105,7 +105,7 @@ Davis.history = (function () {
    * and a path property will also be accepted.
    */
   var replaceState = function (request) {
-    history.replaceState(request, request.title, request.path);
+    history.replaceState(request, request.title, request.historyPath);
     pushStateHandlers.forEach(function (handler) {
       handler(request);
     });

@@ -77,6 +77,26 @@ Davis.router = function () {
     self._routeCollection.push(new Davis.Route ('delete', path, handler))
   }
 
+  this.state = function (path, handler) {
+    self._routeCollection.push(new Davis.Route('state', path, handler))
+  }
+
+  this.trans = function (path, data) {
+    if (data) {
+      var fullPath = [path, decodeURIComponent($.param(data))].join('?')
+    } else {
+      var fullPath = path
+    };
+
+    var req = new Davis.Request({
+      method: 'state',
+      fullPath: fullPath,
+      title: ''
+    })
+
+    Davis.history.pushState(req)
+  }
+
   /**
    * Generating convinience methods for creating filters using Davis.Routes and methods to
    * lookup filters.

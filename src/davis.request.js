@@ -59,6 +59,7 @@ Davis.Request = function (raw) {
 
   if (Davis.Request.prev) Davis.Request.prev.makeStale();
   Davis.Request.prev = this;
+
 };
 
 /**
@@ -110,6 +111,13 @@ Davis.Request.prototype.whenStale = function (callback) {
  */
 Davis.Request.prototype.makeStale = function () {
   this._staleCallback();
+}
+
+/**
+ * ## request.location
+ */
+Davis.Request.prototype.location = function () {
+  return (this.method === 'state') ? '' : this.path
 }
 
 /**
