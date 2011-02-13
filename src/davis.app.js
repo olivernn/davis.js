@@ -100,34 +100,25 @@ Davis.App = (function () {
                       .every(runFilterWith(request))
       }
 
-      var handle = {
-        request: function (request) {
-          if (beforeFiltersPass(request)) {
-            self.trigger('lookupRoute', request)
-            var route = self.lookupRoute(request.method, request.path);
-            if (route) {
-              self.trigger('runRoute', request, route);
-              route.run(request);
-              self.lookupAfterFilter(request.method, request.path)
-                    .every(runFilterWith(request));
-            } else {
-              self.trigger('routeNotFound', request);
-            }
+      var handleRequest = function (request) {
+        if (beforeFiltersPass(request)) {
+          self.trigger('lookupRoute', request)
+          var route = self.lookupRoute(request.method, request.path);
+          if (route) {
+            self.trigger('runRoute', request, route);
+            route.run(request);
+            self.lookupAfterFilter(request.method, request.path)
+                  .every(runFilterWith(request));
           } else {
-            self.trigger('requestHalted', request)
+            self.trigger('routeNotFound', request);
           }
-        },
-
-        state: function (state) {
-          self.trigger('lookupState', state)
-          self.lookupStates(state).forEach(function (action) {
-            action.call(state, state)
-          })
+        } else {
+          self.trigger('requestHalted', request)
         }
       }
 
-      Davis.history.onChange(function (obj) {
-        handle[obj.type](obj)
+      Davis.history.onChange(function (req) {
+        handleRequest(req)
       });
 
       this
@@ -145,7 +136,7 @@ Davis.App = (function () {
       this.trigger('start')
       this.running = true;
 
-      handle.request(Davis.Request.forPageLoad())
+      handleRequest(Davis.Request.forPageLoad())
 
     },
 
@@ -163,7 +154,7 @@ Davis.App = (function () {
    * including listener and event modules
    * @private
    */
-  }, Davis.listener, Davis.event, Davis.stateMapper);
+  }, Davis.listener, Davis.event);
 
   /**
    * decorate the prototype with routing methods
