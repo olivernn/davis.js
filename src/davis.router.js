@@ -55,11 +55,24 @@
  *       // will run after all routes
  *     })
  *
+ * Another special kind of route, called state routes, are also generated using the router.  State routes
+ * are for requests that will not change the current page location.  Instead the page location will remain
+ * the same but the current state of the page has changed.  This allows for states which the server will not
+ * be expected to know about and support.
+ *
+ * ### Example
+ *
+ *     app.state('/foo/:id', function (req) {
+ *       // will run when the app transitions into the '/foo/:id' state.
+ *     })
+ *
+ * Using the `trans` method an app can transition to these kind of states without changing the url location.
  */
 Davis.router = function () {
   var self = this
 
   /**
+   * ## app.get, app.post, app.put
    * Generating convinience methods for creating Davis.Routes
    */
   var verbs = ['get', 'post', 'put'];
@@ -70,6 +83,7 @@ Davis.router = function () {
   })
 
   /**
+   * ## app.del
    * delete is a reserved word in javascript so use the `del` method to
    * creating a Davis.Route with a method of delete.
    */
@@ -77,10 +91,55 @@ Davis.router = function () {
     self._routeCollection.push(new Davis.Route ('delete', path, handler))
   }
 
+  /**
+   * ## app.state
+   * Adds a state route into the apps route collection.  These special kind of routes are not triggered
+   * by clicking links or submitting forms, instead they are triggered manually by calling `trans`.
+   *
+   * Routes added using the state method act in the same way as other routes except that they generate
+   * a route that is listening for requests that will not change the page location.
+   *
+   * @param {String} path The path for this route, this will never be seen in the url bar.
+   * @param {Function} handler The handler for this route, will be called with the request that triggered the route
+   *
+   * ### Example
+   *
+   *     app.state('/foo/:id', function (req) {
+   *       // will run when the app transitions into the '/foo/:id' state.
+   *     })
+   *
+   */
   this.state = function (path, handler) {
     self._routeCollection.push(new Davis.Route('state', path, handler))
   }
 
+  /**
+   * ## app.trans
+   * Transitions the app into the state identified by the passed path parameter.  This allows the app to
+   * enter states without changing the page path through a link click or form submit.  If there are handlers
+   * registered for this state, added by the `state` method, they will be triggered.
+   *
+   * This method generates a request with a method of 'state', in all other ways this request is identical
+   * to those that are generated when clicking links etc.
+   *
+   * States transitioned to using this method will not be able to be revisited directly with a page load as
+   * there is no url that represents the state.
+   *
+   * An optional second parameter can be passed which will be available to any handlers in the requests
+   * params object.
+   *
+   * @param {String} path The path that represents this state.  This will not be seen in the url bar.
+   * @param {Object} data Any additional data that should be sent with the request as params.
+   *
+   * ### Example
+   *
+   *     app.trans('/foo/1')
+   *     
+   *     app.trans('/foo/1', {
+   *       "bar": "baz"
+   *     })
+   *     
+   */
   this.trans = function (path, data) {
     if (data) {
       var fullPath = [path, decodeURIComponent($.param(data))].join('?')

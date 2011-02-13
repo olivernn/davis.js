@@ -26,7 +26,7 @@ Davis.Route = (function () {
  * Inside the callback function 'this' is bound to the request.
  *
  * @constructor
- * @param {String} method - This should be one of either 'get', 'post', 'put' or 'delete'
+ * @param {String} method - This should be one of either 'get', 'post', 'put', 'delete', 'before', 'after' or 'state'
  * @param {String} path - This string can contain place holders for variables, e.g. '/user/:id'
  * @param {Function} callback - A callback that will be called when a request matching both the path and method is triggered.
  *

@@ -193,6 +193,11 @@ routes and filters.
 <pre><code><span class="variable">start</span>: <span class="keyword">function</span> () {
       <span class="keyword">var</span> <span class="variable">self</span> = <span class="this">this</span>;
 
+      <span class="keyword">if</span> (!<span class="class">Davis</span>.<span class="variable">supported</span>()) {
+        <span class="this">this</span>.<span class="variable">trigger</span>(<span class="string">'unsupported'</span>)
+        <span class="keyword">return</span>
+      };
+
       <span class="keyword">var</span> <span class="variable">runFilterWith</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
         <span class="keyword">return</span> <span class="keyword">function</span> (<span class="variable">filter</span>) {
           <span class="keyword">var</span> <span class="variable">result</span> = <span class="variable">filter</span>.<span class="variable">run</span>(<span class="variable">request</span>, <span class="variable">request</span>);
@@ -222,7 +227,9 @@ routes and filters.
         }
       }
 
-      <span class="class">Davis</span>.<span class="variable">history</span>.<span class="variable">onChange</span>(<span class="variable">handleRequest</span>);
+      <span class="class">Davis</span>.<span class="variable">history</span>.<span class="variable">onChange</span>(<span class="keyword">function</span> (<span class="variable">req</span>) {
+        <span class="variable">handleRequest</span>(<span class="variable">req</span>)
+      });
 
       <span class="this">this</span>
         .<span class="variable">bind</span>(<span class="string">'runRoute'</span>, <span class="keyword">function</span> (<span class="variable">request</span>) {
@@ -293,6 +300,8 @@ to the callback function as the first parameter.</p>
 <p> <strong>routeNotFound</strong> : Triggered if no route for the current request can be found, the current request is passed as an arugment</p>
 
 <p> <strong>requestHalted</strong> : Triggered when a before filter halts the current request, the current request is passed as an argument</p>
+
+<p> <strong>unsupported</strong> : Triggered when starting a Davis app in a browser that doesn't support html5 pushState</p>
 
 <h3>Example:</h3>
 
@@ -398,7 +407,7 @@ and a path property will also be accepted.
 </td>
 <td class="code">
 <pre><code><span class="keyword">var</span> <span class="variable">pushState</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
-    <span class="variable">history</span>.<span class="variable">pushState</span>(<span class="variable">request</span>, <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">path</span>);
+    <span class="variable">history</span>.<span class="variable">pushState</span>(<span class="variable">request</span>, <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">location</span>());
     <span class="variable">pushStateHandlers</span>.<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">handler</span>) {
       <span class="variable">handler</span>(<span class="variable">request</span>);
     });
@@ -422,7 +431,7 @@ and a path property will also be accepted.
 </td>
 <td class="code">
 <pre><code><span class="keyword">var</span> <span class="variable">replaceState</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
-    <span class="variable">history</span>.<span class="variable">replaceState</span>(<span class="variable">request</span>, <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">path</span>);
+    <span class="variable">history</span>.<span class="variable">replaceState</span>(<span class="variable">request</span>, <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">historyPath</span>);
     <span class="variable">pushStateHandlers</span>.<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">handler</span>) {
       <span class="variable">handler</span>(<span class="variable">request</span>);
     });
@@ -573,6 +582,8 @@ to set the correct reqeust method.</p>
   <span class="this">this</span>.<span class="variable">params</span> = {};
   <span class="this">this</span>.<span class="variable">title</span> = <span class="variable">raw</span>.<span class="variable">title</span>;
   <span class="this">this</span>.<span class="variable">queryString</span> = <span class="variable">raw</span>.<span class="variable">fullPath</span>.<span class="variable">split</span>(&<span class="variable">quot</span>;?&<span class="variable">quot</span>;)[<span class="number integer">1</span>];
+  <span class="this">this</span>.<span class="variable">type</span> = <span class="string">'request'</span>;
+  <span class="this">this</span>.<span class="variable">_staleCallback</span> = <span class="keyword">function</span> () {};
 
   <span class="keyword">if</span> (<span class="this">this</span>.<span class="variable">queryString</span>) {
     <span class="this">this</span>.<span class="variable">queryString</span>.<span class="variable">split</span>(&<span class="variable">quot</span>;&<span class="variable">amp</span>;&<span class="variable">quot</span>;).<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">keyval</span>) {
@@ -596,6 +607,10 @@ to set the correct reqeust method.</p>
 
   <span class="this">this</span>.<span class="variable">method</span> = <span class="this">this</span>.<span class="variable">params</span>.<span class="variable">_method</span> || <span class="variable">raw</span>.<span class="variable">method</span>;
   <span class="this">this</span>.<span class="variable">path</span> = <span class="variable">raw</span>.<span class="variable">fullPath</span>.<span class="variable">replace</span>(<span class="regexp">/\?.+$/</span>, &<span class="variable">quot</span>;&<span class="variable">quot</span>;);
+
+  <span class="keyword">if</span> (<span class="class">Davis</span>.<span class="class">Request</span>.<span class="variable">prev</span>) <span class="class">Davis</span>.<span class="class">Request</span>.<span class="variable">prev</span>.<span class="variable">makeStale</span>();
+  <span class="class">Davis</span>.<span class="class">Request</span>.<span class="variable">prev</span> = <span class="this">this</span>;
+
 };</code></pre>
 </td>
 </tr>
@@ -634,6 +649,58 @@ submit generated has been replaced in the history stack.</p>
     <span class="variable">title</span>: <span class="this">this</span>.<span class="variable">title</span>
   }));
 };</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>request.whenStale</h2>
+
+<p>Adds a callback to be called when the request is stale.  A request becomes stale when it is no
+longer the current request, this normally occurs when a new request is triggered.  A request 
+can be marked as stale manually if required.</p>
+
+<p>Use the whenStale callback to 'teardown' the objects required for the current route, this gives
+a chance for views to hide themselves and unbind any event handlers etc.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Function</em>  callback A single callback that will be called when the request becomes stale.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="class">Request</span>.<span class="variable">prototype</span>.<span class="variable">whenStale</span> = <span class="keyword">function</span> (<span class="variable">callback</span>) {
+  <span class="this">this</span>.<span class="variable">_staleCallback</span> = <span class="variable">callback</span>;
+}</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>request.makeStale</h2>
+
+<p>Mark the request as stale.  This will cause the whenStale callback to be called.
+ </p>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="class">Request</span>.<span class="variable">prototype</span>.<span class="variable">makeStale</span> = <span class="keyword">function</span> () {
+  <span class="this">this</span>.<span class="variable">_staleCallback</span>();
+}</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>request.location</h2>
+
+<p>Returns the location or path that should be pushed onto the history stack, for most requests this
+will be the same as the path, however there is a special kind of request, with a method of state,
+that should not have any location added to the history stack.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>returns</strong>: <em>String</em>  string The location that the url bar should display and should be pushed onto the history stack for this request.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="class">Request</span>.<span class="variable">prototype</span>.<span class="variable">location</span> = <span class="keyword">function</span> () {
+  <span class="keyword">return</span> (<span class="this">this</span>.<span class="variable">method</span> === <span class="string">'state'</span>) ? <span class="string">''</span> : <span class="this">this</span>.<span class="variable">path</span>
+}</code></pre>
 </td>
 </tr>
 <tr class="code">
@@ -688,7 +755,7 @@ generated request is run.</p>
 
 <h2></h2>
 
-<ul><li><p><strong>param</strong>: <em>String</em>  method - This should be one of either 'get', 'post', 'put' or 'delete'</p></li><li><p><strong>param</strong>: <em>String</em>  path - This string can contain place holders for variables, e.g. '/user/:id'</p></li><li><p><strong>param</strong>: <em>Function</em>  callback - A callback that will be called when a request matching both the path and method is triggered.</p></li></ul>
+<ul><li><p><strong>param</strong>: <em>String</em>  method - This should be one of either 'get', 'post', 'put', 'delete', 'before', 'after' or 'state'</p></li><li><p><strong>param</strong>: <em>String</em>  path - This string can contain place holders for variables, e.g. '/user/:id'</p></li><li><p><strong>param</strong>: <em>Function</em>  callback - A callback that will be called when a request matching both the path and method is triggered.</p></li></ul>
 
 <h3>Example:</h3>
 
@@ -868,7 +935,19 @@ app.after(function (req) {
   // will run after all routes
 })</code></pre>
 
-<p> </p>
+<p>Another special kind of route, called state routes, are also generated using the router.  State routes
+are for requests that will not change the current page location.  Instead the page location will remain
+the same but the current state of the page has changed.  This allows for states which the server will not
+be expected to know about and support.</p>
+
+<h3>Example</h3>
+
+<pre><code>app.state('/foo/:id', function (req) {
+  // will run when the app transitions into the '/foo/:id' state.
+})</code></pre>
+
+<p>Using the <code>trans</code> method an app can transition to these kind of states without changing the url location.
+ </p>
 </td>
 <td class="code">
 <pre><code><span class="class">Davis</span>.<span class="variable">router</span> = <span class="keyword">function</span> () {
@@ -877,6 +956,8 @@ app.after(function (req) {
 </tr>
 <tr class="code">
 <td class="docs">
+<h2>app.get, app.post, app.put</h2>
+
 <p>Generating convinience methods for creating Davis.Routes
    </p>
 </td>
@@ -891,6 +972,8 @@ app.after(function (req) {
 </tr>
 <tr class="code">
 <td class="docs">
+<h2>app.del</h2>
+
 <p>delete is a reserved word in javascript so use the <code>del</code> method to
 creating a Davis.Route with a method of delete.
    </p>
@@ -898,6 +981,83 @@ creating a Davis.Route with a method of delete.
 <td class="code">
 <pre><code><span class="this">this</span>.<span class="variable">del</span> = <span class="keyword">function</span> (<span class="variable">path</span>, <span class="variable">handler</span>) {
     <span class="variable">self</span>.<span class="variable">_routeCollection</span>.<span class="variable">push</span>(<span class="keyword">new</span> <span class="class">Davis</span>.<span class="class">Route</span> (<span class="string">'delete'</span>, <span class="variable">path</span>, <span class="variable">handler</span>))
+  }</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>app.state</h2>
+
+<p>Adds a state route into the apps route collection.  These special kind of routes are not triggered
+by clicking links or submitting forms, instead they are triggered manually by calling <code>trans</code>.</p>
+
+<p>Routes added using the state method act in the same way as other routes except that they generate
+a route that is listening for requests that will not change the page location.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>String</em>  path The path for this route, this will never be seen in the url bar.</p></li><li><p><strong>param</strong>: <em>Function</em>  handler The handler for this route, will be called with the request that triggered the route</p></li></ul>
+
+<h3>Example</h3>
+
+<pre><code>app.state('/foo/:id', function (req) {
+  // will run when the app transitions into the '/foo/:id' state.
+})</code></pre>
+
+<p>   </p>
+</td>
+<td class="code">
+<pre><code><span class="this">this</span>.<span class="variable">state</span> = <span class="keyword">function</span> (<span class="variable">path</span>, <span class="variable">handler</span>) {
+    <span class="variable">self</span>.<span class="variable">_routeCollection</span>.<span class="variable">push</span>(<span class="keyword">new</span> <span class="class">Davis</span>.<span class="class">Route</span>(<span class="string">'state'</span>, <span class="variable">path</span>, <span class="variable">handler</span>))
+  }</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>app.trans</h2>
+
+<p>Transitions the app into the state identified by the passed path parameter.  This allows the app to
+enter states without changing the page path through a link click or form submit.  If there are handlers
+registered for this state, added by the <code>state</code> method, they will be triggered.</p>
+
+<p>This method generates a request with a method of 'state', in all other ways this request is identical
+to those that are generated when clicking links etc.</p>
+
+<p>States transitioned to using this method will not be able to be revisited directly with a page load as
+there is no url that represents the state.</p>
+
+<p>An optional second parameter can be passed which will be available to any handlers in the requests
+params object.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>String</em>  path The path that represents this state.  This will not be seen in the url bar.</p></li><li><p><strong>param</strong>: <em>Object</em>  data Any additional data that should be sent with the request as params.</p></li></ul>
+
+<h3>Example</h3>
+
+<pre><code>app.trans('/foo/1')
+
+app.trans('/foo/1', {
+  "bar": "baz"
+})</code></pre>
+
+<p>   </p>
+</td>
+<td class="code">
+<pre><code><span class="this">this</span>.<span class="variable">trans</span> = <span class="keyword">function</span> (<span class="variable">path</span>, <span class="variable">data</span>) {
+    <span class="keyword">if</span> (<span class="variable">data</span>) {
+      <span class="keyword">var</span> <span class="variable">fullPath</span> = [<span class="variable">path</span>, <span class="variable">decodeURIComponent</span>($.<span class="variable">param</span>(<span class="variable">data</span>))].<span class="variable">join</span>(<span class="string">'?'</span>)
+    } <span class="keyword">else</span> {
+      <span class="keyword">var</span> <span class="variable">fullPath</span> = <span class="variable">path</span>
+    };
+
+    <span class="keyword">var</span> <span class="variable">req</span> = <span class="keyword">new</span> <span class="class">Davis</span>.<span class="class">Request</span>({
+      <span class="variable">method</span>: <span class="string">'state'</span>,
+      <span class="variable">fullPath</span>: <span class="variable">fullPath</span>,
+      <span class="variable">title</span>: <span class="string">''</span>
+    })
+
+    <span class="class">Davis</span>.<span class="variable">history</span>.<span class="variable">pushState</span>(<span class="variable">req</span>)
   }</code></pre>
 </td>
 </tr>

@@ -115,6 +115,11 @@ Davis.Request.prototype.makeStale = function () {
 
 /**
  * ## request.location
+ * Returns the location or path that should be pushed onto the history stack, for most requests this
+ * will be the same as the path, however there is a special kind of request, with a method of state,
+ * that should not have any location added to the history stack.
+ *
+ * @returns {String} string The location that the url bar should display and should be pushed onto the history stack for this request.
  */
 Davis.Request.prototype.location = function () {
   return (this.method === 'state') ? '' : this.path
