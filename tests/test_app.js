@@ -25,3 +25,19 @@ test("passing arguments to a plugin", function () {
 
   equal("oliver", app.name)
 })
+
+test("adding helpers to requests", function () {
+  var app = getApp()
+
+  app.helpers({
+    foo: "bar"
+  })
+
+  var req = new Davis.Request({
+    title: "asd",
+    method: "asdf",
+    fullPath: "asdf"
+  })
+
+  equal('bar', req.foo)
+})

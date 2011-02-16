@@ -54,6 +54,12 @@ Davis.App = (function () {
       plugin.apply(this, Array.prototype.slice.call(arguments, 1))
     },
 
+    helpers: function (helpers) {
+      for (property in helpers) {
+        if (helpers.hasOwnProperty(property)) Davis.Request.prototype[property] = helpers[property]
+      }
+    },
+
     /**
      * ## app.settings
      * Settings for the app.  These may be overriden directly or by using the configure
