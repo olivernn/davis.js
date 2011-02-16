@@ -97,6 +97,31 @@ test("marking a request as stale", function () {
   ok(callbackCalled, "marking a request as stale should call the whenStale callback")
 })
 
+test("passing the next request in to the whenStale callback", function () {
+  var request = new Davis.Request ({
+    method: 'get',
+    fullPath: '/foo',
+    title: 'foo'
+  })
+
+  var callbackReq
+
+  request.whenStale(function (nextReq) {
+    callbackReq = nextReq
+    start()
+  })
+
+  stop()
+
+  var nextRequest = new Davis.Request ({
+    method: 'get',
+    fullPath: '/foo',
+    title: 'foo'
+  })
+
+  same(callbackReq, nextRequest, "the next request should be passed as a parameter to the when stale callback")
+})
+
 test("request has a location that the page url is changed too", function () {
   var reloadableRequest = new Davis.Request ({
     method: 'get',

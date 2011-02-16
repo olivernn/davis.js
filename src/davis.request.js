@@ -57,7 +57,7 @@ Davis.Request = function (raw) {
   this.method = this.params._method || raw.method;
   this.path = raw.fullPath.replace(/\?.+$/, "");
 
-  if (Davis.Request.prev) Davis.Request.prev.makeStale();
+  if (Davis.Request.prev) Davis.Request.prev.makeStale(this);
   Davis.Request.prev = this;
 
 };
@@ -94,12 +94,23 @@ Davis.Request.prototype.redirect = function (path) {
  * ## request.whenStale
  * Adds a callback to be called when the request is stale.  A request becomes stale when it is no
  * longer the current request, this normally occurs when a new request is triggered.  A request 
- * can be marked as stale manually if required.
+ * can be marked as stale manually if required.  The callback passed to whenStale will be called
+ * with the new request that is making the current request stale.
  *
  * Use the whenStale callback to 'teardown' the objects required for the current route, this gives
  * a chance for views to hide themselves and unbind any event handlers etc.
  *
  * @param {Function} callback A single callback that will be called when the request becomes stale.
+ *
+ * ### Example:
+ *     this.get('/foo', function (req) {
+ *       var fooView = new FooView ()
+ *       fooView.render() // display the foo view
+ *       req.whenStale(function (nextReq) {
+ *         fooView.remove() // stop displaying foo view and unbind any events
+ *       })
+ *     })
+ *
  */
 Davis.Request.prototype.whenStale = function (callback) {
   this._staleCallback = callback;
@@ -108,9 +119,11 @@ Davis.Request.prototype.whenStale = function (callback) {
 /**
  * ## request.makeStale
  * Mark the request as stale.  This will cause the whenStale callback to be called.
+ *
+ * @param {Davis.Request} req The next request that has been recieved.
  */
-Davis.Request.prototype.makeStale = function () {
-  this._staleCallback();
+Davis.Request.prototype.makeStale = function (req) {
+  this._staleCallback.call(req, req);
 }
 
 /**
