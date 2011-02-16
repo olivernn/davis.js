@@ -1,11 +1,7 @@
 module("Davis.App")
 
-function getApp () {
-  return new Davis.App
-}
-
 test("using a simple plugin", function () {
-  var app = getApp()
+  var app = factory('app')
   var plugin = function () {
     this.foo = "bar"
   }
@@ -16,7 +12,7 @@ test("using a simple plugin", function () {
 })
 
 test("passing arguments to a plugin", function () {
-  var app = getApp()
+  var app = factory('app')
   var plugin = function (name) {
     this.name = name
   }
@@ -27,17 +23,12 @@ test("passing arguments to a plugin", function () {
 })
 
 test("adding helpers to requests", function () {
-  var app = getApp()
+  var app = factory('app')
 
   app.helpers({
     foo: "bar"
   })
 
-  var req = new Davis.Request({
-    title: "asd",
-    method: "asdf",
-    fullPath: "asdf"
-  })
-
+  var req = factory('request')
   equal('bar', req.foo)
 })

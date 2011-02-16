@@ -1,11 +1,7 @@
 module("Request Module");
 
 test("request without any params", function () {
-  var request = new Davis.Request ({
-    method: 'get',
-    fullPath: '/foo',
-    title: 'foo'
-  });
+  var request = factory('request')
 
   equal('get', request.method, "should store the request method");
   equal('/foo', request.path, "should store the request path");
@@ -15,11 +11,10 @@ test("request without any params", function () {
 });
 
 test("request with params", function () {
-  var request = new Davis.Request({
+  var request = factory('request', {
     method: 'post',
-    fullPath: '/foo?bar=baz',
-    title: 'foo'
-  });
+    fullPath: '/foo?bar=baz'
+  })
 
   equal('post', request.method, "should store the request method");
   equal('/foo', request.path, "should store the path without any of the query params");
@@ -29,30 +24,25 @@ test("request with params", function () {
 });
 
 test("convert request to readable string", function () {
-  var request = new Davis.Request({
+  var request = factory('request', {
     method: 'post',
-    fullPath: '/foo?bar=baz',
-    title: 'foo'
-  });
+    fullPath: '/foo?bar=baz'
+  })
 
   equal('POST /foo', request.toString(), "should include the method and the fullPath")
 })
 
 test("using _method param will set the method of the request", function () {
-  var request = new Davis.Request({
-    method: 'post',
+  var request = factory('request', {
     fullPath: '/foo?_method=put&name=bob',
-    title: 'foo'
   });
 
   equal('put', request.method, "should use the _method param to set the requests method")
 })
 
 test("parsing rails style nested params", function () {
-  var request = new Davis.Request({
-    method: 'post',
-    fullPath: '/foo?note[name]=123&note[title]=asdf',
-    title: 'foo'
+  var request = factory('request', {
+    fullPath: '/foo?note[name]=123&note[title]=asdf'
   })
 
   same({note: {
@@ -70,11 +60,7 @@ test("generating a request for the initial page load", function () {
 })
 
 test("adding a whenStale callback", function () {
-  var request = new Davis.Request ({
-    method: 'get',
-    fullPath: '/foo',
-    title: 'foo'
-  });
+  var request = factory('request')
 
   var staleCallback = function () {};
   request.whenStale(staleCallback)
@@ -82,11 +68,7 @@ test("adding a whenStale callback", function () {
 })
 
 test("marking a request as stale", function () {
-  var request = new Davis.Request ({
-    method: 'get',
-    fullPath: '/foo',
-    title: 'foo'
-  });
+  var request = factory('request')
   var callbackCalled = false;
 
   request.whenStale(function () {
@@ -98,12 +80,7 @@ test("marking a request as stale", function () {
 })
 
 test("passing the next request in to the whenStale callback", function () {
-  var request = new Davis.Request ({
-    method: 'get',
-    fullPath: '/foo',
-    title: 'foo'
-  })
-
+  var request = factory('request')
   var callbackReq
 
   request.whenStale(function (nextReq) {
@@ -112,27 +89,15 @@ test("passing the next request in to the whenStale callback", function () {
   })
 
   stop()
-
-  var nextRequest = new Davis.Request ({
-    method: 'get',
-    fullPath: '/foo',
-    title: 'foo'
-  })
+  var nextRequest = factory('request')
 
   same(callbackReq, nextRequest, "the next request should be passed as a parameter to the when stale callback")
 })
 
 test("request has a location that the page url is changed too", function () {
-  var reloadableRequest = new Davis.Request ({
-    method: 'get',
-    fullPath: '/foo',
-    title: 'foo'
-  })
-
-  var nonReloadableRequest = new Davis.Request ({
-    method: 'state',
-    fullPath: '/bar',
-    title: 'bar'
+  var reloadableRequest = factory('request')
+  var nonReloadableRequest = factory('request', {
+    method: 'state'
   })
 
   equal(reloadableRequest.path, reloadableRequest.location(), "reloadable (GET, POST, PUT, DELETE) request location should match the path")

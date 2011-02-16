@@ -1,7 +1,7 @@
 module('Davis.Route');
 
 test("converting a string path into a regex", function () {
-  var route = new Davis.Route('get', '/foo');
+  var route = factory('route')
 
   ok((route.path instanceof RegExp), "should convert the path into a regular expression if it isn't already one");
   ok(route.path.test('/foo'), "path regexp should match the right paths")
@@ -11,7 +11,9 @@ test("converting a string path into a regex", function () {
 })
 
 test("capturing the param names from a route", function () {
-  var route = new Davis.Route('get', '/foo/:foo_id/bar/:bar_id');
+  var route = factory('route', {
+    path: '/foo/:foo_id/bar/:bar_id'
+  })
 
   ok(2, route.paramNames.length, "should have an entry for each param name in the path");
   equal('foo_id', route.paramNames[0], "should capture the param names in the order that they appear")
@@ -23,9 +25,11 @@ test("capturing the param names from a route", function () {
 test('inoking a routes callback', function () {
   var routeRan = false;
 
-  var route = new Davis.Route('get', '/foo', function () {
-    routeRan = true;
-    return "foo"
+  var route = factory('route', {
+    callback: function () {
+      routeRan = true
+      return "foo"
+    }
   })
 
   var response = route.run({
