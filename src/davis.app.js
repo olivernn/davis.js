@@ -72,12 +72,18 @@ Davis.App = (function () {
      *
      * `logger` is the object that the app will use to log through.
      *
+     * `throwErrors` decides whether or not any errors will be caugth by Davis.  If this is set to true
+     * errors will be thrown so that the request will not be handled by JavaScript, the server will have
+     * to provide a response.  When set to false errors in a route will be caught and the server will not
+     * receive the request.
+     *
      * @see #configure
      */
     settings: {
       linkSelector: 'a',
       formSelector: 'form',
-      logger: Davis.logger
+      logger: Davis.logger,
+      throwErrors: true
     },
 
     /**
@@ -116,7 +122,15 @@ Davis.App = (function () {
           var route = self.lookupRoute(request.method, request.path);
           if (route) {
             self.trigger('runRoute', request, route);
-            route.run(request);
+
+            try {
+              route.run(request)
+            } catch (error) {
+              self.trigger('routeError', request, route, error)
+              self.settings.logger.error(error.message, error.stack)
+              if (self.settings.throwErrors) throw(error)
+            }
+
             self.lookupAfterFilter(request.method, request.path)
                   .every(runFilterWith(request));
           } else {
