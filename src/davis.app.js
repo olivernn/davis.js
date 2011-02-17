@@ -172,6 +172,7 @@ Davis.App = (function () {
     stop: function () {
       this.unlisten();
       this.trigger('stop')
+      this.running = false
     }
 
   /**
