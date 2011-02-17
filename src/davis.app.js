@@ -50,10 +50,28 @@ Davis.App = (function () {
       config.call(this.settings);
     },
 
+    /**
+     * ## app.use
+     * Method to include a plugin in this app.  A plugin is just a function that will be evaluated in the
+     * context of the app.
+     *
+     * @param {Function} plugin - The plugin to use
+     *
+     * ### Example:
+     *     app.use(Davis.title)
+     *
+     */
     use: function (plugin) {
       plugin.apply(this, Array.prototype.slice.call(arguments, 1))
     },
 
+    /**
+     * ## app.helpers
+     * Method to add helper properties to all requests in the application.  Helpers will be added to the
+     * Davis.Request.prototype.  Care should be taken not to override any existing Davis.Request methods.
+     *
+     * @param {Object} helpers - An object containing helpers to mixin to the request
+     */
     helpers: function (helpers) {
       for (property in helpers) {
         if (helpers.hasOwnProperty(property)) Davis.Request.prototype[property] = helpers[property]
