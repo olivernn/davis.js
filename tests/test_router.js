@@ -48,7 +48,7 @@ test("looking up a before filter with no path condition", function () {
   var filters = router.lookupBeforeFilter('get', '/foo')
   var callbackCalled = false;
 
-  equal(filters.length, 0, "should return an empty array if there are no filters")
+  empty(filters, "should return an empty array if there are no filters")
 
   router.before(function () {
     callbackCalled = true;
@@ -69,14 +69,14 @@ test("looking up a before filter with a path condition", function () {
   var filters = router.lookupBeforeFilter('get', '/foo')
   var callbackCalled = false;
 
-  equal(filters.length, 0, "should return an empty array if there are no filters")
+  empty(filters, "should return an empty array if there are no filters")
 
   router.before('/foo', function () {
     callbackCalled = true;
   });
 
   filters = router.lookupBeforeFilter('get', '/bar')
-  equal(filters.length, 0, "should return an empty array if the filter doesn't match")
+  empty(filters, "should return an empty array if the filter doesn't match")
 
   filters = router.lookupBeforeFilter('get', '/foo')
 
@@ -114,14 +114,14 @@ test("looking up a before filter with a path condition", function () {
   var filters = router.lookupAfterFilter('get', '/foo')
   var callbackCalled = false;
 
-  equal(filters.length, 0, "should return an empty array if there are no filters")
+  empty(filters, "should return an empty array if there are no filters")
 
   router.after('/foo', function () {
     callbackCalled = true;
   });
 
   filters = router.lookupAfterFilter('get', '/bar')
-  equal(filters.length, 0, "should return an empty array if the filter doesn't match")
+  empty(filters, "should return an empty array if the filter doesn't match")
 
   filters = router.lookupAfterFilter('get', '/foo')
 

@@ -7,7 +7,7 @@ test("converting a string path into a regex", function () {
   ok(route.path.test('/foo'), "path regexp should match the right paths")
   ok(!route.path.test('/bar'), "path regexp should not match the wrong paths")
   ok(route.path.test("/foo"))
-  equal(0, route.paramNames.length, "should have no param names")
+  empty(route.paramNames, "should have no param names")
 })
 
 test("capturing the param names from a route", function () {
