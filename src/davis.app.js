@@ -143,6 +143,7 @@ Davis.App = (function () {
 
             try {
               route.run(request)
+              self.trigger('routeComplete', request, route)
             } catch (error) {
               self.trigger('routeError', request, route, error)
               self.settings.logger.error(error.message, error.stack)
