@@ -1,4 +1,4 @@
-Davis.googleAnalytics = function (asyncTracker) {
+Davis.googleAnalytics = function () {
   var shouldTrack = true
 
   this.bind('routeComplete', function (req) {
@@ -12,7 +12,7 @@ Davis.googleAnalytics = function (asyncTracker) {
     },
 
     track: function () {
-      if (asyncTracker && this.method == 'get') asyncTracker.push(['_trackPageview', this.path])
+      if (_gaq && this.method == 'get') _gaq.push(['_trackPageview', this.path])
     }
   })
 }
