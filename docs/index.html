@@ -139,14 +139,56 @@ are picked up and used.</p>
 <h3>Example:</h3>
 
 <pre><code>app.configure(function () {
-  this.linkSelector: 'a.davis'
-  this.formSelector: 'form.davis'
+  this.linkSelector = 'a.davis'
+  this.formSelector = 'form.davis'
 })
  </code></pre>
 </td>
 <td class="code">
 <pre><code><span class="variable">configure</span>: <span class="keyword">function</span> (<span class="variable">config</span>) {
       <span class="variable">config</span>.<span class="variable">call</span>(<span class="this">this</span>.<span class="variable">settings</span>);
+    },</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>app.use</h2>
+
+<p>Method to include a plugin in this app.  A plugin is just a function that will be evaluated in the
+context of the app.</p>
+
+<h2></h2>
+
+<ul><li><strong>param</strong>: <em>Function</em>  plugin - The plugin to use</li></ul>
+
+<h3>Example:</h3>
+
+<pre><code>app.use(Davis.title)
+
+ </code></pre>
+</td>
+<td class="code">
+<pre><code><span class="variable">use</span>: <span class="keyword">function</span> (<span class="variable">plugin</span>) {
+      <span class="variable">plugin</span>.<span class="variable">apply</span>(<span class="this">this</span>, <span class="class">Array</span>.<span class="variable">prototype</span>.<span class="variable">slice</span>.<span class="variable">call</span>(<span class="variable">arguments</span>, <span class="number integer">1</span>))
+    },</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>app.helpers</h2>
+
+<p>Method to add helper properties to all requests in the application.  Helpers will be added to the
+Davis.Request.prototype.  Care should be taken not to override any existing Davis.Request methods.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Object</em>  helpers - An object containing helpers to mixin to the request</p><p> </p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="variable">helpers</span>: <span class="keyword">function</span> (<span class="variable">helpers</span>) {
+      <span class="keyword">for</span> (<span class="variable">property</span> <span class="keyword">in</span> <span class="variable">helpers</span>) {
+        <span class="keyword">if</span> (<span class="variable">helpers</span>.<span class="variable">hasOwnProperty</span>(<span class="variable">property</span>)) <span class="class">Davis</span>.<span class="class">Request</span>.<span class="variable">prototype</span>[<span class="variable">property</span>] = <span class="variable">helpers</span>[<span class="variable">property</span>]
+      }
     },</code></pre>
 </td>
 </tr>
@@ -164,6 +206,11 @@ Davis to respond to.  These links will not trigger a normal http request.</p>
 
 <p><code>logger</code> is the object that the app will use to log through.</p>
 
+<p><code>throwErrors</code> decides whether or not any errors will be caugth by Davis.  If this is set to true
+errors will be thrown so that the request will not be handled by JavaScript, the server will have
+to provide a response.  When set to false errors in a route will be caught and the server will not
+receive the request.</p>
+
 <ul><li><strong>se</strong>: <em>e</em>
 #configure
  </li></ul>
@@ -172,7 +219,8 @@ Davis to respond to.  These links will not trigger a normal http request.</p>
 <pre><code><span class="variable">settings</span>: {
       <span class="variable">linkSelector</span>: <span class="string">'a'</span>,
       <span class="variable">formSelector</span>: <span class="string">'form'</span>,
-      <span class="variable">logger</span>: <span class="class">Davis</span>.<span class="variable">logger</span>
+      <span class="variable">logger</span>: <span class="class">Davis</span>.<span class="variable">logger</span>,
+      <span class="variable">throwErrors</span>: <span class="variable">true</span>
     },</code></pre>
 </td>
 </tr>
@@ -216,7 +264,16 @@ routes and filters.
           <span class="keyword">var</span> <span class="variable">route</span> = <span class="variable">self</span>.<span class="variable">lookupRoute</span>(<span class="variable">request</span>.<span class="variable">method</span>, <span class="variable">request</span>.<span class="variable">path</span>);
           <span class="keyword">if</span> (<span class="variable">route</span>) {
             <span class="variable">self</span>.<span class="variable">trigger</span>(<span class="string">'runRoute'</span>, <span class="variable">request</span>, <span class="variable">route</span>);
-            <span class="variable">route</span>.<span class="variable">run</span>(<span class="variable">request</span>);
+
+            <span class="keyword">try</span> {
+              <span class="variable">route</span>.<span class="variable">run</span>(<span class="variable">request</span>)
+              <span class="variable">self</span>.<span class="variable">trigger</span>(<span class="string">'routeComplete'</span>, <span class="variable">request</span>, <span class="variable">route</span>)
+            } <span class="keyword">catch</span> (<span class="variable">error</span>) {
+              <span class="variable">self</span>.<span class="variable">trigger</span>(<span class="string">'routeError'</span>, <span class="variable">request</span>, <span class="variable">route</span>, <span class="variable">error</span>)
+              <span class="variable">self</span>.<span class="variable">settings</span>.<span class="variable">logger</span>.<span class="variable">error</span>(<span class="variable">error</span>.<span class="variable">message</span>, <span class="variable">error</span>.<span class="variable">stack</span>)
+              <span class="keyword">if</span> (<span class="variable">self</span>.<span class="variable">settings</span>.<span class="variable">throwErrors</span>) <span class="keyword">throw</span>(<span class="variable">error</span>)
+            }
+
             <span class="variable">self</span>.<span class="variable">lookupAfterFilter</span>(<span class="variable">request</span>.<span class="variable">method</span>, <span class="variable">request</span>.<span class="variable">path</span>)
                   .<span class="variable">every</span>(<span class="variable">runFilterWith</span>(<span class="variable">request</span>));
           } <span class="keyword">else</span> {
@@ -263,6 +320,7 @@ apps settings.
 <pre><code><span class="variable">stop</span>: <span class="keyword">function</span> () {
       <span class="this">this</span>.<span class="variable">unlisten</span>();
       <span class="this">this</span>.<span class="variable">trigger</span>(<span class="string">'stop'</span>)
+      <span class="this">this</span>.<span class="variable">running</span> = <span class="variable">false</span>
     }</code></pre>
 </td>
 </tr><tr class="filename"><td><h2 id="src/davis.event.js"><a href="#">davis.event</a></h2></td><td>src/davis.event.js</td></tr><tr class="code">
