@@ -42,8 +42,8 @@ Davis.App = (function () {
      *
      * ### Example:
      *     app.configure(function () {
-     *       this.linkSelector: 'a.davis'
-     *       this.formSelector: 'form.davis'
+     *       this.linkSelector = 'a.davis'
+     *       this.formSelector = 'form.davis'
      *     })
      */
     configure: function (config) {
