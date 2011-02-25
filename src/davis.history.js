@@ -105,7 +105,7 @@ Davis.history = (function () {
    * and a path property will also be accepted.
    */
   var replaceState = function (request) {
-    history.replaceState(request, request.title, request.historyPath);
+    history.replaceState(request, request.title, request.location());
     pushStateHandlers.forEach(function (handler) {
       handler(request);
     });
