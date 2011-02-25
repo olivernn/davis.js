@@ -29,7 +29,7 @@ Davis.googleAnalytics = function () {
    * @private
    */
   this.bind('routeComplete', function (req) {
-    if (shouldTrack) req.track()
+    if (shouldTrack && req.method == 'get') req.track()
     shouldTrack = true
   })
 
@@ -47,7 +47,7 @@ Davis.googleAnalytics = function () {
      * Track this request in google analytics
      */
     track: function () {
-      if (_gaq && this.method == 'get') _gaq.push(['_trackPageview', this.path])
+      if (_gaq) _gaq.push(['_trackPageview', this.path])
     }
   })
 }
