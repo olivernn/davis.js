@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1
+
+* fixed bug with `request.redirect` so that the browser url is set correctly.
+
 ## 0.3.0
 
 * Added `app.use` to use plugins in a Davis.App
