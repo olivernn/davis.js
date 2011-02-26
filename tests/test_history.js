@@ -2,23 +2,44 @@ module('History Module');
 
 test("binding and triggering the push state event", function () {
 
-  var callbackCalled = false;
+  var callbackCount = 0;
 
   Davis.history.onChange(function (data) {
-    callbackCalled = true;
+    callbackCount++
   })
 
-  ok(!callbackCalled, "callback shouldn't have been called yet")
+  ok(!callbackCount, "callback shouldn't have been called yet")
 
-  Davis.history.pushState({
-    title: 'foo',
-    path: '/bar.html',
-    location: function () {
-      return '/bar'
-    }
-  });
+  Davis.history.pushState(factory('request'));
+  ok(callbackCount, "callback should have been called")
+  resetLocation()
 
-  ok(callbackCalled, "callback should have been called")
+  Davis.history.replaceState(factory('request'));
+  equal(2, callbackCount, "call back should have been called again for replace state")
+
+  resetLocation()
+})
+
+test("url should be changed to the requests url on pushState", function () {
+  var req1= factory('request', {
+    fullPath: "/eggs"
+  })
+
+  Davis.history.pushState(req1)
+  currentPathname(req1.location(), "location pathname should be equal to request location")
+
+  resetLocation()
+})
+
+test("url should be changed to the requests url on replace state", function () {
+  var req2 = factory('request', {
+    fullPath: "/ham"
+  })
+
+  Davis.history.replaceState(req2)
+  currentPathname(req2.location(), "location pathname should be equal to request location")
+
+  resetLocation()
 })
 
 test("binding and triggering the pop state event", function () {
@@ -36,5 +57,6 @@ test("binding and triggering the pop state event", function () {
   setTimeout(function () {
     window.history.back(1);
     ok(callbackCalled, "callback should have been called")
+    resetLocation()
   }, 101)
 })
