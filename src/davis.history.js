@@ -54,8 +54,6 @@ Davis.history = (function () {
         var obj = event.state
         obj.__proto__ = Davis.Request.prototype
         handler(obj)
-      } else {
-        handler(Davis.Request.forPageLoad())
       };
     }
   }
