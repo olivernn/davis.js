@@ -17,6 +17,8 @@ Davis.history = (function () {
    */
   var pushStateHandlers = [];
 
+  var firstPop = true;
+
   /**
    * Add a handler to the push state event.  This event is not a native event but is fired
    * every time a call to pushState is called.
@@ -54,7 +56,10 @@ Davis.history = (function () {
         var obj = event.state
         obj.__proto__ = Davis.Request.prototype
         handler(obj)
+      } else {
+        if (!firstPop) handler(Davis.Request.forPageLoad())
       };
+      firstPop = false
     }
   }
 
