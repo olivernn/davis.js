@@ -95,13 +95,18 @@ Davis.App = (function () {
      * to provide a response.  When set to false errors in a route will be caught and the server will not
      * receive the request.
      *
+     * `generateRequestOnPageLoad determines whether a request should be generated for the initial page load.
+     * by default this is set to true so that a Davis.Request will be generated with the path of the current
+     * page.  Setting this to false will prevent a request being passed to your app for the inital page load.
+     *
      * @see #configure
      */
     settings: {
       linkSelector: 'a',
       formSelector: 'form',
       logger: Davis.logger,
-      throwErrors: true
+      throwErrors: true,
+      generateRequestOnPageLoad: true
     },
 
     /**
@@ -179,7 +184,7 @@ Davis.App = (function () {
       this.trigger('start')
       this.running = true;
 
-      handleRequest(Davis.Request.forPageLoad())
+      if (this.settings.generateRequestOnPageLoad) handleRequest(Davis.Request.forPageLoad())
 
     },
 
