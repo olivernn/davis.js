@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.2
+
+* Fixed bug which caused the initial page load to trigger two requests.
+* Made the initial request for the page load configurable, by default it is on.
+
 ## 0.3.1
 
 * fixed bug with `request.redirect` so that the browser url is set correctly.
