@@ -211,6 +211,10 @@ errors will be thrown so that the request will not be handled by JavaScript, the
 to provide a response.  When set to false errors in a route will be caught and the server will not
 receive the request.</p>
 
+<p>`generateRequestOnPageLoad determines whether a request should be generated for the initial page load.
+by default this is set to true so that a Davis.Request will be generated with the path of the current
+page.  Setting this to false will prevent a request being passed to your app for the inital page load.</p>
+
 <ul><li><strong>se</strong>: <em>e</em>
 #configure
  </li></ul>
@@ -220,7 +224,8 @@ receive the request.</p>
       <span class="variable">linkSelector</span>: <span class="string">'a'</span>,
       <span class="variable">formSelector</span>: <span class="string">'form'</span>,
       <span class="variable">logger</span>: <span class="class">Davis</span>.<span class="variable">logger</span>,
-      <span class="variable">throwErrors</span>: <span class="variable">true</span>
+      <span class="variable">throwErrors</span>: <span class="variable">true</span>,
+      <span class="variable">generateRequestOnPageLoad</span>: <span class="variable">true</span>
     },</code></pre>
 </td>
 </tr>
@@ -303,7 +308,7 @@ routes and filters.
       <span class="this">this</span>.<span class="variable">trigger</span>(<span class="string">'start'</span>)
       <span class="this">this</span>.<span class="variable">running</span> = <span class="variable">true</span>;
 
-      <span class="variable">handleRequest</span>(<span class="class">Davis</span>.<span class="class">Request</span>.<span class="variable">forPageLoad</span>())
+      <span class="keyword">if</span> (<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">generateRequestOnPageLoad</span>) <span class="variable">handleRequest</span>(<span class="class">Davis</span>.<span class="class">Request</span>.<span class="variable">forPageLoad</span>())
 
     },</code></pre>
 </td>
@@ -489,11 +494,121 @@ and a path property will also be accepted.
 </td>
 <td class="code">
 <pre><code><span class="keyword">var</span> <span class="variable">replaceState</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
-    <span class="variable">history</span>.<span class="variable">replaceState</span>(<span class="variable">request</span>, <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">historyPath</span>);
+    <span class="variable">history</span>.<span class="variable">replaceState</span>(<span class="variable">request</span>, <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">location</span>());
     <span class="variable">pushStateHandlers</span>.<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">handler</span>) {
       <span class="variable">handler</span>(<span class="variable">request</span>);
     });
   };</code></pre>
+</td>
+</tr><tr class="filename"><td><h2 id="src/davis.listener.js"><a href="#">davis.listener</a></h2></td><td>src/davis.listener.js</td></tr><tr class="code">
+<td class="docs">
+<p>A module to bind to link clicks and form submits and turn what would normally be http requests
+into instances of Davis.Request.  These request objects are then pushed onto the history stack
+using the Davis.history module.</p>
+
+<p>This module requires jQuery for its event binding and event object normalization.  To use Davis
+with any, or no, JavaScript framework this module should be replaced with one using your framework
+of choice.
+ </p>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="variable">listener</span> = (<span class="keyword">function</span> () {</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>app.listen</h2>
+
+<p>Binds to both link clicks and form submits using jQuery's deleagate.  Will catch all current
+and future links and forms.  Uses the apps settings for the selector to use for links and forms</p>
+
+<ul><li><strong>see</strong>: <em>Davis</em>
+.App.settings</li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">listen</span> = <span class="keyword">function</span> () {
+    $(<span class="variable">document</span>).<span class="variable">delegate</span>(<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">formSelector</span>, <span class="string">'submit'</span>, <span class="variable">submitHandler</span>)
+    $(<span class="variable">document</span>).<span class="variable">delegate</span>(<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">linkSelector</span>, <span class="string">'click'</span>, <span class="variable">clickHandler</span>)
+  }</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>app.unlisten</h2>
+
+<p>Unbinds all click and submit handlers that were attatched with listen.  Will efectivley stop
+the current app from processing any requests and all links and forms will have their default
+behaviour restored.</p>
+
+<ul><li><strong>see</strong>: <em>Davis</em>
+.App.settings</li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">unlisten</span> = <span class="keyword">function</span> () {
+    $(<span class="variable">document</span>).<span class="variable">undelegate</span>(<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">linkSelector</span>, <span class="string">'click'</span>, <span class="variable">clickHandler</span>)
+    $(<span class="variable">document</span>).<span class="variable">undelegate</span>(<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">formSelector</span>, <span class="string">'submit'</span>, <span class="variable">submitHandler</span>)
+  }</code></pre>
+</td>
+</tr><tr class="filename"><td><h2 id="src/davis.logger.js"><a href="#">davis.logger</a></h2></td><td>src/davis.logger.js</td></tr><tr class="code">
+<td class="docs">
+<p>A module for enhancing the standard logging available through the console object.
+Used internally in Davis and available for use outside of Davis.</p>
+
+<p>Generates log messages of varying severity in the format:</p>
+
+<p><code>[Sun Jan 23 2011 16:15:21 GMT+0000 (GMT)] &lt;message&gt;</code>
+ </p>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="variable">logger</span> = (<span class="keyword">function</span> () {</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.logger.error</h2>
+
+<p>Prints an error message to the console if the console is available.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>params</strong>: <em>String</em>  All arguments are combined and logged to the console.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">error</span> = <span class="keyword">function</span> () {
+    <span class="keyword">if</span> (<span class="variable">window</span>.<span class="variable">console</span>) <span class="variable">console</span>.<span class="variable">error</span>.<span class="variable">apply</span>(<span class="variable">console</span>, <span class="variable">prepArgs</span>(<span class="variable">arguments</span>))
+  }</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.logger.info</h2>
+
+<p>Prints an info message to the console if the console is available.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>params</strong>: <em>String</em>  All arguments are combined and logged to the console.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">info</span> = <span class="keyword">function</span> () {
+    <span class="keyword">if</span> (<span class="variable">window</span>.<span class="variable">console</span>) <span class="variable">console</span>.<span class="variable">info</span>.<span class="variable">apply</span>(<span class="variable">console</span>, <span class="variable">prepArgs</span>(<span class="variable">arguments</span>))
+  }</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.logger.warn</h2>
+
+<p>Prints a warning message to the console if the console is available.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>params</strong>: <em>String</em>  All arguments are combined and logged to the console.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">warn</span> = <span class="keyword">function</span> () {
+    <span class="keyword">if</span> (<span class="variable">window</span>.<span class="variable">console</span>) <span class="variable">console</span>.<span class="variable">warn</span>.<span class="variable">apply</span>(<span class="variable">console</span>, <span class="variable">prepArgs</span>(<span class="variable">arguments</span>))
+  }</code></pre>
 </td>
 </tr><tr class="filename"><td><h2 id="src/davis.request.js"><a href="#">davis.request</a></h2></td><td>src/davis.request.js</td></tr><tr class="code">
 <td class="docs">
@@ -530,7 +645,6 @@ to set the correct reqeust method.</p>
   <span class="this">this</span>.<span class="variable">params</span> = {};
   <span class="this">this</span>.<span class="variable">title</span> = <span class="variable">raw</span>.<span class="variable">title</span>;
   <span class="this">this</span>.<span class="variable">queryString</span> = <span class="variable">raw</span>.<span class="variable">fullPath</span>.<span class="variable">split</span>(&<span class="variable">quot</span>;?&<span class="variable">quot</span>;)[<span class="number integer">1</span>];
-  <span class="this">this</span>.<span class="variable">type</span> = <span class="string">'request'</span>;
   <span class="this">this</span>.<span class="variable">_staleCallback</span> = <span class="keyword">function</span> () {};
 
   <span class="keyword">if</span> (<span class="this">this</span>.<span class="variable">queryString</span>) {
@@ -1076,116 +1190,6 @@ find and return the first matched route.</p>
     })[<span class="number integer">0</span>];
   };
 }</code></pre>
-</td>
-</tr><tr class="filename"><td><h2 id="src/davis.listener.js"><a href="#">davis.listener</a></h2></td><td>src/davis.listener.js</td></tr><tr class="code">
-<td class="docs">
-<p>A module to bind to link clicks and form submits and turn what would normally be http requests
-into instances of Davis.Request.  These request objects are then pushed onto the history stack
-using the Davis.history module.</p>
-
-<p>This module requires jQuery for its event binding and event object normalization.  To use Davis
-with any, or no, JavaScript framework this module should be replaced with one using your framework
-of choice.
- </p>
-</td>
-<td class="code">
-<pre><code><span class="class">Davis</span>.<span class="variable">listener</span> = (<span class="keyword">function</span> () {</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<h2>app.listen</h2>
-
-<p>Binds to both link clicks and form submits using jQuery's deleagate.  Will catch all current
-and future links and forms.  Uses the apps settings for the selector to use for links and forms</p>
-
-<ul><li><strong>see</strong>: <em>Davis</em>
-.App.settings</li></ul>
-</td>
-<td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">listen</span> = <span class="keyword">function</span> () {
-    $(<span class="variable">document</span>).<span class="variable">delegate</span>(<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">formSelector</span>, <span class="string">'submit'</span>, <span class="variable">submitHandler</span>)
-    $(<span class="variable">document</span>).<span class="variable">delegate</span>(<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">linkSelector</span>, <span class="string">'click'</span>, <span class="variable">clickHandler</span>)
-  }</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<h2>app.unlisten</h2>
-
-<p>Unbinds all click and submit handlers that were attatched with listen.  Will efectivley stop
-the current app from processing any requests and all links and forms will have their default
-behaviour restored.</p>
-
-<ul><li><strong>see</strong>: <em>Davis</em>
-.App.settings</li></ul>
-</td>
-<td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">unlisten</span> = <span class="keyword">function</span> () {
-    $(<span class="variable">document</span>).<span class="variable">undelegate</span>(<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">linkSelector</span>, <span class="string">'click'</span>, <span class="variable">clickHandler</span>)
-    $(<span class="variable">document</span>).<span class="variable">undelegate</span>(<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">formSelector</span>, <span class="string">'submit'</span>, <span class="variable">submitHandler</span>)
-  }</code></pre>
-</td>
-</tr><tr class="filename"><td><h2 id="src/davis.logger.js"><a href="#">davis.logger</a></h2></td><td>src/davis.logger.js</td></tr><tr class="code">
-<td class="docs">
-<p>A module for enhancing the standard logging available through the console object.
-Used internally in Davis and available for use outside of Davis.</p>
-
-<p>Generates log messages of varying severity in the format:</p>
-
-<p><code>[Sun Jan 23 2011 16:15:21 GMT+0000 (GMT)] &lt;message&gt;</code>
- </p>
-</td>
-<td class="code">
-<pre><code><span class="class">Davis</span>.<span class="variable">logger</span> = (<span class="keyword">function</span> () {</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<h2>Davis.logger.error</h2>
-
-<p>Prints an error message to the console if the console is available.</p>
-
-<h2></h2>
-
-<ul><li><p><strong>params</strong>: <em>String</em>  All arguments are combined and logged to the console.</p></li></ul>
-</td>
-<td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">error</span> = <span class="keyword">function</span> () {
-    <span class="keyword">if</span> (<span class="variable">window</span>.<span class="variable">console</span>) <span class="variable">console</span>.<span class="variable">error</span>.<span class="variable">apply</span>(<span class="variable">console</span>, <span class="variable">prepArgs</span>(<span class="variable">arguments</span>))
-  }</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<h2>Davis.logger.info</h2>
-
-<p>Prints an info message to the console if the console is available.</p>
-
-<h2></h2>
-
-<ul><li><p><strong>params</strong>: <em>String</em>  All arguments are combined and logged to the console.</p></li></ul>
-</td>
-<td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">info</span> = <span class="keyword">function</span> () {
-    <span class="keyword">if</span> (<span class="variable">window</span>.<span class="variable">console</span>) <span class="variable">console</span>.<span class="variable">info</span>.<span class="variable">apply</span>(<span class="variable">console</span>, <span class="variable">prepArgs</span>(<span class="variable">arguments</span>))
-  }</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<h2>Davis.logger.warn</h2>
-
-<p>Prints a warning message to the console if the console is available.</p>
-
-<h2></h2>
-
-<ul><li><p><strong>params</strong>: <em>String</em>  All arguments are combined and logged to the console.</p></li></ul>
-</td>
-<td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">warn</span> = <span class="keyword">function</span> () {
-    <span class="keyword">if</span> (<span class="variable">window</span>.<span class="variable">console</span>) <span class="variable">console</span>.<span class="variable">warn</span>.<span class="variable">apply</span>(<span class="variable">console</span>, <span class="variable">prepArgs</span>(<span class="variable">arguments</span>))
-  }</code></pre>
 </td>
 </tr>	</body>
 </html></tbody></table>
