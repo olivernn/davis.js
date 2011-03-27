@@ -17,6 +17,10 @@ Davis.history = (function () {
    */
   var pushStateHandlers = [];
 
+  /**
+   * flag to store whether or not this is the first pop state event received
+   * @private
+   */
   var firstPop = true;
 
   /**
