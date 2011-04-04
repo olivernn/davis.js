@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.3
+
+* Fixed [bug](https://github.com/olivernn/davis.js/issues#issue/2) when links contained other elements, reported by [kbingman](https://github.com/kbingman)
+
 ## 0.3.2
 
 * Fixed bug which caused the initial page load to trigger two requests.
