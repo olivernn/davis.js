@@ -30,7 +30,7 @@ Davis.App = (function () {
    * creating the prototype for the app from modules listener and event
    * @private
    */
-  App.prototype = $.extend({
+  App.prototype = jQuery.extend({
 
     /**
      * ## app.configure

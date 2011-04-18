@@ -67,8 +67,8 @@ Davis.listener = (function () {
    * @see Davis.App.settings
    */
   var listen = function () {
-    $(document).delegate(this.settings.formSelector, 'submit', submitHandler)
-    $(document).delegate(this.settings.linkSelector, 'click', clickHandler)
+    jQuery(document).delegate(this.settings.formSelector, 'submit', submitHandler)
+    jQuery(document).delegate(this.settings.linkSelector, 'click', clickHandler)
   }
 
   /**
@@ -80,8 +80,8 @@ Davis.listener = (function () {
    * @see Davis.App.settings
    */
   var unlisten = function () {
-    $(document).undelegate(this.settings.linkSelector, 'click', clickHandler)
-    $(document).undelegate(this.settings.formSelector, 'submit', submitHandler)
+    jQuery(document).undelegate(this.settings.linkSelector, 'click', clickHandler)
+    jQuery(document).undelegate(this.settings.formSelector, 'submit', submitHandler)
   }
 
   /**
