@@ -30,7 +30,20 @@ Davis.supported = function () {
 /**
  * ## Davis.noop
  * A function that does nothing, used as a default param for any callbacks.
- *
+ * 
  * @returns {Function}
  */
 Davis.noop = function () {}
+
+/**
+ * ## Davis.toArray
+ * A convinience function for converting arguments to a proper array
+ *
+ * @param {args} a functions arguments
+ * @param {start} an integer at which to start converting the arguments to an array
+ * @returns {Array}
+ */
+Davis.toArray = function (args, start) {
+  var start = start || 0
+  return Array.prototype.slice.call(args, start)
+}

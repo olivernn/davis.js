@@ -71,7 +71,7 @@ Davis.event = {
     var args = arguments;
     if (!this._callbacks[eventName]) this._callbacks[eventName] = [];
     this._callbacks[eventName].forEach(function (callback) {
-      callback.apply(self, Array.prototype.slice.call(args, 1));
+      callback.apply(self, Davis.toArray(args, 1));
     }) 
     return this;
   }

@@ -27,7 +27,7 @@ Davis.logger = (function () {
    * @private
    */
   var prepArgs = function (args) {
-    var a = Array.prototype.slice.call(args)
+    var a = Davis.toArray(args)
     a.unshift(timestamp())
     return a
   }

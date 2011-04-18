@@ -62,7 +62,7 @@ Davis.App = (function () {
      *
      */
     use: function (plugin) {
-      plugin.apply(this, Array.prototype.slice.call(arguments, 1))
+      plugin.apply(this, Davis.toArray(arguments, 1))
     },
 
     /**
