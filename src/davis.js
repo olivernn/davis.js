@@ -26,3 +26,11 @@ Davis = function (config) {
 Davis.supported = function () {
   return (typeof window.history.pushState == 'function')
 }
+
+/**
+ * ## Davis.noop
+ * A function that does nothing, used as a default param for any callbacks.
+ *
+ * @returns {Function}
+ */
+Davis.noop = function () {}
