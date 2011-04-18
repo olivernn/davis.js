@@ -23,10 +23,10 @@ test("shortcuts for verbs", function () {
   router.put('/foo', $.noop);
   router.del('/foo', $.noop);
 
-  same(router._routeCollection[0].method, /^get$/)
-  same(router._routeCollection[1].method, /^post$/)
-  same(router._routeCollection[2].method, /^put$/)
-  same(router._routeCollection[3].method, /^delete$/)
+  same(router._routeCollection[0].method, /^get$/i)
+  same(router._routeCollection[1].method, /^post$/i)
+  same(router._routeCollection[2].method, /^put$/i)
+  same(router._routeCollection[3].method, /^delete$/i)
 })
 
 test("keeping a collection of before filters", function () {
@@ -156,4 +156,22 @@ test("transitioning to a state", function () {
   stop()
   router.trans('/blah/2')
   equal("/blah/2", req.path)
+})
+
+test("methods should be case insensitive", function () {
+  var router = factory('router')
+
+  router.get('/foo', $.noop)
+  var route = router._routeCollection[0]
+
+  same(route, router.lookupRoute('GET', '/foo'), "should match regardless of the case of the route method")
+})
+
+test("path should be case insensitive", function () {
+  var router = factory('router')
+
+  router.get('/foo', $.noop)
+  var route = router._routeCollection[0]
+
+  same(route, router.lookupRoute('get', '/FOO'), "should match regardless of the case of the route path")
 })

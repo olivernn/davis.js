@@ -39,7 +39,7 @@ Davis.Route = (function () {
   var Route = function (method, path, callback) {
     var convertPathToRegExp = function () {
       if (!(path instanceof RegExp)) {
-        return new RegExp("^" + path.replace(pathNameRegex, pathNameReplacement) + "$", "g");
+        return new RegExp("^" + path.replace(pathNameRegex, pathNameReplacement) + "$", "gi");
       } else {
         return path;
       };
@@ -47,7 +47,7 @@ Davis.Route = (function () {
 
     var convertMethodToRegExp = function () {
       if (!(method instanceof RegExp)) {
-        return new RegExp("^" + method + "$");
+        return new RegExp("^" + method + "$", "i");
       } else {
         return method
       };
