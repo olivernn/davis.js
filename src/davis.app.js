@@ -95,6 +95,10 @@ Davis.App = (function () {
      * to provide a response.  When set to false errors in a route will be caught and the server will not
      * receive the request.
      *
+     * `handleRouteNotFound` determines whether or not Davis should handle requests when there is no matching
+     * route.  If set to false Davis will allow the request to be passed to your server to handle if no matching
+     * route can be found.
+     *
      * `generateRequestOnPageLoad` determines whether a request should be generated for the initial page load.
      * by default this is set to true so that a Davis.Request will be generated with the path of the current
      * page.  Setting this to false will prevent a request being passed to your app for the inital page load.
@@ -106,6 +110,7 @@ Davis.App = (function () {
       formSelector: 'form',
       logger: Davis.logger,
       throwErrors: true,
+      handleRouteNotFound: false,
       generateRequestOnPageLoad: true
     },
 
@@ -172,6 +177,10 @@ Davis.App = (function () {
           self.settings.logger.info("runRoute: " + request.toString());
         })
         .bind('routeNotFound', function (request) {
+          if (self.settings.handleRouteNotFound) {
+            self.stop()
+            request.delegateToServer()
+          };
           self.settings.logger.warn("routeNotFound: " + request.toString());
         })
         .bind('start', function () {
