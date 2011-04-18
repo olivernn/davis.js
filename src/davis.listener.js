@@ -34,10 +34,14 @@ Davis.listener = (function () {
    * @private
    */
   var clickHandler = handler(function () {
+    var self = this
     return {
       method: 'get',
       fullPath: this.attr('href'),
-      title: this.attr('title')
+      title: this.attr('title'),
+      delegateToServer: function () {
+        window.location.pathname = self.attr('href')
+      }
     };
   });
 
@@ -52,10 +56,15 @@ Davis.listener = (function () {
       }).join('&')
     }
 
+    var self = this
+
     return {
       method: this.attr('method'),
       fullPath: [this.attr('action'), extractFormParams(this)].join("?"),
-      title: this.attr('title')
+      title: this.attr('title'),
+      delegateToServer: function () {
+        self.submit()
+      }
     };
   });
 

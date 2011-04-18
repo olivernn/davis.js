@@ -103,3 +103,17 @@ test("request has a location that the page url is changed too", function () {
   equal(reloadableRequest.path, reloadableRequest.location(), "reloadable (GET, POST, PUT, DELETE) request location should match the path")
   equal('', nonReloadableRequest.location(), "non reloadable requests should have a blank location")
 })
+
+test("pass a request to the server", function () {
+  var serverCalled = false
+
+  var request = factory('request', {
+    delegateToServer: function () {
+      serverCalled = true
+    }
+  })
+
+  request.delegateToServer()
+
+  ok(serverCalled, "should have delegated responsibility for the route to the server")
+})

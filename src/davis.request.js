@@ -55,6 +55,7 @@ Davis.Request = function (raw) {
 
   this.method = this.params._method || raw.method;
   this.path = raw.fullPath.replace(/\?.+$/, "");
+  this.delegateToServer = raw.delegateToServer || Davis.noop;
 
   if (Davis.Request.prev) Davis.Request.prev.makeStale(this);
   Davis.Request.prev = this;
