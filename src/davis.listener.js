@@ -23,7 +23,7 @@ Davis.listener = (function () {
    */
   var handler = function (targetExtractor) {
     return function (event) {
-      var request = new Davis.Request (targetExtractor.call($(this)));
+      var request = new Davis.Request (targetExtractor.call(jQuery(this)));
       Davis.history.pushState(request);
       return false;
     };
