@@ -151,8 +151,6 @@ Davis.App = (function () {
               self.trigger('routeComplete', request, route)
             } catch (error) {
               self.trigger('routeError', request, route, error)
-              self.settings.logger.error(error.message, error.stack)
-              if (self.settings.throwErrors) throw(error)
             }
 
             self.lookupAfterFilter(request.method, request.path)
@@ -178,6 +176,10 @@ Davis.App = (function () {
         })
         .bind('start', function () {
           self.settings.logger.info("application started")
+        })
+        .bind('routeError', function (request, route, error) {
+          if (self.settings.throwErrors) throw(error)
+          self.settings.logger.error(error.message, error.stack)
         });
 
       this.listen();
