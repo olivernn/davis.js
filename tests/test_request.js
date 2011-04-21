@@ -95,13 +95,29 @@ test("passing the next request in to the whenStale callback", function () {
 })
 
 test("request has a location that the page url is changed too", function () {
-  var reloadableRequest = factory('request')
-  var nonReloadableRequest = factory('request', {
+  var getRequest = factory('request')
+
+  var postRequest = factory('request', {
+    method: 'post'
+  })
+
+  var putRequest = factory('request', {
+    method: 'put'
+  })
+
+  var deleteRequest = factory('request', {
+    method: 'delete'
+  })
+
+  var stateRequest = factory('request', {
     method: 'state'
   })
 
-  equal(reloadableRequest.path, reloadableRequest.location(), "reloadable (GET, POST, PUT, DELETE) request location should match the path")
-  equal('', nonReloadableRequest.location(), "non reloadable requests should have a blank location")
+  equal(getRequest.path, getRequest.location(), "get requests should have a location that matches the path")
+  equal('', postRequest.location(), "post requests should have a blank location")
+  equal('', putRequest.location(), "put requests should have a blank location")
+  equal('', deleteRequest.location(), "delete requests should have a blank location")
+  equal('', stateRequest.location(), "state requests should have a blank location")
 })
 
 test("pass a request to the server", function () {
