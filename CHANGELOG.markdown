@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0
+
+* Only get requests should change the browser url, all others will create an entry in the history but not change the url
+* By default any routes not handled by Davis will be automatically sent to the server.  This can be configured using the setting `handleRouteNotFound`
+* Request methods and paths are now case insensitive
+* Fixed bug which meant that restarting a Davis app would lead to events being bound to twice
+* Work when jQuery is in no conflict mode
+
 ## 0.3.3
 
 * Fixed [bug](https://github.com/olivernn/davis.js/issues#issue/2) when links contained other elements, reported by [kbingman](https://github.com/kbingman)
