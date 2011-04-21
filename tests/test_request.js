@@ -133,3 +133,11 @@ test("pass a request to the server", function () {
 
   ok(serverCalled, "should have delegated responsibility for the route to the server")
 })
+
+test("request method should always be lower case", function () {
+  var request = factory('request', {
+    method: 'GET'
+  })
+
+  equal('get', request.method, "should lowwer case the request method")
+})

@@ -53,7 +53,7 @@ Davis.Request = function (raw) {
     });
   };
 
-  this.method = this.params._method || raw.method;
+  this.method = (this.params._method || raw.method).toLowerCase();
   this.path = raw.fullPath.replace(/\?.+$/, "");
   this.delegateToServer = raw.delegateToServer || Davis.noop;
 
