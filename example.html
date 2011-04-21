@@ -20,15 +20,30 @@
 <!--     <script src="/dist/davis-0.1.0.min.js" type="text/javascript" charset="utf-8"></script> -->
 
     <script type="text/javascript" charset="utf-8">
+      jQuery.noConflict()
+
       app = Davis(function () {
+
+        this.configure(function () {
+          this.handleRouteNotFound = true
+          // this.throwErrors = false
+        })
 
         this.before(function (req) {
           console.log('before filter')
           req.foo = "foo"
         })
 
+        this.get("/bar(?:/:id)?", function () {
+          console.log(this)
+        })
+
         this.get('/example.html', function () {
           console.log('page has loaded')
+        })
+
+        this.get('/bang', function () {
+          breakage.happennig().now
         })
 
         this.before('/foo/:id/blah/:bob', function () {
@@ -78,13 +93,16 @@
     <a href="/foo/hello/blah/asdfas?blah=123">foo</a>
     <a href="/foo/goodbye/blah/asdfas">foo1</a>
     <a href="/bar/55">bar</a>
+    <a href="/BAR">bar no id</a>
+    <a href="/bang">Bang!</a>
+    <a href="/not_found">404</a>
 
     <form action="/baz/555" method="post">
       <input type="text" name="name" value="" id="name">
       <input type="submit" name="submit" value="Send" id="submit">
     </form>
 
-    <form action="/blah/12" method="post">
+    <form action="/not_found" method="post">
       <input type="hidden" name="_method" value="put">
       <input type="text" name="note[name]" value="">
       <input type="text" name="note[title]" value="">
