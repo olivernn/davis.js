@@ -31,6 +31,7 @@ Davis.supported = function () {
  * ## Davis.noop
  * A function that does nothing, used as a default param for any callbacks.
  * 
+ * @private
  * @returns {Function}
  */
 Davis.noop = function () {}
@@ -39,6 +40,7 @@ Davis.noop = function () {}
  * ## Davis.toArray
  * A convinience function for converting arguments to a proper array
  *
+ * @private
  * @param {args} a functions arguments
  * @param {start} an integer at which to start converting the arguments to an array
  * @returns {Array}
