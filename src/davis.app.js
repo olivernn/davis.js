@@ -24,6 +24,7 @@ Davis.App = (function () {
   var App = function () {
     this.id = [new Date().valueOf(), appCounter++].join("-");
     this.running = false;
+    this.boundToInternalEvents = false;
   };
 
   /**
@@ -168,28 +169,34 @@ Davis.App = (function () {
         }
       }
 
-      Davis.history.onChange(function (req) {
-        handleRequest(req)
-      });
+      var bindToInternalEvents = function () {
+        self
+          .bind('runRoute', function (request) {
+            self.settings.logger.info("runRoute: " + request.toString());
+          })
+          .bind('routeNotFound', function (request) {
+            if (!self.settings.handleRouteNotFound) {
+              self.stop()
+              request.delegateToServer()
+            };
+            self.settings.logger.warn("routeNotFound: " + request.toString());
+          })
+          .bind('start', function () {
+            self.settings.logger.info("application started")
+          })
+          .bind('routeError', function (request, route, error) {
+            if (self.settings.throwErrors) throw(error)
+            self.settings.logger.error(error.message, error.stack)
+          });
 
-      this
-        .bind('runRoute', function (request) {
-          self.settings.logger.info("runRoute: " + request.toString());
-        })
-        .bind('routeNotFound', function (request) {
-          if (self.settings.handleRouteNotFound) {
-            self.stop()
-            request.delegateToServer()
-          };
-          self.settings.logger.warn("routeNotFound: " + request.toString());
-        })
-        .bind('start', function () {
-          self.settings.logger.info("application started")
-        })
-        .bind('routeError', function (request, route, error) {
-          if (self.settings.throwErrors) throw(error)
-          self.settings.logger.error(error.message, error.stack)
+        Davis.history.onChange(function (req) {
+          handleRequest(req)
         });
+
+        self.boundToInternalEvents = true
+      }
+
+      if (!this.boundToInternalEvents) bindToInternalEvents()
 
       this.listen();
       this.trigger('start')
