@@ -141,3 +141,11 @@ test("request method should always be lower case", function () {
 
   equal('get', request.method, "should lowwer case the request method")
 })
+
+test("flagging a request as a page load request", function () {
+  var request = factory('request')
+  var pageLoad = Davis.Request.forPageLoad()
+
+  ok(!request.isForPageLoad, "request should not be for the page load")
+  ok(pageLoad.isForPageLoad, "request should be for the page load")
+})

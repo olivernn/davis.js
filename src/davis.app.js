@@ -175,7 +175,7 @@ Davis.App = (function () {
             self.settings.logger.info("runRoute: " + request.toString());
           })
           .bind('routeNotFound', function (request) {
-            if (!self.settings.handleRouteNotFound) {
+            if (!self.settings.handleRouteNotFound && !request.isForPageLoad) {
               self.stop()
               request.delegateToServer()
             };
