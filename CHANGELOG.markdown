@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.1
+
+* If no route is found for the initial page load request don't stop the app
+* Log a message when the app is stopped
+
 ## 0.4.0
 
 * Only get requests should change the browser url, all others will create an entry in the history but not change the url
