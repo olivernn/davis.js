@@ -184,6 +184,9 @@ Davis.App = (function () {
           .bind('start', function () {
             self.settings.logger.info("application started")
           })
+          .bind('stop', function () {
+            self.settings.logger.info("application stopped")
+          })
           .bind('routeError', function (request, route, error) {
             if (self.settings.throwErrors) throw(error)
             self.settings.logger.error(error.message, error.stack)
