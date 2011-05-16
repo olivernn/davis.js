@@ -49,3 +49,7 @@ Davis.toArray = function (args, start) {
   var start = start || 0
   return Array.prototype.slice.call(args, start)
 }
+
+Davis.extend = function (extension) {
+  extension()
+}

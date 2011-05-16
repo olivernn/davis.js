@@ -118,6 +118,10 @@ Davis.history = (function () {
     });
   };
 
+  var current = function () {
+    return window.location.pathname
+  }
+
   /**
    * Exposing the public methods of this module
    * @private
@@ -125,6 +129,9 @@ Davis.history = (function () {
   return {
     replaceState: replaceState,
     pushState: pushState,
-    onChange: onChange
+    onChange: onChange,
+    current: current,
+    assign: pushState,
+    replace: replaceState
   }
 })()
