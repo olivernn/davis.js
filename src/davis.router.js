@@ -76,7 +76,7 @@ Davis.router = function () {
    * Generating convinience methods for creating Davis.Routes
    */
   var verbs = ['get', 'post', 'put'];
-  verbs.forEach(function (verb) {
+  Davis.utils.forEach(verbs, function (verb) {
     self[verb] = function (path, handler) {
       self._routeCollection.push(new Davis.Route (verb, path, handler));
     }
@@ -161,7 +161,7 @@ Davis.router = function () {
    * lookup filters.
    */
   var filters = ['before', 'after'];
-  filters.forEach(function (filter) {
+  Davis.utils.forEach(filters, function (filter) {
     self[filter] = function () {
       var method = /.+/;
 
@@ -179,7 +179,7 @@ Davis.router = function () {
     var lookupName = 'lookup' + filter.replace(/^\w/, function ($0) { return $0.toUpperCase()}) + 'Filter';
 
     self[lookupName] = function (method, path) {
-      return self._filterCollection[filter].filter(function (route) {
+      return Davis.utils.filter(self._filterCollection[filter], function (route) {
         return route.match(method, path)
       });
     }
@@ -205,7 +205,7 @@ Davis.router = function () {
    * @returns {Davis.Route} route
    */
   self.lookupRoute = function (method, path) {
-    return this._routeCollection.filter(function (route) {
+    return Davis.utils.filter(this._routeCollection, function (route) {
       return route.match(method, path)
     })[0];
   };

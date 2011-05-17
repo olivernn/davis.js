@@ -51,7 +51,7 @@ Davis.listener = (function () {
    */
   var submitHandler = handler(function () {
     var extractFormParams = function (form) {
-      return form.serializeArray().map(function (attr) {
+      return Davis.utils.map(form.serializeArray(), function (attr) {
         return [attr.name, attr.value].join('=')
       }).join('&')
     }

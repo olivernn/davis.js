@@ -63,7 +63,7 @@ Davis.App = (function () {
      *
      */
     use: function (plugin) {
-      plugin.apply(this, Davis.toArray(arguments, 1))
+      plugin.apply(this, Davis.utils.toArray(arguments, 1))
     },
 
     /**
@@ -141,8 +141,10 @@ Davis.App = (function () {
       }
 
       var beforeFiltersPass = function (request) {
-        return self.lookupBeforeFilter(request.method, request.path)
-                      .every(runFilterWith(request))
+        return Davis.utils.every(
+          self.lookupBeforeFilter(request.method, request.path),
+          runFilterWith(request)
+        )
       }
 
       var handleRequest = function (request) {
@@ -159,8 +161,11 @@ Davis.App = (function () {
               self.trigger('routeError', request, route, error)
             }
 
-            self.lookupAfterFilter(request.method, request.path)
-                  .every(runFilterWith(request));
+            Davis.utils.every(
+              self.lookupAfterFilter(request.method, request.path),
+              runFilterWith(request)
+            );
+
           } else {
             self.trigger('routeNotFound', request);
           }

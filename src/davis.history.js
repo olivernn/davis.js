@@ -96,7 +96,7 @@ Davis.history = (function () {
    */
   var pushState = function (request) {
     history.pushState(request, request.title, request.location());
-    pushStateHandlers.forEach(function (handler) {
+    Davis.utils.forEach(pushStateHandlers, function (handler) {
       handler(request);
     });
   };
@@ -113,7 +113,7 @@ Davis.history = (function () {
    */
   var replaceState = function (request) {
     history.replaceState(request, request.title, request.location());
-    pushStateHandlers.forEach(function (handler) {
+    Davis.utils.forEach(pushStateHandlers, function (handler) {
       handler(request);
     });
   };
