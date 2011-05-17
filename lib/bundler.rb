@@ -29,6 +29,7 @@ class Bundler
       def files
         @files ||= %w(
           davis
+          davis.utils
           davis.listener
           davis.event
           davis.logger
