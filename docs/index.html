@@ -170,7 +170,7 @@ context of the app.</p>
 </td>
 <td class="code">
 <pre><code><span class="variable">use</span>: <span class="keyword">function</span> (<span class="variable">plugin</span>) {
-      <span class="variable">plugin</span>.<span class="variable">apply</span>(<span class="this">this</span>, <span class="class">Davis</span>.<span class="variable">toArray</span>(<span class="variable">arguments</span>, <span class="number integer">1</span>))
+      <span class="variable">plugin</span>.<span class="variable">apply</span>(<span class="this">this</span>, <span class="class">Davis</span>.<span class="variable">utils</span>.<span class="variable">toArray</span>(<span class="variable">arguments</span>, <span class="number integer">1</span>))
     },</code></pre>
 </td>
 </tr>
@@ -265,8 +265,10 @@ routes and filters.
       }
 
       <span class="keyword">var</span> <span class="variable">beforeFiltersPass</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
-        <span class="keyword">return</span> <span class="variable">self</span>.<span class="variable">lookupBeforeFilter</span>(<span class="variable">request</span>.<span class="variable">method</span>, <span class="variable">request</span>.<span class="variable">path</span>)
-                      .<span class="variable">every</span>(<span class="variable">runFilterWith</span>(<span class="variable">request</span>))
+        <span class="keyword">return</span> <span class="class">Davis</span>.<span class="variable">utils</span>.<span class="variable">every</span>(
+          <span class="variable">self</span>.<span class="variable">lookupBeforeFilter</span>(<span class="variable">request</span>.<span class="variable">method</span>, <span class="variable">request</span>.<span class="variable">path</span>),
+          <span class="variable">runFilterWith</span>(<span class="variable">request</span>)
+        )
       }
 
       <span class="keyword">var</span> <span class="variable">handleRequest</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
@@ -283,8 +285,11 @@ routes and filters.
               <span class="variable">self</span>.<span class="variable">trigger</span>(<span class="string">'routeError'</span>, <span class="variable">request</span>, <span class="variable">route</span>, <span class="variable">error</span>)
             }
 
-            <span class="variable">self</span>.<span class="variable">lookupAfterFilter</span>(<span class="variable">request</span>.<span class="variable">method</span>, <span class="variable">request</span>.<span class="variable">path</span>)
-                  .<span class="variable">every</span>(<span class="variable">runFilterWith</span>(<span class="variable">request</span>));
+            <span class="class">Davis</span>.<span class="variable">utils</span>.<span class="variable">every</span>(
+              <span class="variable">self</span>.<span class="variable">lookupAfterFilter</span>(<span class="variable">request</span>.<span class="variable">method</span>, <span class="variable">request</span>.<span class="variable">path</span>),
+              <span class="variable">runFilterWith</span>(<span class="variable">request</span>)
+            );
+
           } <span class="keyword">else</span> {
             <span class="variable">self</span>.<span class="variable">trigger</span>(<span class="string">'routeNotFound'</span>, <span class="variable">request</span>);
           }
@@ -299,7 +304,7 @@ routes and filters.
             <span class="variable">self</span>.<span class="variable">settings</span>.<span class="variable">logger</span>.<span class="variable">info</span>(&<span class="variable">quot</span>;<span class="variable">runRoute</span>: &<span class="variable">quot</span>; + <span class="variable">request</span>.<span class="variable">toString</span>());
           })
           .<span class="variable">bind</span>(<span class="string">'routeNotFound'</span>, <span class="keyword">function</span> (<span class="variable">request</span>) {
-            <span class="keyword">if</span> (!<span class="variable">self</span>.<span class="variable">settings</span>.<span class="variable">handleRouteNotFound</span>) {
+            <span class="keyword">if</span> (!<span class="variable">self</span>.<span class="variable">settings</span>.<span class="variable">handleRouteNotFound</span> &<span class="variable">amp</span>;&<span class="variable">amp</span>; !<span class="variable">request</span>.<span class="variable">isForPageLoad</span>) {
               <span class="variable">self</span>.<span class="variable">stop</span>()
               <span class="variable">request</span>.<span class="variable">delegateToServer</span>()
             };
@@ -307,6 +312,9 @@ routes and filters.
           })
           .<span class="variable">bind</span>(<span class="string">'start'</span>, <span class="keyword">function</span> () {
             <span class="variable">self</span>.<span class="variable">settings</span>.<span class="variable">logger</span>.<span class="variable">info</span>(&<span class="variable">quot</span>;<span class="variable">application</span> <span class="variable">started</span>&<span class="variable">quot</span>;)
+          })
+          .<span class="variable">bind</span>(<span class="string">'stop'</span>, <span class="keyword">function</span> () {
+            <span class="variable">self</span>.<span class="variable">settings</span>.<span class="variable">logger</span>.<span class="variable">info</span>(&<span class="variable">quot</span>;<span class="variable">application</span> <span class="variable">stopped</span>&<span class="variable">quot</span>;)
           })
           .<span class="variable">bind</span>(<span class="string">'routeError'</span>, <span class="keyword">function</span> (<span class="variable">request</span>, <span class="variable">route</span>, <span class="variable">error</span>) {
             <span class="keyword">if</span> (<span class="variable">self</span>.<span class="variable">settings</span>.<span class="variable">throwErrors</span>) <span class="keyword">throw</span>(<span class="variable">error</span>)
@@ -426,8 +434,8 @@ app.trigger('bar', {baz: true})</code></pre>
     <span class="keyword">var</span> <span class="variable">self</span> = <span class="this">this</span>;
     <span class="keyword">var</span> <span class="variable">args</span> = <span class="variable">arguments</span>;
     <span class="keyword">if</span> (!<span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>]) <span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>] = [];
-    <span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>].<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">callback</span>) {
-      <span class="variable">callback</span>.<span class="variable">apply</span>(<span class="variable">self</span>, <span class="class">Davis</span>.<span class="variable">toArray</span>(<span class="variable">args</span>, <span class="number integer">1</span>));
+    <span class="class">Davis</span>.<span class="variable">utils</span>.<span class="variable">forEach</span>(<span class="this">this</span>.<span class="variable">_callbacks</span>[<span class="variable">eventName</span>], <span class="keyword">function</span> (<span class="variable">callback</span>) {
+      <span class="variable">callback</span>.<span class="variable">apply</span>(<span class="variable">self</span>, <span class="class">Davis</span>.<span class="variable">utils</span>.<span class="variable">toArray</span>(<span class="variable">args</span>, <span class="number integer">1</span>));
     }) 
     <span class="keyword">return</span> <span class="this">this</span>;
   }
@@ -489,7 +497,7 @@ and a path property will also be accepted.
 <td class="code">
 <pre><code><span class="keyword">var</span> <span class="variable">pushState</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
     <span class="variable">history</span>.<span class="variable">pushState</span>(<span class="variable">request</span>, <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">location</span>());
-    <span class="variable">pushStateHandlers</span>.<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">handler</span>) {
+    <span class="class">Davis</span>.<span class="variable">utils</span>.<span class="variable">forEach</span>(<span class="variable">pushStateHandlers</span>, <span class="keyword">function</span> (<span class="variable">handler</span>) {
       <span class="variable">handler</span>(<span class="variable">request</span>);
     });
   };</code></pre>
@@ -513,7 +521,7 @@ and a path property will also be accepted.
 <td class="code">
 <pre><code><span class="keyword">var</span> <span class="variable">replaceState</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
     <span class="variable">history</span>.<span class="variable">replaceState</span>(<span class="variable">request</span>, <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">location</span>());
-    <span class="variable">pushStateHandlers</span>.<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">handler</span>) {
+    <span class="class">Davis</span>.<span class="variable">utils</span>.<span class="variable">forEach</span>(<span class="variable">pushStateHandlers</span>, <span class="keyword">function</span> (<span class="variable">handler</span>) {
       <span class="variable">handler</span>(<span class="variable">request</span>);
     });
   };</code></pre>
@@ -666,7 +674,7 @@ to set the correct reqeust method.</p>
   <span class="this">this</span>.<span class="variable">_staleCallback</span> = <span class="keyword">function</span> () {};
 
   <span class="keyword">if</span> (<span class="this">this</span>.<span class="variable">queryString</span>) {
-    <span class="this">this</span>.<span class="variable">queryString</span>.<span class="variable">split</span>(&<span class="variable">quot</span>;&<span class="variable">amp</span>;&<span class="variable">quot</span>;).<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">keyval</span>) {
+    <span class="class">Davis</span>.<span class="variable">utils</span>.<span class="variable">forEach</span>(<span class="this">this</span>.<span class="variable">queryString</span>.<span class="variable">split</span>(&<span class="variable">quot</span>;&<span class="variable">amp</span>;&<span class="variable">quot</span>;), <span class="keyword">function</span> (<span class="variable">keyval</span>) {
       <span class="keyword">var</span> <span class="variable">paramName</span> = <span class="variable">keyval</span>.<span class="variable">split</span>(&<span class="variable">quot</span>;=&<span class="variable">quot</span>;)[<span class="number integer">0</span>],
           <span class="variable">paramValue</span> = <span class="variable">keyval</span>.<span class="variable">split</span>(&<span class="variable">quot</span>;=&<span class="variable">quot</span>;)[<span class="number integer">1</span>],
           <span class="variable">nestedParamRegex</span> = <span class="regexp">/^(\w+)\[(\w+)\]/</span>,
@@ -688,6 +696,7 @@ to set the correct reqeust method.</p>
   <span class="this">this</span>.<span class="variable">method</span> = (<span class="this">this</span>.<span class="variable">params</span>.<span class="variable">_method</span> || <span class="variable">raw</span>.<span class="variable">method</span>).<span class="variable">toLowerCase</span>();
   <span class="this">this</span>.<span class="variable">path</span> = <span class="variable">raw</span>.<span class="variable">fullPath</span>.<span class="variable">replace</span>(<span class="regexp">/\?.+$/</span>, &<span class="variable">quot</span>;&<span class="variable">quot</span>;);
   <span class="this">this</span>.<span class="variable">delegateToServer</span> = <span class="variable">raw</span>.<span class="variable">delegateToServer</span> || <span class="class">Davis</span>.<span class="variable">noop</span>;
+  <span class="this">this</span>.<span class="variable">isForPageLoad</span> = <span class="variable">raw</span>.<span class="variable">forPageLoad</span> || <span class="variable">false</span>;
 
   <span class="keyword">if</span> (<span class="class">Davis</span>.<span class="class">Request</span>.<span class="variable">prev</span>) <span class="class">Davis</span>.<span class="class">Request</span>.<span class="variable">prev</span>.<span class="variable">makeStale</span>(<span class="this">this</span>);
   <span class="class">Davis</span>.<span class="class">Request</span>.<span class="variable">prev</span> = <span class="this">this</span>;
@@ -835,7 +844,8 @@ JavaScript app should handle.</p>
   <span class="keyword">return</span> <span class="keyword">new</span> <span class="this">this</span> ({
     <span class="variable">method</span>: <span class="string">'get'</span>,
     <span class="variable">fullPath</span>: <span class="variable">window</span>.<span class="variable">location</span>.<span class="variable">pathname</span>,
-    <span class="variable">title</span>: <span class="variable">document</span>.<span class="variable">title</span>
+    <span class="variable">title</span>: <span class="variable">document</span>.<span class="variable">title</span>,
+    <span class="variable">forPageLoad</span>: <span class="variable">true</span>
   });
 }</code></pre>
 </td>
@@ -1060,7 +1070,7 @@ be expected to know about and support.</p>
 </td>
 <td class="code">
 <pre><code><span class="keyword">var</span> <span class="variable">verbs</span> = [<span class="string">'get'</span>, <span class="string">'post'</span>, <span class="string">'put'</span>];
-  <span class="variable">verbs</span>.<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">verb</span>) {
+  <span class="class">Davis</span>.<span class="variable">utils</span>.<span class="variable">forEach</span>(<span class="variable">verbs</span>, <span class="keyword">function</span> (<span class="variable">verb</span>) {
     <span class="variable">self</span>[<span class="variable">verb</span>] = <span class="keyword">function</span> (<span class="variable">path</span>, <span class="variable">handler</span>) {
       <span class="variable">self</span>.<span class="variable">_routeCollection</span>.<span class="variable">push</span>(<span class="keyword">new</span> <span class="class">Davis</span>.<span class="class">Route</span> (<span class="variable">verb</span>, <span class="variable">path</span>, <span class="variable">handler</span>));
     }
@@ -1166,7 +1176,7 @@ lookup filters.
 </td>
 <td class="code">
 <pre><code><span class="keyword">var</span> <span class="variable">filters</span> = [<span class="string">'before'</span>, <span class="string">'after'</span>];
-  <span class="variable">filters</span>.<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">filter</span>) {
+  <span class="class">Davis</span>.<span class="variable">utils</span>.<span class="variable">forEach</span>(<span class="variable">filters</span>, <span class="keyword">function</span> (<span class="variable">filter</span>) {
     <span class="variable">self</span>[<span class="variable">filter</span>] = <span class="keyword">function</span> () {
       <span class="keyword">var</span> <span class="variable">method</span> = <span class="regexp">/.+/</span>;
 
@@ -1184,7 +1194,7 @@ lookup filters.
     <span class="keyword">var</span> <span class="variable">lookupName</span> = <span class="string">'lookup'</span> + <span class="variable">filter</span>.<span class="variable">replace</span>(<span class="regexp">/^\w/</span>, <span class="keyword">function</span> ($<span class="number integer">0</span>) { <span class="keyword">return</span> $<span class="number integer">0</span>.<span class="variable">toUpperCase</span>()}) + <span class="string">'Filter'</span>;
 
     <span class="variable">self</span>[<span class="variable">lookupName</span>] = <span class="keyword">function</span> (<span class="variable">method</span>, <span class="variable">path</span>) {
-      <span class="keyword">return</span> <span class="variable">self</span>.<span class="variable">_filterCollection</span>[<span class="variable">filter</span>].<span class="variable">filter</span>(<span class="keyword">function</span> (<span class="variable">route</span>) {
+      <span class="keyword">return</span> <span class="class">Davis</span>.<span class="variable">utils</span>.<span class="variable">filter</span>(<span class="variable">self</span>.<span class="variable">_filterCollection</span>[<span class="variable">filter</span>], <span class="keyword">function</span> (<span class="variable">route</span>) {
         <span class="keyword">return</span> <span class="variable">route</span>.<span class="variable">match</span>(<span class="variable">method</span>, <span class="variable">path</span>)
       });
     }
@@ -1204,11 +1214,21 @@ find and return the first matched route.</p>
 </td>
 <td class="code">
 <pre><code><span class="variable">self</span>.<span class="variable">lookupRoute</span> = <span class="keyword">function</span> (<span class="variable">method</span>, <span class="variable">path</span>) {
-    <span class="keyword">return</span> <span class="this">this</span>.<span class="variable">_routeCollection</span>.<span class="variable">filter</span>(<span class="keyword">function</span> (<span class="variable">route</span>) {
+    <span class="keyword">return</span> <span class="class">Davis</span>.<span class="variable">utils</span>.<span class="variable">filter</span>(<span class="this">this</span>.<span class="variable">_routeCollection</span>, <span class="keyword">function</span> (<span class="variable">route</span>) {
       <span class="keyword">return</span> <span class="variable">route</span>.<span class="variable">match</span>(<span class="variable">method</span>, <span class="variable">path</span>)
     })[<span class="number integer">0</span>];
   };
 }</code></pre>
+</td>
+</tr><tr class="filename"><td><h2 id="src/davis.utils.js"><a href="#">davis.utils</a></h2></td><td>src/davis.utils.js</td></tr><tr class="code">
+<td class="docs">
+<p>A module that provides wrappers around modern JavaScript so that native implementations are used
+whereever possible and JavaScript implementations are used in those browsers that do not natively
+support them.
+ </p>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="variable">utils</span> = (<span class="keyword">function</span> () {</code></pre>
 </td>
 </tr>	</body>
 </html></tbody></table>

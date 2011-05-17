@@ -24,7 +24,7 @@ Davis.utils = (function () {
    * @returns {Array}
    */
   if (Array.prototype.every) {
-    var every = function (array, fn /*, thisp */) {
+    var every = function (array, fn) {
       return array.every(fn, arguments[2])
     }
   } else {
@@ -56,11 +56,11 @@ Davis.utils = (function () {
    * @returns {Array}
    */
   if (Array.prototype.forEach) {
-    var forEach = function (array, fn /*, thisp */) {
+    var forEach = function (array, fn) {
       return array.forEach(fn, arguments[2])
     }
   } else {
-    var forEach = function (array, fn /*, thisp */) {
+    var forEach = function (array, fn) {
       if (array === void 0 || array === null) throw new TypeError();
       var t = Object(array);
       var len = t.length >>> 0;
@@ -87,11 +87,11 @@ Davis.utils = (function () {
    * @returns {Array}
    */
   if (Array.prototype.filter) {
-    var filter = function (array, fn /*, thisp */) {
+    var filter = function (array, fn) {
       return array.filter(fn, arguments[2])
     }
   } else {
-    var filter = function(array, fn /*, thisp */) {
+    var filter = function(array, fn) {
       if (array === void 0 || array === null) throw new TypeError();
       var t = Object(array);
       var len = t.length >>> 0;
@@ -125,11 +125,11 @@ Davis.utils = (function () {
    * @returns {Array}
    */
   if (Array.prototype.map) {
-    var map = function (array, fn /*, thisp */) {
+    var map = function (array, fn) {
       return array.map(fn, arguments[2])
     }
   } else {
-    var map = function(array, fn /*, thisp */) {
+    var map = function(array, fn) {
       if (array === void 0 || array === null) throw new TypeError();
       var t = Object(array);
       var len = t.length >>> 0;
