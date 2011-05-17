@@ -12,17 +12,6 @@
 Davis.utils = (function () {
 
   /**
-   * Checks the arguments for type errors
-   * @private
-   */
-  var checkForTypeError = function (array, fn) {
-    if (array === void 0 || array === null) throw new TypeError();
-    var t = Object(array);
-    var len = t.length >>> 0;
-    if (typeof fun !== "function") throw new TypeError();
-  }
-
-  /**
    * ## Davis.utils.every
    * A wrapper around native Array.prototype.every that falls back to a pure JavaScript implementation
    * in browsers that do not support Array.prototype.every.  For more details see the full docs on MDC
@@ -40,7 +29,10 @@ Davis.utils = (function () {
     }
   } else {
     var every = function (array, fn) {
-      checkForTypeErrors(array, fn)
+      if (array === void 0 || array === null) throw new TypeError();
+      var t = Object(array);
+      var len = t.length >>> 0;
+      if (typeof fn !== "function") throw new TypeError();
 
       var thisp = arguments[2];
       for (var i = 0; i < len; i++) {
@@ -69,7 +61,11 @@ Davis.utils = (function () {
     }
   } else {
     var forEach = function (array, fn /*, thisp */) {
-      checkForTypeErrors(array, fn)
+      if (array === void 0 || array === null) throw new TypeError();
+      var t = Object(array);
+      var len = t.length >>> 0;
+      if (typeof fn !== "function") throw new TypeError();
+      
 
       var thisp = arguments[2];
       for (var i = 0; i < len; i++) {
@@ -96,13 +92,17 @@ Davis.utils = (function () {
     }
   } else {
     var filter = function(array, fn /*, thisp */) {
-      checkForTypeErrors(array, fn)
+      if (array === void 0 || array === null) throw new TypeError();
+      var t = Object(array);
+      var len = t.length >>> 0;
+      if (typeof fn !== "function") throw new TypeError();
+      
 
       var res = [];
-      var thisp = arguments[1];
+      var thisp = arguments[2];
       for (var i = 0; i < len; i++) {
         if (i in t) {
-          var val = t[i]; // in case fun mutates this
+          var val = t[i]; // in case fn mutates this
           if (fn.call(thisp, val, i, t)) res.push(val);
         }
       }
@@ -130,10 +130,14 @@ Davis.utils = (function () {
     }
   } else {
     var map = function(array, fn /*, thisp */) {
-      checkForTypeError(array, fn)
+      if (array === void 0 || array === null) throw new TypeError();
+      var t = Object(array);
+      var len = t.length >>> 0;
+      if (typeof fn !== "function") throw new TypeError();
+      
 
       var res = new Array(len);
-      var thisp = arguments[1];
+      var thisp = arguments[2];
       for (var i = 0; i < len; i++) {
         if (i in t) res[i] = fn.call(thisp, t[i], i, t);
       }
