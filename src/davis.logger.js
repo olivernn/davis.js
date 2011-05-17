@@ -29,7 +29,7 @@ Davis.logger = (function () {
   var prepArgs = function (args) {
     var a = Davis.utils.toArray(args)
     a.unshift(timestamp())
-    return a
+    return a.join(' ');
   }
 
   /**
@@ -39,7 +39,7 @@ Davis.logger = (function () {
    * @params {String} All arguments are combined and logged to the console.
    */
   var error = function () {
-    if (window.console) console.error.apply(console, prepArgs(arguments))
+    if (window.console) console.error(prepArgs(arguments));
   }
 
   /**
@@ -49,7 +49,7 @@ Davis.logger = (function () {
    * @params {String} All arguments are combined and logged to the console.
    */
   var info = function () {
-    if (window.console) console.info.apply(console, prepArgs(arguments))
+    if (window.console) console.info(prepArgs(arguments));
   }
 
   /**
@@ -59,7 +59,7 @@ Davis.logger = (function () {
    * @params {String} All arguments are combined and logged to the console.
    */
   var warn = function () {
-    if (window.console) console.warn.apply(console, prepArgs(arguments))
+    if (window.console) console.warn(prepArgs(arguments));
   }
 
   /**
