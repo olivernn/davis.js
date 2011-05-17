@@ -78,11 +78,17 @@ Davis.utils = (function () {
     };
   };
 
+  var toArray = function (args, start) {
+    var start = start || 0
+    return Array.prototype.slice.call(args, start)
+  }
+
   return {
     every: every,
     forEach: forEach,
     filter: filter,
-    map: map
+    map: map,
+    toArray: toArray
   }
 })()
 
