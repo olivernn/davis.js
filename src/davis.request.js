@@ -34,7 +34,7 @@ Davis.Request = function (raw) {
   this._staleCallback = function () {};
 
   if (this.queryString) {
-    this.queryString.split("&").forEach(function (keyval) {
+    Davis.utils.forEach(this.queryString.split("&"), function (keyval) {
       var paramName = keyval.split("=")[0],
           paramValue = keyval.split("=")[1],
           nestedParamRegex = /^(\w+)\[(\w+)\]/,

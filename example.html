@@ -11,6 +11,7 @@
     <script src="/src/davis.history.js"></script>
     <script src="/src/davis.location.js"></script>
     <script src="/src/davis.hash.js"></script>
+    <script src="/src/davis.utils.js"></script>
     <script src="/src/davis.listener.js"></script>
     <script src="/src/davis.event.js"></script>
     <script src="/src/davis.logger.js"></script>
@@ -34,16 +35,16 @@
         })
 
         this.before(function (req) {
-          console.log('before filter')
+          Davis.logger.info('before filter')
           req.foo = "foo"
         })
 
         this.get("/bar(?:/:id)?", function () {
-          console.log(this)
+          Davis.logger.info(this)
         })
 
         this.get('/example.html', function () {
-          console.log('page has loaded')
+          Davis.logger.info('page has loaded')
         })
 
         this.get('/bang', function () {
@@ -55,37 +56,37 @@
         })
 
         this.after(function () {
-          console.log('after callback')
+          Davis.logger.info('after callback')
         })
 
         this.get('/foo/:id/blah/:bob', function () {
-          console.log('params:', this.params)
+          Davis.logger.info('params:', this.params)
         })
 
         this.get('/bar/:id', function (req) {
-          console.log(req)
+          Davis.logger.info(req)
         })
 
         this.post('/baz/:id', function () {
-          console.log('params:', this.params)
+          Davis.logger.info('params:', this.params)
           this.redirect('/bar')
         })
 
         this.put('/blah/:id', function (req) {
-          console.log('request', this)
+          Davis.logger.info('request', this)
           req.whenStale(function () {
-            console.log(req.toString(), " is now stale")
+            Davis.logger.info(req.toString(), " is now stale")
           })
           this.redirect('/bar')
         })
 
         this.state('/photoscroll/:id', function (req) {
-          console.log(req)
+          Davis.logger.info(req)
         })
       })
 
       app.bind('unsupported', function () {
-        console.log('sucks to be you!')
+        alert('unsupported')
       })
 
       app.start();
