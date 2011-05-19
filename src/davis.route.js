@@ -39,7 +39,13 @@ Davis.Route = (function () {
   var Route = function (method, path, callback) {
     var convertPathToRegExp = function () {
       if (!(path instanceof RegExp)) {
-        return new RegExp("^" + path.replace(pathNameRegex, pathNameReplacement) + "$", "gi");
+        var str = path.replace(pathNameRegex, pathNameReplacement);
+
+        // Most browsers will reset this to zero after a replace call.  IE will
+        // set it to the index of the last matched character.
+        path.lastIndex = 0;
+
+        return new RegExp("^" + str + "$", "gi");
       } else {
         return path;
       };
