@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.3
+
+* Merge [pull request](https://github.com/olivernn/davis.js/pull/4) fixes issues with IE's console functions/objects and IE's handling of lastIndex, thanks to [jbaudanza](https://github.com/jbaudanza).
+
 ## 0.4.2
 
 * Fixed [bug](https://github.com/olivernn/davis.js/issues#issue/3) by introducing a utils module which uses native implementations of `Array.prototype.every`, `Array.prototype.forEach`, `Array.prototype.filter`, `Array.prototype.map` if they exist and if not falls back to a non native implementation.  This allows Davis.js to fail gracefully in IE.  Thanks to to [jbaudanza](https://github.com/jbaudanza) for reporting the issue.
