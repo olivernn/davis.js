@@ -5,7 +5,7 @@ Davis.hashRouting = function () {
 
     var current = function () {
       var hash
-      if (hash = window.location.hash.replace(/^#!/, "")) {
+      if (hash = window.location.hash.replace(/^#/, "")) {
         return hash
       } else {
         return "/"
@@ -14,7 +14,7 @@ Davis.hashRouting = function () {
 
     var assign = function (request) {
       if (request.location()) {
-        window.location.hash = ["!", request.location()].join("")
+        window.location.hash = request.location()
       } else {
         callbacks.forEach(function (callback) {
           callback(request)
