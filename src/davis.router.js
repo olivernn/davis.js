@@ -153,7 +153,7 @@ Davis.router = function () {
       title: ''
     })
 
-    Davis.history.pushState(req)
+    Davis.location.assign(req)
   }
 
   /**

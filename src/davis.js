@@ -35,3 +35,19 @@ Davis.supported = function () {
  * @returns {Function}
  */
 Davis.noop = function () {}
+
+/**
+ * ## Davis.extend
+ * Method to extend the Davis library with an extension.  An extension is just a function that will modify
+ * the Davis framework in some way, for example changing how the routing works or adjusting where Davis thinks
+ * it is supported.
+ *
+ * @param {Function} the function that will extend Davis
+ *
+ * ### Example:
+ *     Davis.extend(Davis.hashBasedRouting)
+ *
+ */
+Davis.extend = function (extension) {
+  extension(Davis)
+}

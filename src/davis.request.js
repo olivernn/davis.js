@@ -84,7 +84,7 @@ Davis.Request = function (raw) {
  *     })
  */
 Davis.Request.prototype.redirect = function (path) {
-  Davis.history.replaceState(new Davis.Request ({
+  Davis.location.replace(new Davis.Request ({
     method: 'get',
     fullPath: path,
     title: this.title
@@ -162,7 +162,8 @@ Davis.Request.prototype.toString = function () {
 Davis.Request.forPageLoad = function () {
   return new this ({
     method: 'get',
-    fullPath: window.location.pathname,
+    // fullPath: window.location.pathname,
+    fullPath: Davis.location.current(),
     title: document.title,
     forPageLoad: true
   });

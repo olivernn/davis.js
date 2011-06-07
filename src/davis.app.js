@@ -197,7 +197,7 @@ Davis.App = (function () {
             self.settings.logger.error(error.message, error.stack)
           });
 
-        Davis.history.onChange(function (req) {
+        Davis.location.onChange(function (req) {
           handleRequest(req)
         });
 

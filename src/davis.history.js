@@ -84,7 +84,7 @@ Davis.history = (function () {
   };
 
   /**
-   * ## Davis.history.pushState
+   * ## Davis.history.assign
    * Push a request onto the history stack.  This is used internally by Davis to push a new request
    * resulting from either a form submit or a link click onto the history stack, it will also trigger
    * the onpushstate event.
@@ -94,7 +94,7 @@ Davis.history = (function () {
    * An instance of Davis.Request is expected to be passed, however any object that has a title
    * and a path property will also be accepted.
    */
-  var pushState = function (request) {
+  var assign = function (request) {
     history.pushState(request, request.title, request.location());
     Davis.utils.forEach(pushStateHandlers, function (handler) {
       handler(request);
@@ -102,7 +102,7 @@ Davis.history = (function () {
   };
 
   /**
-   * ## Davis.history.replaceState
+   * ## Davis.history.replace
    * Replace the current state on the history stack.  This is used internally by Davis when performing
    * a redirect.  This will trigger an onpushstate event.
    *
@@ -111,20 +111,25 @@ Davis.history = (function () {
    * An instance of Davis.Request is expected to be passed, however any object that has a title
    * and a path property will also be accepted.
    */
-  var replaceState = function (request) {
+  var replace = function (request) {
     history.replaceState(request, request.title, request.location());
     Davis.utils.forEach(pushStateHandlers, function (handler) {
       handler(request);
     });
   };
 
+  var current = function () {
+    return window.location.pathname
+  }
+
   /**
    * Exposing the public methods of this module
    * @private
    */
   return {
-    replaceState: replaceState,
-    pushState: pushState,
-    onChange: onChange
+    onChange: onChange,
+    current: current,
+    assign: assign,
+    replace: replace
   }
 })()
