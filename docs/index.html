@@ -321,7 +321,7 @@ routes and filters.
             <span class="variable">self</span>.<span class="variable">settings</span>.<span class="variable">logger</span>.<span class="variable">error</span>(<span class="variable">error</span>.<span class="variable">message</span>, <span class="variable">error</span>.<span class="variable">stack</span>)
           });
 
-        <span class="class">Davis</span>.<span class="variable">history</span>.<span class="variable">onChange</span>(<span class="keyword">function</span> (<span class="variable">req</span>) {
+        <span class="class">Davis</span>.<span class="variable">location</span>.<span class="variable">onChange</span>(<span class="keyword">function</span> (<span class="variable">req</span>) {
           <span class="variable">handleRequest</span>(<span class="variable">req</span>)
         });
 
@@ -480,7 +480,7 @@ off the history stack.</p>
 </tr>
 <tr class="code">
 <td class="docs">
-<h2>Davis.history.pushState</h2>
+<h2>Davis.history.assign</h2>
 
 <p>Push a request onto the history stack.  This is used internally by Davis to push a new request
 resulting from either a form submit or a link click onto the history stack, it will also trigger
@@ -495,7 +495,7 @@ and a path property will also be accepted.
    </p>
 </td>
 <td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">pushState</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
+<pre><code><span class="keyword">var</span> <span class="variable">assign</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
     <span class="variable">history</span>.<span class="variable">pushState</span>(<span class="variable">request</span>, <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">location</span>());
     <span class="class">Davis</span>.<span class="variable">utils</span>.<span class="variable">forEach</span>(<span class="variable">pushStateHandlers</span>, <span class="keyword">function</span> (<span class="variable">handler</span>) {
       <span class="variable">handler</span>(<span class="variable">request</span>);
@@ -505,7 +505,7 @@ and a path property will also be accepted.
 </tr>
 <tr class="code">
 <td class="docs">
-<h2>Davis.history.replaceState</h2>
+<h2>Davis.history.replace</h2>
 
 <p>Replace the current state on the history stack.  This is used internally by Davis when performing
 a redirect.  This will trigger an onpushstate event.</p>
@@ -519,12 +519,26 @@ and a path property will also be accepted.
    </p>
 </td>
 <td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">replaceState</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
+<pre><code><span class="keyword">var</span> <span class="variable">replace</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
     <span class="variable">history</span>.<span class="variable">replaceState</span>(<span class="variable">request</span>, <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">location</span>());
     <span class="class">Davis</span>.<span class="variable">utils</span>.<span class="variable">forEach</span>(<span class="variable">pushStateHandlers</span>, <span class="keyword">function</span> (<span class="variable">handler</span>) {
       <span class="variable">handler</span>(<span class="variable">request</span>);
     });
   };</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.history.current</h2>
+
+<p>Returns the current location for the application.
+Davis.location delegates to this method for getting the apps current location.
+   </p>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">current</span> = <span class="keyword">function</span> () {
+    <span class="keyword">return</span> <span class="variable">window</span>.<span class="variable">location</span>.<span class="variable">pathname</span>
+  }</code></pre>
 </td>
 </tr><tr class="filename"><td><h2 id="src/davis.listener.js"><a href="#">davis.listener</a></h2></td><td>src/davis.listener.js</td></tr><tr class="code">
 <td class="docs">
@@ -575,6 +589,122 @@ behaviour restored.</p>
     <span class="variable">jQuery</span>(<span class="variable">document</span>).<span class="variable">undelegate</span>(<span class="this">this</span>.<span class="variable">settings</span>.<span class="variable">formSelector</span>, <span class="string">'submit'</span>, <span class="variable">submitHandler</span>)
   }</code></pre>
 </td>
+</tr><tr class="filename"><td><h2 id="src/davis.location.js"><a href="#">davis.location</a></h2></td><td>src/davis.location.js</td></tr><tr class="code">
+<td class="docs">
+<p>A module that acts as a delegator to any locationDelegate implementation.  This abstracts the details of
+what is being used for the apps routing away from the rest of the library.  This allows any kind of routing
+To be used with Davis as long as it can respond appropriatly to the given delegate methods.</p>
+
+<p>A routing module must respond to the following methods:</p>
+
+<p> <strong>current</strong> : Should return the current location for the app</p>
+
+<p> <strong>assign</strong> : Should set the current location of the app based on the location of the passed request.</p>
+
+<p> <strong>replace</strong> : Should at least change the current location to the location of the passed request, for full compatibility it should not add any extra items in the history stack.</p>
+
+<p> <strong>onChange</strong> : Should add calbacks that will be fired whenever the location is changed.</p>
+
+<p> </p>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="variable">location</span> = (<span class="keyword">function</span> () {</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>By default the Davis uses the Davis.history module for its routing, this gives HTML5 based pushState routing
+which is preferrable over location.hash based routing.
+   </p>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">locationDelegate</span> = <span class="class">Davis</span>.<span class="variable">history</span></code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.location.setLocationDelegate</h2>
+
+<p>Used to change the location delegate.  The passed delegate will be used for all Davis apps.  The delegate
+must respond to the following four methods <code>current</code>, <code>assign</code>, <code>replace</code> &amp; <code>onChange</code>.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Object</em>  the location delegate to use.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">setLocationDelegate</span> = <span class="keyword">function</span> (<span class="variable">delegate</span>) {
+    <span class="variable">locationDelegate</span> = <span class="variable">delegate</span>
+  }</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.location.current</h2>
+
+<p>Delegates to the locationDelegate.current method.  This should return the current location of the app.
+   </p>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">current</span> = <span class="keyword">function</span> () {
+    <span class="keyword">return</span> <span class="variable">locationDelegate</span>.<span class="variable">current</span>()
+  }</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.location.assign</h2>
+
+<p>Delegates to the locationDelegate.assign method.  This should set the current location for the app to
+that of the passed request object.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Request</em>  the request to set the current location to.</p></li><li><p><strong>see</strong>: <em>Davis</em>
+.Request</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">assign</span> = <span class="keyword">function</span> (<span class="variable">req</span>) {
+    <span class="variable">locationDelegate</span>.<span class="variable">assign</span>(<span class="variable">req</span>)
+  }</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.location.replace</h2>
+
+<p>Delegates to the locationDelegate.replace method.  This should replace the current location with that
+of the passed request.  Ideally it should not create a new entry in the browsers history.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Request</em>  the request to replace the current location with.</p></li><li><p><strong>see</strong>: <em>Davis</em>
+.Request</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">replace</span> = <span class="keyword">function</span> (<span class="variable">req</span>) {
+    <span class="variable">locationDelegate</span>.<span class="variable">replace</span>(<span class="variable">req</span>)
+  }</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.location.onChange</h2>
+
+<p>Delegates to the locationDelegate.onChange method.  This should add a callback that will be called any
+time the location changes.  The handler function will be called with a request param which is an
+instance of Davis.Request.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Function</em>  callback function to be called on location chnage.</p></li><li><p><strong>see</strong>: <em>Davis</em>
+.Request</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">onChange</span> = <span class="keyword">function</span> (<span class="variable">handler</span>) {
+    <span class="variable">locationDelegate</span>.<span class="variable">onChange</span>(<span class="variable">handler</span>)
+  }</code></pre>
+</td>
 </tr><tr class="filename"><td><h2 id="src/davis.logger.js"><a href="#">davis.logger</a></h2></td><td>src/davis.logger.js</td></tr><tr class="code">
 <td class="docs">
 <p>A module for enhancing the standard logging available through the console object.
@@ -601,7 +731,7 @@ Used internally in Davis and available for use outside of Davis.</p>
 </td>
 <td class="code">
 <pre><code><span class="keyword">var</span> <span class="variable">error</span> = <span class="keyword">function</span> () {
-    <span class="keyword">if</span> (<span class="variable">window</span>.<span class="variable">console</span>) <span class="variable">console</span>.<span class="variable">error</span>.<span class="variable">apply</span>(<span class="variable">console</span>, <span class="variable">prepArgs</span>(<span class="variable">arguments</span>))
+    <span class="keyword">if</span> (<span class="variable">window</span>.<span class="variable">console</span>) <span class="variable">console</span>.<span class="variable">error</span>(<span class="variable">prepArgs</span>(<span class="variable">arguments</span>));
   }</code></pre>
 </td>
 </tr>
@@ -617,7 +747,7 @@ Used internally in Davis and available for use outside of Davis.</p>
 </td>
 <td class="code">
 <pre><code><span class="keyword">var</span> <span class="variable">info</span> = <span class="keyword">function</span> () {
-    <span class="keyword">if</span> (<span class="variable">window</span>.<span class="variable">console</span>) <span class="variable">console</span>.<span class="variable">info</span>.<span class="variable">apply</span>(<span class="variable">console</span>, <span class="variable">prepArgs</span>(<span class="variable">arguments</span>))
+    <span class="keyword">if</span> (<span class="variable">window</span>.<span class="variable">console</span>) <span class="variable">console</span>.<span class="variable">info</span>(<span class="variable">prepArgs</span>(<span class="variable">arguments</span>));
   }</code></pre>
 </td>
 </tr>
@@ -633,7 +763,7 @@ Used internally in Davis and available for use outside of Davis.</p>
 </td>
 <td class="code">
 <pre><code><span class="keyword">var</span> <span class="variable">warn</span> = <span class="keyword">function</span> () {
-    <span class="keyword">if</span> (<span class="variable">window</span>.<span class="variable">console</span>) <span class="variable">console</span>.<span class="variable">warn</span>.<span class="variable">apply</span>(<span class="variable">console</span>, <span class="variable">prepArgs</span>(<span class="variable">arguments</span>))
+    <span class="keyword">if</span> (<span class="variable">window</span>.<span class="variable">console</span>) <span class="variable">console</span>.<span class="variable">warn</span>(<span class="variable">prepArgs</span>(<span class="variable">arguments</span>));
   }</code></pre>
 </td>
 </tr><tr class="filename"><td><h2 id="src/davis.request.js"><a href="#">davis.request</a></h2></td><td>src/davis.request.js</td></tr><tr class="code">
@@ -733,7 +863,7 @@ submit generated has been replaced in the history stack.</p>
 </td>
 <td class="code">
 <pre><code><span class="class">Davis</span>.<span class="class">Request</span>.<span class="variable">prototype</span>.<span class="variable">redirect</span> = <span class="keyword">function</span> (<span class="variable">path</span>) {
-  <span class="class">Davis</span>.<span class="variable">history</span>.<span class="variable">replaceState</span>(<span class="keyword">new</span> <span class="class">Davis</span>.<span class="class">Request</span> ({
+  <span class="class">Davis</span>.<span class="variable">location</span>.<span class="variable">replace</span>(<span class="keyword">new</span> <span class="class">Davis</span>.<span class="class">Request</span> ({
     <span class="variable">method</span>: <span class="string">'get'</span>,
     <span class="variable">fullPath</span>: <span class="variable">path</span>,
     <span class="variable">title</span>: <span class="this">this</span>.<span class="variable">title</span>
@@ -843,7 +973,8 @@ JavaScript app should handle.</p>
 <pre><code><span class="class">Davis</span>.<span class="class">Request</span>.<span class="variable">forPageLoad</span> = <span class="keyword">function</span> () {
   <span class="keyword">return</span> <span class="keyword">new</span> <span class="this">this</span> ({
     <span class="variable">method</span>: <span class="string">'get'</span>,
-    <span class="variable">fullPath</span>: <span class="variable">window</span>.<span class="variable">location</span>.<span class="variable">pathname</span>,
+    <span class="comment">// fullPath: window.location.pathname,</span>
+    <span class="variable">fullPath</span>: <span class="class">Davis</span>.<span class="variable">location</span>.<span class="variable">current</span>(),
     <span class="variable">title</span>: <span class="variable">document</span>.<span class="variable">title</span>,
     <span class="variable">forPageLoad</span>: <span class="variable">true</span>
   });
@@ -877,7 +1008,13 @@ generated request is run.</p>
 <pre><code><span class="keyword">var</span> <span class="class">Route</span> = <span class="keyword">function</span> (<span class="variable">method</span>, <span class="variable">path</span>, <span class="variable">callback</span>) {
     <span class="keyword">var</span> <span class="variable">convertPathToRegExp</span> = <span class="keyword">function</span> () {
       <span class="keyword">if</span> (!(<span class="variable">path</span> <span class="variable">instanceof</span> <span class="class">RegExp</span>)) {
-        <span class="keyword">return</span> <span class="keyword">new</span> <span class="class">RegExp</span>(&<span class="variable">quot</span>;^&<span class="variable">quot</span>; + <span class="variable">path</span>.<span class="variable">replace</span>(<span class="variable">pathNameRegex</span>, <span class="variable">pathNameReplacement</span>) + &<span class="variable">quot</span>;$&<span class="variable">quot</span>;, &<span class="variable">quot</span>;<span class="variable">gi</span>&<span class="variable">quot</span>;);
+        <span class="keyword">var</span> <span class="variable">str</span> = <span class="variable">path</span>.<span class="variable">replace</span>(<span class="variable">pathNameRegex</span>, <span class="variable">pathNameReplacement</span>);
+
+        <span class="comment">// Most browsers will reset this to zero after a replace call.  IE will</span>
+        <span class="comment">// set it to the index of the last matched character.</span>
+        <span class="variable">path</span>.<span class="variable">lastIndex</span> = <span class="number integer">0</span>;
+
+        <span class="keyword">return</span> <span class="keyword">new</span> <span class="class">RegExp</span>(&<span class="variable">quot</span>;^&<span class="variable">quot</span>; + <span class="variable">str</span> + &<span class="variable">quot</span>;$&<span class="variable">quot</span>;, &<span class="variable">quot</span>;<span class="variable">gi</span>&<span class="variable">quot</span>;);
       } <span class="keyword">else</span> {
         <span class="keyword">return</span> <span class="variable">path</span>;
       };
@@ -1164,7 +1301,7 @@ app.trans('/foo/1', {
       <span class="variable">title</span>: <span class="string">''</span>
     })
 
-    <span class="class">Davis</span>.<span class="variable">history</span>.<span class="variable">pushState</span>(<span class="variable">req</span>)
+    <span class="class">Davis</span>.<span class="variable">location</span>.<span class="variable">assign</span>(<span class="variable">req</span>)
   }</code></pre>
 </td>
 </tr>

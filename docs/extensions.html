@@ -1,0 +1,227 @@
+<html>
+	<head>
+		<title>Davis Extensions</title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+		<style>body {
+    margin: 0;
+    padding: 0;
+    font: 14px/1.5 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+    color: #252519;
+}
+a {
+    color: #252519;
+}
+a:hover {
+    text-decoration: underline;
+    color: #19469D;
+}
+p {
+    margin: 12px 0;
+}
+h1, h2, h3 {
+    margin: 0;
+    padding: 0;
+}
+table#source {
+    width: 100%;
+    border-collapse: collapse;
+}
+table#source td:first-child {
+    padding: 30px 40px 30px 40px;
+    vertical-align: top;
+}
+table#source td:first-child,
+table#source td:first-child pre {
+    width: 450px;
+}
+table#source td:last-child {
+    padding: 30px 0 30px 40px;
+    border-left: 1px solid #E5E5EE;
+    background: #F5F5FF;
+}
+table#source tr {
+    border-bottom: 1px solid #E5E5EE;
+}
+table#source tr.filename {
+    padding-top: 40px;
+    border-top: 1px solid #E5E5EE;
+}
+table#source tr.filename td:first-child {
+    text-transform: capitalize;
+}
+table#source tr.filename td:last-child {
+    font-size: 12px;
+}
+table#source tr.filename h2 {
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+}
+table#source tr.code h1,
+table#source tr.code h2,
+table#source tr.code h3 {
+    margin-top: 30px;
+    font-family: "Lucida Grande", "Helvetica Nueue", Arial, sans-serif;
+    font-size: 18px;
+}
+table#source tr.code h2 {
+    font-size: 16px;
+}
+table#source tr.code h3 {
+    font-size: 14px;
+}
+table#source tr.code ul {
+    margin: 15px 0 15px 35px;
+    padding: 0;
+}
+table#source tr.code ul li {
+    margin: 0;
+    padding: 1px 0;
+}
+table#source tr.code ul li p {
+    margin: 0;
+    padding: 0;
+}
+table#source tr.code td:first-child pre {
+    padding: 20px;
+}
+#ribbon {
+    position: fixed;
+    top: 0;
+    right: 0;
+}
+code .string { color: #219161; }
+code .regexp { color: #219161; }
+code .keyword { color: #954121; }
+code .number { color: #19469D; }
+code .comment { color: #bbb; }
+code .this { color: #19469D; }</style>
+		<script>
+			$(function(){
+				$('tr.code').hide();
+				$('tr.filename').toggle(function(){
+					$(this).nextUntil('.filename').fadeIn();
+				}, function(){
+					$(this).nextUntil('.filename').fadeOut();
+				});
+			});
+		</script>
+	</head>
+	<body>
+<table id="source"><tbody><tr><td><h1>Davis Extensions</h1></td><td></td></tr><tr class="filename"><td><h2 id="src/extensions/davis.hashRouting.js"><a href="#">davis.hashRouting</a></h2></td><td>src/extensions/davis.hashRouting.js</td></tr><tr class="code">
+<td class="docs">
+<p>Davis.hash is an extension to Davis which swaps out the HTML5 pushState based routing with a location
+hash based approach.  It implements the delegate methods of Davis.location however it has some limitations
+when compared with the default pushState based routing.</p>
+
+<p>Firstly there is nothing similar to the history.replaceState method available when using location.hash, this
+means that doing redirects always adds a new entry in the history rather than replacing the current history
+entry.</p>
+
+<p>Secondly it is not possible to have multiple history entries of the same location as the hashchange event
+only fires when the hash changes to a different value.</p>
+
+<p>This extension could be used to provide a fallback for browsers that do not support the HTML5 history api,
+however this extension does not take into account what happens when a hash link is used in a browser that
+supports HTML5 history.</p>
+
+<p>To use this extension put this code at before starting your app.</p>
+
+<p>   Davis.extend(Davis.hashRouting)</p>
+
+<ul><li><p><strong>plugi</strong>: <em>n</em></p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="variable">hashRouting</span> = <span class="keyword">function</span> () {</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.supported</h2>
+
+<p>Overwriting the supported because we are interested in the onhashchange event only now.
+   </p>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="variable">supported</span> = <span class="keyword">function</span> () {
+    <span class="keyword">return</span> (&<span class="variable">quot</span>;<span class="variable">onhashchange</span>&<span class="variable">quot</span>; <span class="keyword">in</span> <span class="variable">window</span>)
+  }</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Setting the location delegate to be this hashRouting module
+   </p>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="variable">location</span>.<span class="variable">setLocationDelegate</span>((<span class="keyword">function</span> () {</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.hashRouting.current</h2>
+
+<p>Returns the apps current location, which for hashRouting is pulled from the location.hash.
+Davis.location delegates to this method for getting the apps current location.
+     </p>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">current</span> = <span class="keyword">function</span> () {
+      <span class="keyword">var</span> <span class="variable">hash</span>
+      <span class="keyword">if</span> (<span class="variable">hash</span> = <span class="variable">window</span>.<span class="variable">location</span>.<span class="variable">hash</span>.<span class="variable">replace</span>(<span class="regexp">/^#/</span>, &<span class="variable">quot</span>;&<span class="variable">quot</span>;)) {
+        <span class="keyword">return</span> <span class="variable">hash</span>
+      } <span class="keyword">else</span> {
+        <span class="keyword">return</span> &<span class="variable">quot</span>;/&<span class="variable">quot</span>;
+      }
+    }</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.hashRouting.assign</h2>
+
+<p>Wrapper around changing the current location.hash.  This will also trigger all onChange callbacks
+that have been registered.  Davis.location delegates to this method for setting the apps current
+location as well as replacing the current location for the app with a new location.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>params</strong>: <em>Request</em>  the request to set the current location to.</p><p> </p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">assign</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
+      <span class="keyword">if</span> (<span class="variable">request</span>.<span class="variable">location</span>()) {
+        <span class="variable">window</span>.<span class="variable">location</span>.<span class="variable">hash</span> = <span class="variable">request</span>.<span class="variable">location</span>()
+      } <span class="keyword">else</span> {
+        <span class="variable">callbacks</span>.<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">callback</span>) {
+          <span class="variable">callback</span>(<span class="variable">request</span>)
+        })
+      };
+    }</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.hashRouting.onChange</h2>
+
+<p>Adds callbacks to the hashchange event.  Davis.location delegates to this method when asinging
+callbacks for when the apps location has changed.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Function</em>  the callback to be fired when the location has changed.</p><p> </p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">onChange</span> = <span class="keyword">function</span> (<span class="variable">callback</span>) {
+      <span class="variable">callbacks</span>.<span class="variable">push</span>(<span class="variable">callback</span>)
+
+      <span class="variable">jQuery</span>(<span class="variable">window</span>).<span class="variable">bind</span>(<span class="string">'hashchange'</span>, <span class="keyword">function</span> (<span class="variable">e</span>) {
+        <span class="variable">callback</span>(<span class="keyword">new</span> <span class="class">Davis</span>.<span class="class">Request</span>({
+          <span class="variable">fullPath</span>: <span class="variable">current</span>(),
+          <span class="variable">method</span>: <span class="string">'get'</span>
+        }))
+      })
+    }</code></pre>
+</td>
+</body>
+</html></tbody></table>

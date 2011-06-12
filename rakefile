@@ -14,7 +14,19 @@ task :test do
   open 'localhost:8003'
 end
 
-desc 'Generate the documentation'
-task :docs do
-  exec "dox --title 'Davis' src/davis.*.js > docs/index.html"
+namespace :docs do
+  desc 'Generate the documentation for the core library'
+  task :core do
+    exec "dox --title 'Davis' src/davis.*.js > docs/index.html"
+  end
+
+  desc 'Generate the documentation for the plugins'
+  task :plugins do
+    exec "dox --title 'Davis Plugins' src/plugins/davis.*.js > docs/plugins.html"
+  end
+
+  desc 'Generate the documentation for the extensions'
+  task :extensions do
+    exec "dox --title 'Davis Extensions' src/extensions/davis.*.js > docs/extensions.html"
+  end
 end

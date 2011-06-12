@@ -118,6 +118,12 @@ Davis.history = (function () {
     });
   };
 
+
+  /**
+   * ## Davis.history.current
+   * Returns the current location for the application.
+   * Davis.location delegates to this method for getting the apps current location.
+   */
   var current = function () {
     return window.location.pathname
   }
