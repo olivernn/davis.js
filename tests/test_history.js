@@ -10,11 +10,11 @@ test("binding and triggering the push state event", function () {
 
   ok(!callbackCount, "callback shouldn't have been called yet")
 
-  Davis.history.pushState(factory('request'));
+  Davis.history.assign(factory('request'));
   ok(callbackCount, "callback should have been called")
   resetLocation()
 
-  Davis.history.replaceState(factory('request'));
+  Davis.history.replace(factory('request'));
   equal(2, callbackCount, "call back should have been called again for replace state")
 
   resetLocation()
@@ -25,7 +25,7 @@ test("url should be changed to the requests url on pushState", function () {
     fullPath: "/eggs"
   })
 
-  Davis.history.pushState(req1)
+  Davis.history.assign(req1)
   currentPathname(req1.location(), "location pathname should be equal to request location")
 
   resetLocation()
@@ -36,7 +36,7 @@ test("url should be changed to the requests url on replace state", function () {
     fullPath: "/ham"
   })
 
-  Davis.history.replaceState(req2)
+  Davis.history.replace(req2)
   currentPathname(req2.location(), "location pathname should be equal to request location")
 
   resetLocation()
