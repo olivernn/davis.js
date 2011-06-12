@@ -135,19 +135,19 @@ are picked up and used.</p>
 
 <h2></h2>
 
-<ul><li><strong>param</strong>: <em>Function</em>  config - This function will be executed with the context bound to the apps setting object</li></ul>
+<ul><li><strong>param</strong>: <em>Function</em>  config - This function will be executed with the context bound to the apps setting object, this will also be passed as the first argument to the function.</li></ul>
 
 <h3>Example:</h3>
 
-<pre><code>app.configure(function () {
-  this.linkSelector = 'a.davis'
-  this.formSelector = 'form.davis'
+<pre><code>app.configure(function (config) {
+  config.linkSelector = 'a.davis'
+  config.formSelector = 'form.davis'
 })
  </code></pre>
 </td>
 <td class="code">
 <pre><code><span class="variable">configure</span>: <span class="keyword">function</span> (<span class="variable">config</span>) {
-      <span class="variable">config</span>.<span class="variable">call</span>(<span class="this">this</span>.<span class="variable">settings</span>);
+      <span class="variable">config</span>.<span class="variable">call</span>(<span class="this">this</span>.<span class="variable">settings</span>, <span class="this">this</span>.<span class="variable">settings</span>);
     },</code></pre>
 </td>
 </tr>
