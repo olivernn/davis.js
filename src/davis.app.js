@@ -48,7 +48,7 @@ Davis.App = (function () {
      *     })
      */
     configure: function (config) {
-      config.call(this.settings);
+      config.call(this.settings, this.settings);
     },
 
     /**
