@@ -10,7 +10,7 @@
     <script src="/src/davis.js"></script>
     <script src="/src/davis.history.js"></script>
     <script src="/src/davis.location.js"></script>
-    <script src="/src/davis.hash.js"></script>
+    <script src="/src/extensions/davis.hashRouting.js"></script>
     <script src="/src/davis.utils.js"></script>
     <script src="/src/davis.listener.js"></script>
     <script src="/src/davis.event.js"></script>
@@ -34,10 +34,10 @@
           // this.throwErrors = false
         })
 
-        this.before(function (req) {
-          Davis.logger.info('before filter')
-          req.foo = "foo"
-        })
+        // this.before(function (req) {
+        //   Davis.logger.info('before filter')
+        //   req.foo = "foo"
+        // })
 
         this.get("/bar(?:/:id)?", function () {
           Davis.logger.info(this)
@@ -107,7 +107,7 @@
       <input type="submit" name="submit" value="Send" id="submit">
     </form>
 
-    <form action="/not_found" method="post">
+    <form action="/blah/12" method="post">
       <input type="hidden" name="_method" value="put">
       <input type="text" name="note[name]" value="">
       <input type="text" name="note[title]" value="">
