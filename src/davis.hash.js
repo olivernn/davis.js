@@ -27,6 +27,15 @@
  * @plugin
  */
 Davis.hashRouting = function () {
+
+  /**
+   * ## Davis.supported
+   * Overwriting the supported because we are interested in the onhashchange event only now.
+   */
+  Davis.supported = function () {
+    return ("onhashchange" in window)
+  }
+
   /**
    * Setting the location delegate to be this hashRouting module
    */
