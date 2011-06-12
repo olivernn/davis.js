@@ -39,12 +39,12 @@ Davis.App = (function () {
      * Should be used before starting the app to ensure any new settings
      * are picked up and used.
      *
-     * @param {Function} config - This function will be executed with the context bound to the apps setting object
+     * @param {Function} config - This function will be executed with the context bound to the apps setting object, this will also be passed as the first argument to the function.
      *
      * ### Example:
-     *     app.configure(function () {
-     *       this.linkSelector = 'a.davis'
-     *       this.formSelector = 'form.davis'
+     *     app.configure(function (config) {
+     *       config.linkSelector = 'a.davis'
+     *       config.formSelector = 'form.davis'
      *     })
      */
     configure: function (config) {
