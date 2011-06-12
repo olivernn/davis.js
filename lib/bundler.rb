@@ -28,16 +28,17 @@ class Bundler
     private
       def files
         @files ||= %w(
-          davis
-          davis.utils
-          davis.listener
-          davis.event
-          davis.logger
-          davis.route
-          davis.router
-          davis.history
-          davis.request
-          davis.app
+          davis.js
+          davis.utils.js
+          davis.listener.js
+          davis.event.js
+          davis.logger.js
+          davis.route.js
+          davis.router.js
+          davis.history.js
+          davis.location.js
+          davis.request.js
+          davis.app.js
         )
       end
 
