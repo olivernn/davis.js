@@ -1,5 +1,5 @@
 /*!
- * Davis - hash
+ * Davis - hashRouting
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
  */
