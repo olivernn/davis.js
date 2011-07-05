@@ -12,7 +12,7 @@ Davis.js is heavily inspired by [Sammy.js](https://github.com/quirkey/sammy) (he
 
 ## Requirements
 
-Davis.js requires jQuery 1.4.2+ as well as a modern browser that supports HTML5 history.pushState and the onpopstate event.  At the moment that means FireFox 4+, Safari 5+, Chrome, iOS Safari 4+*, Android Browser 2.2+.
+Davis.js requires jQuery 1.4.2+ as well as a modern browser that supports HTML5 history.pushState and the onpopstate event.  At the moment that means FireFox 4+, Safari 5+, Chrome, iOS Safari 4+*, Android Browser 2.2+, Opera 11.50+.
 
 In all other browsers Davis.js is currently unsupported, all links and forms will have their default behaviour.  You can bind to the 'unsupported' event on an app to handle this situation in your code.  Fallback to `location.hash` and `onhashchange` is a possibility in the future.
 
