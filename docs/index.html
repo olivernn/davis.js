@@ -496,7 +496,7 @@ and a path property will also be accepted.
 </td>
 <td class="code">
 <pre><code><span class="keyword">var</span> <span class="variable">assign</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
-    <span class="variable">history</span>.<span class="variable">pushState</span>(<span class="variable">request</span>, <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">location</span>());
+    <span class="variable">history</span>.<span class="variable">pushState</span>(<span class="variable">request</span>.<span class="variable">asJSON</span>(), <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">location</span>());
     <span class="class">Davis</span>.<span class="variable">utils</span>.<span class="variable">forEach</span>(<span class="variable">pushStateHandlers</span>, <span class="keyword">function</span> (<span class="variable">handler</span>) {
       <span class="variable">handler</span>(<span class="variable">request</span>);
     });
@@ -520,7 +520,7 @@ and a path property will also be accepted.
 </td>
 <td class="code">
 <pre><code><span class="keyword">var</span> <span class="variable">replace</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
-    <span class="variable">history</span>.<span class="variable">replaceState</span>(<span class="variable">request</span>, <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">location</span>());
+    <span class="variable">history</span>.<span class="variable">replaceState</span>(<span class="variable">request</span>.<span class="variable">asJSON</span>(), <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">location</span>());
     <span class="class">Davis</span>.<span class="variable">utils</span>.<span class="variable">forEach</span>(<span class="variable">pushStateHandlers</span>, <span class="keyword">function</span> (<span class="variable">handler</span>) {
       <span class="variable">handler</span>(<span class="variable">request</span>);
     });
@@ -798,6 +798,7 @@ to set the correct reqeust method.</p>
 <td class="code">
 <pre><code><span class="class">Davis</span>.<span class="class">Request</span> = <span class="keyword">function</span> (<span class="variable">raw</span>) {
   <span class="keyword">var</span> <span class="variable">self</span> = <span class="this">this</span>;
+  <span class="this">this</span>.<span class="variable">raw</span> = <span class="variable">raw</span>;
   <span class="this">this</span>.<span class="variable">params</span> = {};
   <span class="this">this</span>.<span class="variable">title</span> = <span class="variable">raw</span>.<span class="variable">title</span>;
   <span class="this">this</span>.<span class="variable">queryString</span> = <span class="variable">raw</span>.<span class="variable">fullPath</span>.<span class="variable">split</span>(&<span class="variable">quot</span>;?&<span class="variable">quot</span>;)[<span class="number integer">1</span>];
@@ -954,6 +955,27 @@ attributes.</p>
 <pre><code><span class="class">Davis</span>.<span class="class">Request</span>.<span class="variable">prototype</span>.<span class="variable">toString</span> = <span class="keyword">function</span> () {
   <span class="keyword">return</span> [<span class="this">this</span>.<span class="variable">method</span>.<span class="variable">toUpperCase</span>(), <span class="this">this</span>.<span class="variable">path</span>].<span class="variable">join</span>(&<span class="variable">quot</span>; &<span class="variable">quot</span>;)
 };</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>request.asJSON</h2>
+
+<p>Converts the request to a plain object which can be converted to a JSON string.  Used when
+pushing a request onto the history stack.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>returns</strong>: <em>Object</em>  a plain object representation of the request.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="class">Request</span>.<span class="variable">prototype</span>.<span class="variable">asJSON</span> = <span class="keyword">function</span> () {
+  <span class="keyword">return</span> {
+    <span class="variable">title</span>: <span class="this">this</span>.<span class="variable">raw</span>.<span class="variable">title</span>,
+    <span class="variable">fullPath</span>: <span class="this">this</span>.<span class="variable">raw</span>.<span class="variable">fullPath</span>,
+    <span class="variable">method</span>: <span class="this">this</span>.<span class="variable">raw</span>.<span class="variable">method</span>
+  }
+}</code></pre>
 </td>
 </tr>
 <tr class="code">
@@ -1290,7 +1312,7 @@ app.trans('/foo/1', {
 <td class="code">
 <pre><code><span class="this">this</span>.<span class="variable">trans</span> = <span class="keyword">function</span> (<span class="variable">path</span>, <span class="variable">data</span>) {
     <span class="keyword">if</span> (<span class="variable">data</span>) {
-      <span class="keyword">var</span> <span class="variable">fullPath</span> = [<span class="variable">path</span>, <span class="variable">decodeURIComponent</span>($.<span class="variable">param</span>(<span class="variable">data</span>))].<span class="variable">join</span>(<span class="string">'?'</span>)
+      <span class="keyword">var</span> <span class="variable">fullPath</span> = [<span class="variable">path</span>, <span class="variable">decodeURIComponent</span>(<span class="variable">jQuery</span>.<span class="variable">param</span>(<span class="variable">data</span>))].<span class="variable">join</span>(<span class="string">'?'</span>)
     } <span class="keyword">else</span> {
       <span class="keyword">var</span> <span class="variable">fullPath</span> = <span class="variable">path</span>
     };
