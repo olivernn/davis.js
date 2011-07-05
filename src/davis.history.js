@@ -92,7 +92,7 @@ Davis.history = (function () {
    * and a path property will also be accepted.
    */
   var assign = function (request) {
-    history.pushState(request.raw, request.title, request.location());
+    history.pushState(request.asJSON(), request.title, request.location());
     Davis.utils.forEach(pushStateHandlers, function (handler) {
       handler(request);
     });
@@ -109,7 +109,7 @@ Davis.history = (function () {
    * and a path property will also be accepted.
    */
   var replace = function (request) {
-    history.replaceState(request.raw, request.title, request.location());
+    history.replaceState(request.asJSON(), request.title, request.location());
     Davis.utils.forEach(pushStateHandlers, function (handler) {
       handler(request);
     });
