@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.1
+
+* Fixes required for Opera support now that Opera 11.50 supports pushState.
+* Ensure that jQuery is never referenced as $.
+
 ## 0.5.0
 
 * Introduce Davis.location object which acts as an interface to any kind of routing mechanism.  Expects to be passed a delegate object which will do the actual routing work.  By default the delegate is the HTML5 pushState module Davis.history.
