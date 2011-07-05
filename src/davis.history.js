@@ -56,10 +56,7 @@ Davis.history = (function () {
   var wrapped = function (handler) {
     return function (event) {
       if (event.state) {
-        // the object that is pushed into the browser history looses its __proto__
-        var obj = event.state
-        obj.__proto__ = Davis.Request.prototype
-        handler(obj)
+        handler(new Davis.Request(event.state))
       } else {
         if (!firstPop) handler(Davis.Request.forPageLoad())
       };
@@ -95,7 +92,7 @@ Davis.history = (function () {
    * and a path property will also be accepted.
    */
   var assign = function (request) {
-    history.pushState(request, request.title, request.location());
+    history.pushState(request.raw, request.title, request.location());
     Davis.utils.forEach(pushStateHandlers, function (handler) {
       handler(request);
     });
@@ -112,7 +109,7 @@ Davis.history = (function () {
    * and a path property will also be accepted.
    */
   var replace = function (request) {
-    history.replaceState(request, request.title, request.location());
+    history.replaceState(request.raw, request.title, request.location());
     Davis.utils.forEach(pushStateHandlers, function (handler) {
       handler(request);
     });

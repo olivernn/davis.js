@@ -28,6 +28,7 @@
  */
 Davis.Request = function (raw) {
   var self = this;
+  this.raw = raw;
   this.params = {};
   this.title = raw.title;
   this.queryString = raw.fullPath.split("?")[1];
