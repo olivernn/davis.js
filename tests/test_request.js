@@ -10,6 +10,11 @@ test("request without any params", function () {
   same({}, request.params, "should have no params");
 });
 
+test("request with a full url", function() {
+  var request = factory('request', {fullPath: 'http://www-1.example.com:80/users/john-smith.html'});
+  equal(request.location(), '/users/john-smith.html', "should remove the host and protocol parts");
+});
+
 test("request with params", function () {
   var request = factory('request', {
     method: 'post',
