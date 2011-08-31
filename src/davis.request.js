@@ -38,15 +38,22 @@ Davis.Request = function (raw) {
     Davis.utils.forEach(this.queryString.split("&"), function (keyval) {
       var paramName = keyval.split("=")[0],
           paramValue = keyval.split("=")[1],
-          nestedParamRegex = /^(\w+)\[(\w+)\]/,
+          nestedParamRegex = /^(\w+)\[(\w+)\](\[\])?/,
           nested;
-
       if (nested = nestedParamRegex.exec(paramName)) {
         var paramParent = nested[1];
         var paramName = nested[2];
+        var isArray = nested[3];
         var parentParams = self.params[paramParent] || {};
-        parentParams[paramName] = paramValue;
-        self.params[paramParent] = parentParams;
+        
+        if(isArray != undefined) {
+          parentParams[paramName] = parentParams[paramName] || [];
+          parentParams[paramName].push(paramValue);
+          self.params[paramParent] = parentParams;
+        }else {
+          parentParams[paramName] = paramValue;
+          self.params[paramParent] = parentParams;
+        }
       } else {
         self.params[paramName] = paramValue;
       };
