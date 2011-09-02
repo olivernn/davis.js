@@ -37,6 +37,10 @@
  *
  * `prefix`. This string will be prepended to all hash locations. This defaults to ''
  *
+ * `pollerInterval`. Sets the interval in milliseconds that the window.location object will be polled
+ *  for changes in the hash. This is irrelevant for browsers that support the onhashchange event. 
+ *  This defaults to 100.
+ *
  * @plugin
  */
 Davis.hashRouting = function(options) {
@@ -54,6 +58,9 @@ Davis.hashRouting = function(options) {
 
   if(typeof(options.normalizeInitialLocation) == 'undefined')
     options.normalizeInitialLocation = true;
+
+  if(typeof(options.pollerInterval) == 'undefined')
+    options.pollerInterval = 100;
 
   /**
     * options.location should be the same as window.location.  This option is
@@ -77,7 +84,7 @@ Davis.hashRouting = function(options) {
     if("onhashchange" in window) {
       jQuery(window).bind('hashchange', checkForLocationChange);
     } else {
-      setTimeout(locationPoller, pollerInterval);
+      setTimeout(locationPoller, options.pollerInterval);
     }
   };
 
@@ -170,7 +177,6 @@ Davis.hashRouting = function(options) {
     * On browsers that don't support the onhashchange event, we poll
     * window.location to detect a change
     */
-  var pollerInterval = 500;
   getLocation = function() {
     return options.location.hash;
   };
@@ -184,7 +190,7 @@ Davis.hashRouting = function(options) {
 
   var locationPoller = function() {
     checkForLocationChange();
-    setTimeout(locationPoller, pollerInterval);
+    setTimeout(locationPoller, options.pollerInterval);
   };
 
   /**
