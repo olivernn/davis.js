@@ -34,7 +34,7 @@ test("location delegate", function() {
   var onChangeCallback = createSpy();
   locationDelegate.onChange(onChangeCallback);
 
-  mockLocation.hash = "#!/somewhere_else"
+  mockLocation.hash = "#/somewhere_else"
   jQuery(window).trigger('hashchange');
   ok(onChangeCallback.wasCalled);
 
@@ -49,7 +49,7 @@ test("location delegate", function() {
 
   ok(onChangeCallback.wasCalled);
   ok(mockLocation.assign.wasCalled);
-  equal(mockLocation.assign.mostRecentCall.args[0], '/#!/hello_assign_test');
+  equal(mockLocation.assign.mostRecentCall.args[0], '/#/hello_assign_test');
 
   /**
     * Test replace
@@ -62,7 +62,7 @@ test("location delegate", function() {
 
   ok(onChangeCallback.wasCalled);
   ok(mockLocation.replace.wasCalled);
-  equal(mockLocation.replace.mostRecentCall.args[0], '/#!/hello_replace_test');
+  equal(mockLocation.replace.mostRecentCall.args[0], '/#/hello_replace_test');
 });
 
 test("normalizing the initial value of window.location", function() {
@@ -70,7 +70,7 @@ test("normalizing the initial value of window.location", function() {
   /**
     * test helper
     */
-  function normalizationTest(forceHashRouting, pathname, hash) {
+  function normalizationTest(forceHashRouting, pathname, hash, prefix) {
     var mockLocation = {
       pathname: pathname,
       hash: hash,
@@ -79,7 +79,8 @@ test("normalizing the initial value of window.location", function() {
 
     var extension = Davis.hashRouting({
       forceHashRouting: forceHashRouting,
-      location: mockLocation
+      location: mockLocation,
+      prefix: prefix
     });
 
     extension(Davis);
@@ -95,10 +96,10 @@ test("normalizing the initial value of window.location", function() {
   /**
     * Test when history API is supported
     */
-  result = normalizationTest(false, '/foo', '#!/bar');
+  result = normalizationTest(false, '/foo', '#/bar');
   equal(result, '/bar');
 
-  result = normalizationTest(false, '/', '#!/foobar');
+  result = normalizationTest(false, '/', '#/foobar');
   equal(result, '/foobar');
 
   result = normalizationTest(false, '/foobar', '');
@@ -108,12 +109,19 @@ test("normalizing the initial value of window.location", function() {
     * Test when history API is not supported
     */
   result = normalizationTest(true, '/woot', '');
-  ok(result == '/#!/woot');
+  equal(result, '/#/woot');
 
-  result = normalizationTest(true, '/woot', '#!/foobar');
-  ok(result == '/#!/foobar');
+  result = normalizationTest(true, '/woot', '#/foobar');
+  equal(result, '/#/foobar');
 
-  result = normalizationTest(true, '/', '#!/foobar');
+  result = normalizationTest(true, '/woot', '', '!');
+  equal(result, '/#!/woot');
+
+
+  result = normalizationTest(true, '/woot', '#!/foobar', '!');
+  equal(result, '/#!/foobar');
+
+  result = normalizationTest(true, '/', '#/foobar');
   equal(result, null);
 
   // Cleanup

@@ -18,7 +18,7 @@
  *
  * When this extension is instantiated, the browser will be redirected to the appropriate location scheme.
  * For example, if the current URL is "http://www.example.com/foobar" but the browser doesn't support
- * the history api, it will be redirected to "http://www.example.com/#!/foobar".
+ * the history api, it will be redirected to "http://www.example.com/#/foobar".
  *
  * If this extension is instantiated on a browser that supports the history API, then the hash routing will
  * not take effect unless the forceHashRouting option is set to true
@@ -35,7 +35,7 @@
  * `normalizeInitialLocation` - If this is true, then the browser will be redirected to the appropriate routing
  *  as soon as the extension is initialized.  This defaults to true.
  *
- * `prefix`. This string will be prepended to all hash locations. This defaults to '!'
+ * `prefix`. This string will be prepended to all hash locations. This defaults to ''
  *
  * @plugin
  */
@@ -50,10 +50,10 @@ Davis.hashRouting = function(options) {
     options.forceHashRouting = false;
 
   if(typeof(options.prefix) == 'undefined')
-    options.prefix = "!";
+    options.prefix = '';
 
   if(typeof(options.normalizeInitialLocation) == 'undefined')
-    options.normalizeInitialLocation = "!";
+    options.normalizeInitialLocation = true;
 
   /**
     * options.location should be the same as window.location.  This option is
@@ -143,7 +143,7 @@ Davis.hashRouting = function(options) {
             URL looks like:          http://www.example.com/foo#!/bar
             We want it to look like: http://www.example.com/#!/bar
           */
-          return "/#!" + hashLocation;
+          return "/#" + options.prefix + hashLocation;
         }
       } else {
         /*
@@ -158,7 +158,7 @@ Davis.hashRouting = function(options) {
           URL looks like:          http://www.example.com/foo
           We want it to look like: http://www.example.com/#!/foo
         */
-        return "/#!" + normalLocation;
+        return "/#" + options.prefix + normalLocation;
       }
     }
 
