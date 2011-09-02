@@ -33,7 +33,7 @@
  *  the history API.  This defaults to false.
  *
  * `normalizeInitialLocation` - If this is true, then the browser will be redirected to the appropriate routing
- *  as soon as the extension is initialized.  This defaults to true.
+ *  as soon as the extension is initialized.  This defaults to false.
  *
  * `prefix`. This string will be prepended to all hash locations. This defaults to ''
  *
@@ -57,7 +57,7 @@ Davis.hashRouting = function(options) {
     options.prefix = '';
 
   if(typeof(options.normalizeInitialLocation) == 'undefined')
-    options.normalizeInitialLocation = true;
+    options.normalizeInitialLocation = false;
 
   if(typeof(options.pollerInterval) == 'undefined')
     options.pollerInterval = 100;

@@ -80,6 +80,7 @@ test("normalizing the initial value of window.location", function() {
     var extension = Davis.hashRouting({
       forceHashRouting: forceHashRouting,
       location: mockLocation,
+      normalizeInitialLocation: true,
       prefix: prefix
     });
 
