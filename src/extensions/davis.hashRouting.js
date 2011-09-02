@@ -62,6 +62,9 @@ Davis.hashRouting = function(options) {
   if(typeof(options.pollerInterval) == 'undefined')
     options.pollerInterval = 100;
 
+  if(typeof(options.forcePolling) == 'undefined')
+    options.forcePolling = false;
+
   /**
     * options.location should be the same as window.location.  This option is
     * available for the sake of test mocking.
@@ -81,7 +84,7 @@ Davis.hashRouting = function(options) {
    * @private
    */
   var bindHashChange = function() {
-    if("onhashchange" in window) {
+    if("onhashchange" in window && !options.forcePolling) {
       jQuery(window).bind('hashchange', checkForLocationChange);
     } else {
       setTimeout(locationPoller, options.pollerInterval);
