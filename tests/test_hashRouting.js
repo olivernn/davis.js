@@ -97,14 +97,16 @@ test("normalizing the initial value of window.location", function() {
   /**
     * Test when history API is supported
     */
-  result = normalizationTest(false, '/foo', '#/bar');
-  equal(result, '/bar');
+  if ((typeof window.history.pushState == 'function')) {
+    result = normalizationTest(false, '/foo', '#/bar');
+    equal(result, '/bar');
 
-  result = normalizationTest(false, '/', '#/foobar');
-  equal(result, '/foobar');
+    result = normalizationTest(false, '/', '#/foobar');
+    equal(result, '/foobar');
 
-  result = normalizationTest(false, '/foobar', '');
-  equal(result, null);
+    result = normalizationTest(false, '/foobar', '');
+    equal(result, null);
+  };
 
   /**
     * Test when history API is not supported
