@@ -26,7 +26,13 @@
  *       method: "get"
  *     })
  */
-Davis.Request = function (raw) {
+Davis.Request = function (opts) {
+  var raw = jQuery.extend({}, {
+    title: "",
+    fullPath: "",
+    method: "get"
+  }, opts)
+
   var self = this;
   this.raw = raw;
   this.params = {};
