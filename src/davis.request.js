@@ -43,14 +43,14 @@ Davis.Request = function (raw) {
       if (nested = nestedParamRegex.exec(paramName)) {
         var paramParent = nested[1];
         var paramName = nested[2];
-        var isArray = nested[3];
+        var isArray = !!nested[3];
         var parentParams = self.params[paramParent] || {};
         
-        if(isArray != undefined) {
+        if (isArray) {
           parentParams[paramName] = parentParams[paramName] || [];
           parentParams[paramName].push(paramValue);
           self.params[paramParent] = parentParams;
-        }else {
+        } else {
           parentParams[paramName] = paramValue;
           self.params[paramParent] = parentParams;
         }
