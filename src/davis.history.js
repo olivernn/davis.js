@@ -55,13 +55,22 @@ Davis.history = (function () {
    */
   var wrapped = function (handler) {
     return function (event) {
-      if (event.state) {
-        handler(new Davis.Request(event.state))
+      if (event.state && event.state._davis) {
+        handler(new Davis.Request(event.state._davis))
       } else {
         if (!firstPop) handler(Davis.Request.forPageLoad())
       };
       firstPop = false
     }
+  }
+
+  /**
+   * provide a wrapper for any data that is going to be pushed into the history stack.  All
+   * data is wrapped in a "_davis" namespace.
+   * @private
+   */
+  var wrapStateData = function (data) {
+    return {"_davis": data}
   }
 
   /**
@@ -92,7 +101,7 @@ Davis.history = (function () {
    * and a path property will also be accepted.
    */
   var assign = function (request) {
-    history.pushState(request.asJSON(), request.title, request.location());
+    history.pushState(wrapStateData(request.asJSON()), request.title, request.location());
     Davis.utils.forEach(pushStateHandlers, function (handler) {
       handler(request);
     });
@@ -109,7 +118,7 @@ Davis.history = (function () {
    * and a path property will also be accepted.
    */
   var replace = function (request) {
-    history.replaceState(request.asJSON(), request.title, request.location());
+    history.replaceState(wrapStateData(request.asJSON()), request.title, request.location());
     Davis.utils.forEach(pushStateHandlers, function (handler) {
       handler(request);
     });
