@@ -60,8 +60,14 @@ Davis.Request = function (opts) {
     });
   };
 
+  raw.fullPath = raw.fullPath.replace(/^https?:\/\/.+?\//, '/');
+
   this.method = (this.params._method || raw.method).toLowerCase();
-  this.path = raw.fullPath.replace(/\?.+$/, "");
+
+  this.path = raw.fullPath
+    .replace(/\?.+$/, "")  // Remove the query string
+    .replace(/^https?:\/\/[^\/]+/, ""); // Remove the protocol and host parts
+
   this.delegateToServer = raw.delegateToServer || Davis.noop;
   this.isForPageLoad = raw.forPageLoad || false;
 
