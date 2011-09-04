@@ -16,6 +16,33 @@
 Davis.listener = (function () {
 
   /**
+   * Methods to check whether an element has an href or action that is local to this page
+   * @private
+   */
+  var originChecks = {
+    "A": function (elem) {
+      return elem.host !== window.location.host
+    },
+
+    "FORM": function (elem) {
+      var a = document.createElement('a')
+      a.href = elem.action
+      return this["A"](a)
+    }
+  }
+
+  /**
+   * Checks whether the target of a click or submit event has an href or action that is local to the
+   * current page.  Only links or targets with local hrefs or actions will be handled by davis, all
+   * others will be ignored.
+   * @private
+   */
+  var differentOrigin = function (elem) {
+    if (!originChecks[elem.nodeName]) return true // the elem is neither a link or a form
+    return originChecks[elem.nodeName](elem)
+  }
+
+  /**
    * A handler that creates a new Davis.Request and pushes it onto the history stack using Davis.history.
    * 
    * @param {Function} targetExtractor a function that will be called with the event target jQuery object and should return an object with path, title and method.
@@ -23,6 +50,7 @@ Davis.listener = (function () {
    */
   var handler = function (targetExtractor) {
     return function (event) {
+      if (differentOrigin(this)) return true
       var request = new Davis.Request (targetExtractor.call(jQuery(this)));
       Davis.location.assign(request)
       return false;
