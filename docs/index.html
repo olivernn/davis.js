@@ -496,7 +496,7 @@ and a path property will also be accepted.
 </td>
 <td class="code">
 <pre><code><span class="keyword">var</span> <span class="variable">assign</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
-    <span class="variable">history</span>.<span class="variable">pushState</span>(<span class="variable">request</span>.<span class="variable">asJSON</span>(), <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">location</span>());
+    <span class="variable">history</span>.<span class="variable">pushState</span>(<span class="variable">wrapStateData</span>(<span class="variable">request</span>.<span class="variable">asJSON</span>()), <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">location</span>());
     <span class="class">Davis</span>.<span class="variable">utils</span>.<span class="variable">forEach</span>(<span class="variable">pushStateHandlers</span>, <span class="keyword">function</span> (<span class="variable">handler</span>) {
       <span class="variable">handler</span>(<span class="variable">request</span>);
     });
@@ -520,7 +520,7 @@ and a path property will also be accepted.
 </td>
 <td class="code">
 <pre><code><span class="keyword">var</span> <span class="variable">replace</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
-    <span class="variable">history</span>.<span class="variable">replaceState</span>(<span class="variable">request</span>.<span class="variable">asJSON</span>(), <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">location</span>());
+    <span class="variable">history</span>.<span class="variable">replaceState</span>(<span class="variable">wrapStateData</span>(<span class="variable">request</span>.<span class="variable">asJSON</span>()), <span class="variable">request</span>.<span class="variable">title</span>, <span class="variable">request</span>.<span class="variable">location</span>());
     <span class="class">Davis</span>.<span class="variable">utils</span>.<span class="variable">forEach</span>(<span class="variable">pushStateHandlers</span>, <span class="keyword">function</span> (<span class="variable">handler</span>) {
       <span class="variable">handler</span>(<span class="variable">request</span>);
     });
@@ -796,7 +796,13 @@ to set the correct reqeust method.</p>
 <p> </p>
 </td>
 <td class="code">
-<pre><code><span class="class">Davis</span>.<span class="class">Request</span> = <span class="keyword">function</span> (<span class="variable">raw</span>) {
+<pre><code><span class="class">Davis</span>.<span class="class">Request</span> = <span class="keyword">function</span> (<span class="variable">opts</span>) {
+  <span class="keyword">var</span> <span class="variable">raw</span> = <span class="variable">jQuery</span>.<span class="variable">extend</span>({}, {
+    <span class="variable">title</span>: &<span class="variable">quot</span>;&<span class="variable">quot</span>;,
+    <span class="variable">fullPath</span>: &<span class="variable">quot</span>;&<span class="variable">quot</span>;,
+    <span class="variable">method</span>: &<span class="variable">quot</span>;<span class="variable">get</span>&<span class="variable">quot</span>;
+  }, <span class="variable">opts</span>)
+
   <span class="keyword">var</span> <span class="variable">self</span> = <span class="this">this</span>;
   <span class="this">this</span>.<span class="variable">raw</span> = <span class="variable">raw</span>;
   <span class="this">this</span>.<span class="variable">params</span> = {};
@@ -808,15 +814,22 @@ to set the correct reqeust method.</p>
     <span class="class">Davis</span>.<span class="variable">utils</span>.<span class="variable">forEach</span>(<span class="this">this</span>.<span class="variable">queryString</span>.<span class="variable">split</span>(&<span class="variable">quot</span>;&<span class="variable">amp</span>;&<span class="variable">quot</span>;), <span class="keyword">function</span> (<span class="variable">keyval</span>) {
       <span class="keyword">var</span> <span class="variable">paramName</span> = <span class="variable">keyval</span>.<span class="variable">split</span>(&<span class="variable">quot</span>;=&<span class="variable">quot</span>;)[<span class="number integer">0</span>],
           <span class="variable">paramValue</span> = <span class="variable">keyval</span>.<span class="variable">split</span>(&<span class="variable">quot</span>;=&<span class="variable">quot</span>;)[<span class="number integer">1</span>],
-          <span class="variable">nestedParamRegex</span> = <span class="regexp">/^(\w+)\[(\w+)\]/</span>,
+          <span class="variable">nestedParamRegex</span> = <span class="regexp">/^(\w+)\[(\w+)\](\[\])?/</span>,
           <span class="variable">nested</span>;
-
       <span class="keyword">if</span> (<span class="variable">nested</span> = <span class="variable">nestedParamRegex</span>.<span class="variable">exec</span>(<span class="variable">paramName</span>)) {
         <span class="keyword">var</span> <span class="variable">paramParent</span> = <span class="variable">nested</span>[<span class="number integer">1</span>];
         <span class="keyword">var</span> <span class="variable">paramName</span> = <span class="variable">nested</span>[<span class="number integer">2</span>];
+        <span class="keyword">var</span> <span class="variable">isArray</span> = !!<span class="variable">nested</span>[<span class="number integer">3</span>];
         <span class="keyword">var</span> <span class="variable">parentParams</span> = <span class="variable">self</span>.<span class="variable">params</span>[<span class="variable">paramParent</span>] || {};
-        <span class="variable">parentParams</span>[<span class="variable">paramName</span>] = <span class="variable">paramValue</span>;
-        <span class="variable">self</span>.<span class="variable">params</span>[<span class="variable">paramParent</span>] = <span class="variable">parentParams</span>;
+        
+        <span class="keyword">if</span> (<span class="variable">isArray</span>) {
+          <span class="variable">parentParams</span>[<span class="variable">paramName</span>] = <span class="variable">parentParams</span>[<span class="variable">paramName</span>] || [];
+          <span class="variable">parentParams</span>[<span class="variable">paramName</span>].<span class="variable">push</span>(<span class="variable">paramValue</span>);
+          <span class="variable">self</span>.<span class="variable">params</span>[<span class="variable">paramParent</span>] = <span class="variable">parentParams</span>;
+        } <span class="keyword">else</span> {
+          <span class="variable">parentParams</span>[<span class="variable">paramName</span>] = <span class="variable">paramValue</span>;
+          <span class="variable">self</span>.<span class="variable">params</span>[<span class="variable">paramParent</span>] = <span class="variable">parentParams</span>;
+        }
       } <span class="keyword">else</span> {
         <span class="variable">self</span>.<span class="variable">params</span>[<span class="variable">paramName</span>] = <span class="variable">paramValue</span>;
       };
@@ -824,8 +837,14 @@ to set the correct reqeust method.</p>
     });
   };
 
+  <span class="variable">raw</span>.<span class="variable">fullPath</span> = <span class="variable">raw</span>.<span class="variable">fullPath</span>.<span class="variable">replace</span>(<span class="regexp">/^https?:\/</span>\<span class="regexp">/.+?\/</span><span class="regexp">/, '/</span>');
+
   <span class="this">this</span>.<span class="variable">method</span> = (<span class="this">this</span>.<span class="variable">params</span>.<span class="variable">_method</span> || <span class="variable">raw</span>.<span class="variable">method</span>).<span class="variable">toLowerCase</span>();
-  <span class="this">this</span>.<span class="variable">path</span> = <span class="variable">raw</span>.<span class="variable">fullPath</span>.<span class="variable">replace</span>(<span class="regexp">/\?.+$/</span>, &<span class="variable">quot</span>;&<span class="variable">quot</span>;);
+
+  <span class="this">this</span>.<span class="variable">path</span> = <span class="variable">raw</span>.<span class="variable">fullPath</span>
+    .<span class="variable">replace</span>(<span class="regexp">/\?.+$/</span>, &<span class="variable">quot</span>;&<span class="variable">quot</span>;)  <span class="comment">// Remove the query string</span>
+    .<span class="variable">replace</span>(<span class="regexp">/^https?:\/</span>\<span class="regexp">/[^\/</span>]+<span class="regexp">/, &quot;&quot;); /</span>/ <span class="class">Remove</span> <span class="variable">the</span> <span class="variable">protocol</span> <span class="variable">and</span> <span class="variable">host</span> <span class="variable">parts</span>
+
   <span class="this">this</span>.<span class="variable">delegateToServer</span> = <span class="variable">raw</span>.<span class="variable">delegateToServer</span> || <span class="class">Davis</span>.<span class="variable">noop</span>;
   <span class="this">this</span>.<span class="variable">isForPageLoad</span> = <span class="variable">raw</span>.<span class="variable">forPageLoad</span> || <span class="variable">false</span>;
 

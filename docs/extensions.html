@@ -114,90 +114,77 @@ code .this { color: #19469D; }</style>
 hash based approach.  It implements the delegate methods of Davis.location however it has some limitations
 when compared with the default pushState based routing.</p>
 
-<p>Firstly there is nothing similar to the history.replaceState method available when using location.hash, this
-means that doing redirects always adds a new entry in the history rather than replacing the current history
-entry.</p>
-
-<p>Secondly it is not possible to have multiple history entries of the same location as the hashchange event
-only fires when the hash changes to a different value.</p>
+<p>It is not possible to have multiple history entries of the same location as the hashchange event only fires
+when the hash changes to a different value.</p>
 
 <p>This extension could be used to provide a fallback for browsers that do not support the HTML5 history api,
 however this extension does not take into account what happens when a hash link is used in a browser that
 supports HTML5 history.</p>
 
+<p>When this extension is instantiated, the browser will be redirected to the appropriate location scheme.
+For example, if the current URL is "http://www.example.com/foobar" but the browser doesn't support
+the history api, it will be redirected to "http://www.example.com/#/foobar".</p>
+
+<p>If this extension is instantiated on a browser that supports the history API, then the hash routing will
+not take effect unless the forceHashRouting option is set to true</p>
+
 <p>To use this extension put this code at before starting your app.</p>
 
-<p>   Davis.extend(Davis.hashRouting)</p>
+<p>   Davis.extend(Davis.hashRouting({ prefix: "!" }))</p>
+
+<p>The extention takes a number of options:</p>
+
+<p><code>forceHashRouting</code> Setting this to true will force hash routing, even if the browser supports 
+ the history API.  This defaults to false.</p>
+
+<p><code>normalizeInitialLocation</code> - If this is true, then the browser will be redirected to the appropriate routing
+ as soon as the extension is initialized.  This defaults to false.</p>
+
+<p><code>prefix</code>. This string will be prepended to all hash locations. This defaults to ''</p>
+
+<p><code>pollerInterval</code>. Sets the interval in milliseconds that the window.location object will be polled
+ for changes in the hash. This is irrelevant for browsers that support the onhashchange event. 
+ This defaults to 100.</p>
 
 <ul><li><p><strong>plugi</strong>: <em>n</em></p></li></ul>
 </td>
 <td class="code">
-<pre><code><span class="class">Davis</span>.<span class="variable">hashRouting</span> = <span class="keyword">function</span> () {</code></pre>
+<pre><code><span class="class">Davis</span>.<span class="variable">hashRouting</span> = <span class="keyword">function</span>(<span class="variable">options</span>) {
+  <span class="keyword">if</span>(!<span class="variable">options</span>)
+    <span class="variable">options</span> = {};</code></pre>
 </td>
 </tr>
 <tr class="code">
 <td class="docs">
-<h2>Davis.supported</h2>
-
-<p>Overwriting the supported because we are interested in the onhashchange event only now.
-   </p>
+<p>Configuring option defaults
+    </p>
 </td>
 <td class="code">
-<pre><code><span class="class">Davis</span>.<span class="variable">supported</span> = <span class="keyword">function</span> () {
-    <span class="keyword">return</span> (&<span class="variable">quot</span>;<span class="variable">onhashchange</span>&<span class="variable">quot</span>; <span class="keyword">in</span> <span class="variable">window</span>)
-  }</code></pre>
+<pre><code><span class="keyword">if</span>(<span class="keyword">typeof</span>(<span class="variable">options</span>.<span class="variable">forceHashRouting</span>) == <span class="string">'undefined'</span>)
+    <span class="variable">options</span>.<span class="variable">forceHashRouting</span> = <span class="variable">false</span>;
+
+  <span class="keyword">if</span>(<span class="keyword">typeof</span>(<span class="variable">options</span>.<span class="variable">prefix</span>) == <span class="string">'undefined'</span>)
+    <span class="variable">options</span>.<span class="variable">prefix</span> = <span class="string">''</span>;
+
+  <span class="keyword">if</span>(<span class="keyword">typeof</span>(<span class="variable">options</span>.<span class="variable">normalizeInitialLocation</span>) == <span class="string">'undefined'</span>)
+    <span class="variable">options</span>.<span class="variable">normalizeInitialLocation</span> = <span class="variable">false</span>;
+
+  <span class="keyword">if</span>(<span class="keyword">typeof</span>(<span class="variable">options</span>.<span class="variable">pollerInterval</span>) == <span class="string">'undefined'</span>)
+    <span class="variable">options</span>.<span class="variable">pollerInterval</span> = <span class="number integer">100</span>;
+
+  <span class="keyword">if</span>(<span class="keyword">typeof</span>(<span class="variable">options</span>.<span class="variable">forcePolling</span>) == <span class="string">'undefined'</span>)
+    <span class="variable">options</span>.<span class="variable">forcePolling</span> = <span class="variable">false</span>;</code></pre>
 </td>
 </tr>
 <tr class="code">
 <td class="docs">
-<p>Setting the location delegate to be this hashRouting module
-   </p>
+<p>options.location should be the same as window.location.  This option is
+available for the sake of test mocking.
+    </p>
 </td>
 <td class="code">
-<pre><code><span class="class">Davis</span>.<span class="variable">location</span>.<span class="variable">setLocationDelegate</span>((<span class="keyword">function</span> () {</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<h2>Davis.hashRouting.current</h2>
-
-<p>Returns the apps current location, which for hashRouting is pulled from the location.hash.
-Davis.location delegates to this method for getting the apps current location.
-     </p>
-</td>
-<td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">current</span> = <span class="keyword">function</span> () {
-      <span class="keyword">var</span> <span class="variable">hash</span>
-      <span class="keyword">if</span> (<span class="variable">hash</span> = <span class="variable">window</span>.<span class="variable">location</span>.<span class="variable">hash</span>.<span class="variable">replace</span>(<span class="regexp">/^#/</span>, &<span class="variable">quot</span>;&<span class="variable">quot</span>;)) {
-        <span class="keyword">return</span> <span class="variable">hash</span>
-      } <span class="keyword">else</span> {
-        <span class="keyword">return</span> &<span class="variable">quot</span>;/&<span class="variable">quot</span>;
-      }
-    }</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<h2>Davis.hashRouting.assign</h2>
-
-<p>Wrapper around changing the current location.hash.  This will also trigger all onChange callbacks
-that have been registered.  Davis.location delegates to this method for setting the apps current
-location as well as replacing the current location for the app with a new location.</p>
-
-<h2></h2>
-
-<ul><li><p><strong>params</strong>: <em>Request</em>  the request to set the current location to.</p><p> </p></li></ul>
-</td>
-<td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">assign</span> = <span class="keyword">function</span> (<span class="variable">request</span>) {
-      <span class="keyword">if</span> (<span class="variable">request</span>.<span class="variable">location</span>()) {
-        <span class="variable">window</span>.<span class="variable">location</span>.<span class="variable">hash</span> = <span class="variable">request</span>.<span class="variable">location</span>()
-      } <span class="keyword">else</span> {
-        <span class="variable">callbacks</span>.<span class="variable">forEach</span>(<span class="keyword">function</span> (<span class="variable">callback</span>) {
-          <span class="variable">callback</span>(<span class="variable">request</span>)
-        })
-      };
-    }</code></pre>
+<pre><code><span class="keyword">if</span>(<span class="keyword">typeof</span>(<span class="variable">options</span>.<span class="variable">location</span>) == <span class="string">'undefined'</span>)
+    <span class="variable">options</span>.<span class="variable">location</span> = <span class="variable">window</span>.<span class="variable">location</span>;</code></pre>
 </td>
 </tr>
 <tr class="code">
@@ -209,19 +196,222 @@ callbacks for when the apps location has changed.</p>
 
 <h2></h2>
 
-<ul><li><p><strong>param</strong>: <em>Function</em>  the callback to be fired when the location has changed.</p><p> </p></li></ul>
+<ul><li><p><strong>param</strong>: <em>Function</em>  the callback to be fired when the location has changed.</p></li></ul>
 </td>
 <td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">onChange</span> = <span class="keyword">function</span> (<span class="variable">callback</span>) {
-      <span class="variable">callbacks</span>.<span class="variable">push</span>(<span class="variable">callback</span>)
+<pre><code><span class="keyword">var</span> <span class="variable">onChange</span> = <span class="keyword">function</span>(<span class="variable">handler</span>) {
+    <span class="variable">callbacks</span>.<span class="variable">push</span>(<span class="variable">handler</span>);
+  };
 
-      <span class="variable">jQuery</span>(<span class="variable">window</span>).<span class="variable">bind</span>(<span class="string">'hashchange'</span>, <span class="keyword">function</span> (<span class="variable">e</span>) {
-        <span class="variable">callback</span>(<span class="keyword">new</span> <span class="class">Davis</span>.<span class="class">Request</span>({
-          <span class="variable">fullPath</span>: <span class="variable">current</span>(),
-          <span class="variable">method</span>: <span class="string">'get'</span>
-        }))
-      })
+  <span class="keyword">var</span> <span class="variable">hashLocationPattern</span> = <span class="keyword">new</span> <span class="class">RegExp</span>(&<span class="variable">quot</span>;#&<span class="variable">quot</span>; + <span class="variable">options</span>.<span class="variable">prefix</span> + &<span class="variable">quot</span>;(.*)$&<span class="variable">quot</span>;)</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.hashRouting.current</h2>
+
+<p>Returns the apps current location, which for hashRouting is pulled from the location.hash.
+Davis.location delegates to this method for getting the apps current location.
+   </p>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">current</span> = <span class="keyword">function</span>() {
+    <span class="keyword">var</span> <span class="variable">match</span> = <span class="variable">options</span>.<span class="variable">location</span>.<span class="variable">hash</span>.<span class="variable">match</span>(<span class="variable">hashLocationPattern</span>);
+    <span class="keyword">if</span>(<span class="variable">match</span>)
+      <span class="keyword">return</span> <span class="variable">match</span>[<span class="number integer">1</span>];
+    <span class="keyword">else</span>
+      <span class="keyword">return</span> <span class="string">'/'</span>;
+  };
+
+  <span class="keyword">var</span> <span class="variable">onHashChange</span> = <span class="keyword">function</span>() {
+    <span class="keyword">var</span> <span class="variable">path</span> = <span class="variable">current</span>();
+
+    <span class="keyword">if</span>(<span class="variable">path</span>) {
+      <span class="variable">invokeCallbacks</span>( <span class="keyword">new</span> <span class="class">Davis</span>.<span class="class">Request</span>({
+          <span class="variable">fullPath</span>: <span class="variable">path</span>,
+          <span class="variable">method</span>: &<span class="variable">quot</span>;<span class="variable">get</span>&<span class="variable">quot</span>;
+        })
+      );
+    }
+  };</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<pre><code>        URL looks like:          http://www.example.com/foo#!/bar
+        We want it to look like: http://www.example.com/#!/bar
+      </code></pre>
+</td>
+<td class="code">
+<pre><code><span class="keyword">return</span> &<span class="variable">quot</span>;/#&<span class="variable">quot</span>; + <span class="variable">options</span>.<span class="variable">prefix</span> + <span class="variable">hashLocation</span>;
+        }
+      } <span class="keyword">else</span> {</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<pre><code>      URL looks like:          http://www.example.com/foo#!/bar
+      We want it to look like: http://www.example.com/bar
+    </code></pre>
+</td>
+<td class="code">
+<pre><code><span class="keyword">return</span> <span class="variable">hashLocation</span>;
+      }
+    } <span class="keyword">else</span> {
+      <span class="keyword">if</span>(<span class="variable">usingHashRouting</span> &<span class="variable">amp</span>;&<span class="variable">amp</span>; <span class="variable">normalLocation</span> != <span class="string">'/'</span>) {</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<pre><code>      URL looks like:          http://www.example.com/foo
+      We want it to look like: http://www.example.com/#!/foo
+    </code></pre>
+</td>
+<td class="code">
+<pre><code><span class="keyword">return</span> &<span class="variable">quot</span>;/#&<span class="variable">quot</span>; + <span class="variable">options</span>.<span class="variable">prefix</span> + <span class="variable">normalLocation</span>;
+      }
     }</code></pre>
 </td>
-</body>
+</tr>
+<tr class="code">
+<td class="docs">
+<p> URL is find the way it is.  Don't forward anywhere </p>
+</td>
+<td class="code">
+<pre><code><span class="keyword">return</span> <span class="keyword">null</span>;
+  };</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>On browsers that don't support the onhashchange event, we poll
+window.location to detect a change
+    </p>
+</td>
+<td class="code">
+<pre><code><span class="variable">getLocation</span> = <span class="keyword">function</span>() {
+    <span class="keyword">return</span> <span class="variable">options</span>.<span class="variable">location</span>.<span class="variable">hash</span>;
+  };
+  <span class="keyword">var</span> <span class="variable">lastPolledLocation</span> = <span class="variable">getLocation</span>();
+  <span class="keyword">var</span> <span class="variable">checkForLocationChange</span> = <span class="keyword">function</span>() {
+    <span class="keyword">if</span>(<span class="variable">lastPolledLocation</span> != <span class="variable">getLocation</span>()) {
+      <span class="variable">lastPolledLocation</span> = <span class="variable">getLocation</span>();
+      <span class="variable">onHashChange</span>();
+    }
+  };
+
+  <span class="keyword">var</span> <span class="variable">locationPoller</span> = <span class="keyword">function</span>() {
+    <span class="variable">checkForLocationChange</span>();
+    <span class="variable">setTimeout</span>(<span class="variable">locationPoller</span>, <span class="variable">options</span>.<span class="variable">pollerInterval</span>);
+  };</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.hashRouting.assign and replace</h2>
+
+<p>Wrapper around location.assign and location.replace.  This will also trigger all onChange callbacks
+that have been registered.  Davis.location delegates to this method for setting the apps current
+location as well as replacing the current location for the app with a new location.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>params</strong>: <em>Request</em>  the request to set the current location to.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">wrapper</span> = <span class="keyword">function</span>(<span class="variable">request</span>, <span class="variable">setter</span>) {
+    <span class="variable">setter</span>(&<span class="variable">quot</span>;/#&<span class="variable">quot</span>; + <span class="variable">options</span>.<span class="variable">prefix</span> + <span class="variable">request</span>.<span class="variable">location</span>());
+    <span class="variable">lastPolledLocation</span> = <span class="variable">getLocation</span>();
+    <span class="variable">invokeCallbacks</span>(<span class="variable">request</span>);
+  };
+
+  <span class="keyword">var</span> <span class="variable">assign</span> = <span class="keyword">function</span>(<span class="variable">request</span>) {
+    <span class="variable">wrapper</span>(<span class="variable">request</span>, <span class="keyword">function</span>(<span class="variable">string</span>) {
+      <span class="comment">// IE does not allow you to use call or apply on location.replace or location.assign.</span>
+      <span class="comment">// Keep this in mind if refactoring.</span>
+      <span class="variable">options</span>.<span class="variable">location</span>.<span class="variable">assign</span>(<span class="variable">string</span>);
+    });
+  };
+
+  <span class="keyword">var</span> <span class="variable">replace</span> = <span class="keyword">function</span>(<span class="variable">request</span>) {
+    <span class="variable">wrapper</span>(<span class="variable">request</span>, <span class="keyword">function</span>(<span class="variable">string</span>) {
+      <span class="variable">options</span>.<span class="variable">location</span>.<span class="variable">replace</span>(<span class="variable">string</span>);
+    });
+  };
+
+  <span class="keyword">return</span> <span class="keyword">function</span>(<span class="class">Davis</span>) {</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>By default, don't enable this extension if the browser supports the history api. 
+     </p>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="variable">usingHashRouting</span> = !<span class="class">Davis</span>.<span class="variable">supported</span>() || <span class="variable">options</span>.<span class="variable">forceHashRouting</span>;</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Forward the web browser to a normalized version of the current URL, if necessary.
+     </p>
+</td>
+<td class="code">
+<pre><code><span class="keyword">if</span>(<span class="variable">options</span>.<span class="variable">normalizeInitialLocation</span>) {
+      <span class="variable">normalizedLocation</span> = <span class="variable">normalize</span>(<span class="variable">usingHashRouting</span>, <span class="variable">current</span>(), <span class="variable">options</span>.<span class="variable">location</span>.<span class="variable">pathname</span>);
+      <span class="keyword">if</span>(<span class="variable">normalizedLocation</span>) {
+        <span class="variable">options</span>.<span class="variable">location</span>.<span class="variable">replace</span>(<span class="variable">normalizedLocation</span>);
+      }
+    }
+
+    <span class="keyword">if</span>(!<span class="variable">usingHashRouting</span>)
+      <span class="keyword">return</span>;</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>Davis.supported</h2>
+
+<p>Overwriting supported because this extension will support any browser.
+     </p>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="variable">supported</span> = <span class="keyword">function</span> () { <span class="keyword">return</span> <span class="variable">true</span>; }
+
+    <span class="class">Davis</span>.<span class="variable">location</span>.<span class="variable">setLocationDelegate</span>({
+      <span class="variable">assign</span>: <span class="variable">assign</span>,
+      <span class="variable">current</span>: <span class="variable">current</span>,
+      <span class="variable">replace</span>: <span class="variable">replace</span>,
+      <span class="variable">onChange</span>: <span class="variable">onChange</span>
+    });
+
+    <span class="variable">bindHashChange</span>();
+  }
+};</code></pre>
+</td>
+</tr><tr class="filename"><td><h2 id="src/extensions/davis.noiOS.js"><a href="#">davis.noiOS</a></h2></td><td>src/extensions/davis.noiOS.js</td></tr><tr class="code">
+<td class="docs">
+<p>Davis.noIOS is a plugin that will mark iOS devices of version less than 4 as unsupported.
+iOS devices have several bugs in their implementation of pushState, if these bugs are causing
+issues for your application you can use this extension to disable support for iOS devices.</p>
+
+<p>   this.extend(Davis.noIOS)</p>
+
+<ul><li><p><strong>plugi</strong>: <em>n</em></p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="variable">noIOS</span> = <span class="keyword">function</span> () {
+
+  <span class="class">Davis</span>.<span class="variable">supported</span> = (<span class="keyword">function</span> (<span class="variable">uber</span>) {
+    <span class="keyword">var</span> <span class="variable">iosRegex</span> = <span class="regexp">/\([iPhone;]?[iPad;]?[iPod;]?.+OS (\d)_(\d)/</span>,
+        <span class="variable">match</span> = <span class="variable">iosRegex</span>.<span class="variable">exec</span>(<span class="variable">window</span>.<span class="variable">navigator</span>.<span class="variable">userAgent</span>),
+        <span class="variable">majorVersionNumber</span> = <span class="variable">match</span> &<span class="variable">amp</span>;&<span class="variable">amp</span>; <span class="variable">match</span>[<span class="number integer">1</span>] || <span class="class">Infinity</span>;
+
+    <span class="keyword">return</span> <span class="keyword">function</span> () {
+      <span class="keyword">return</span> <span class="variable">uber</span>() &<span class="variable">amp</span>;&<span class="variable">amp</span>; (!<span class="variable">match</span> &<span class="variable">amp</span>;&<span class="variable">amp</span>; <span class="variable">majorVersionNumber</span> &<span class="variable">gt</span>; <span class="number integer">4</span>)
+    }
+  })(<span class="class">Davis</span>.<span class="variable">supported</span>)
+}</code></pre>
+</td>
+</tr>	</body>
 </html></tbody></table>

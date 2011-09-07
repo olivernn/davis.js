@@ -108,7 +108,48 @@ code .this { color: #19469D; }</style>
 		</script>
 	</head>
 	<body>
-<table id="source"><tbody><tr><td><h1>Davis Plugins</h1></td><td></td></tr><tr class="filename"><td><h2 id="src/plugins/davis.google_analytics.js"><a href="#">davis.google_analytics</a></h2></td><td>src/plugins/davis.google_analytics.js</td></tr><tr class="code">
+<table id="source"><tbody><tr><td><h1>Davis Plugins</h1></td><td></td></tr><tr class="filename"><td><h2 id="src/plugins/davis.title.js"><a href="#">davis.title</a></h2></td><td>src/plugins/davis.title.js</td></tr><tr class="code">
+<td class="docs">
+<p>Davis.title is a plugin that automatically sets the document title to the title associated with
+a request.  If there is no title for a particular request then the title is not set, leaving the
+title in place from the previous request.</p>
+
+<p>It also adds a helper method onto Davis.Request instances for manually setting the title.</p>
+
+<p>To include this plugin in your application first include a script tag for it and then in your
+app do the following.</p>
+
+<p>   this.use(Davis.title)</p>
+
+<ul><li><p><strong>plugi</strong>: <em>n</em></p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="class">Davis</span>.<span class="variable">title</span> = <span class="keyword">function</span> () {</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h2>request.setTitle</h2>
+
+<p>Sets the current request and document title</p>
+
+<h2></h2>
+
+<ul><li><strong>param</strong>: <em>String</em>  the title for the document and this request</li></ul>
+
+<h3>Example</h3>
+
+<p>   req.setTitle('foo')
+     </p>
+</td>
+<td class="code">
+<pre><code><span class="variable">setTitle</span>: <span class="keyword">function</span> (<span class="variable">title</span>) {
+      <span class="variable">document</span>.<span class="variable">title</span> = <span class="this">this</span>.<span class="variable">title</span> = <span class="variable">title</span>;
+    }
+  })
+}</code></pre>
+</td>
+</tr><tr class="filename"><td><h2 id="src/plugins/davis.google_analytics.js"><a href="#">davis.google_analytics</a></h2></td><td>src/plugins/davis.google_analytics.js</td></tr><tr class="code">
 <td class="docs">
 <p>Davis.googleAnalytics is a plugin to track Davis requests in google analytics.  It automatically
 tracks every GET request and adds helpers to manually track other requests and to prevent a
@@ -148,47 +189,6 @@ app do the following.</p>
 <td class="code">
 <pre><code><span class="variable">track</span>: <span class="keyword">function</span> () {
       <span class="keyword">if</span> (<span class="variable">_gaq</span>) <span class="variable">_gaq</span>.<span class="variable">push</span>([<span class="string">'_trackPageview'</span>, <span class="this">this</span>.<span class="variable">path</span>])
-    }
-  })
-}</code></pre>
-</td>
-</tr><tr class="filename"><td><h2 id="src/plugins/davis.title.js"><a href="#">davis.title</a></h2></td><td>src/plugins/davis.title.js</td></tr><tr class="code">
-<td class="docs">
-<p>Davis.title is a plugin that automatically sets the document title to the title associated with
-a request.  If there is no title for a particular request then the title is not set, leaving the
-title in place from the previous request.</p>
-
-<p>It also adds a helper method onto Davis.Request instances for manually setting the title.</p>
-
-<p>To include this plugin in your application first include a script tag for it and then in your
-app do the following.</p>
-
-<p>   this.use(Davis.title)</p>
-
-<ul><li><p><strong>plugi</strong>: <em>n</em></p></li></ul>
-</td>
-<td class="code">
-<pre><code><span class="class">Davis</span>.<span class="variable">title</span> = <span class="keyword">function</span> () {</code></pre>
-</td>
-</tr>
-<tr class="code">
-<td class="docs">
-<h2>request.setTitle</h2>
-
-<p>Sets the current request and document title</p>
-
-<h2></h2>
-
-<ul><li><strong>param</strong>: <em>String</em>  the title for the document and this request</li></ul>
-
-<h3>Example</h3>
-
-<p>   req.setTitle('foo')
-     </p>
-</td>
-<td class="code">
-<pre><code><span class="variable">setTitle</span>: <span class="keyword">function</span> (<span class="variable">title</span>) {
-      <span class="variable">document</span>.<span class="variable">title</span> = <span class="this">this</span>.<span class="variable">title</span> = <span class="variable">title</span>;
     }
   })
 }</code></pre>
