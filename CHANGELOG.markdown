@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.6.0
+
+* Ignore any links or forms that are not on the same origin, only listen to clicks on links and forms with a href or action from the same domain.
+* Big upgrade to the hashRouting extension, adding fallback for browsers that don't support `onhashchange` & the ability to fallback to hash based routing in browsers that do not support pushState.  Many thanks to [jbaudanza](https://github.com/jbaudanza).
+* Fix [bug](https://github.com/olivernn/davis.js/pull/6) in Davis.Request so that full urls are handled properly, [jbaudanza](https://github.com/jbaudanza).
+* Fix [bug](https://github.com/olivernn/davis.js/pull/8) when parsing rails style nested params with arrays, thanks [ismasan](https://github.com/ismasan).
+* Creating instances of Davis.Request should be more robust, fixes issues seen in some versions of Chrome.
+* State data is pushed into the history state object under a `_davis` prefix to defend against any possible clashes with other code manipulating the history.
+* Add extension to disable Davis support in iOS versions less than 5.
+
 ## 0.5.1
 
 * Fixes required for Opera support now that Opera 11.50 supports pushState.
