@@ -20,11 +20,11 @@ Davis.listener = (function () {
    * @private
    */
   var originChecks = {
-    "A": function (elem) {
+    "a": function (elem) {
       return elem.host !== window.location.host
     },
 
-    "FORM": function (elem) {
+    "form": function (elem) {
       var a = document.createElement('a')
       a.href = elem.action
       return this["A"](a)
@@ -38,8 +38,8 @@ Davis.listener = (function () {
    * @private
    */
   var differentOrigin = function (elem) {
-    if (!originChecks[elem.nodeName]) return true // the elem is neither a link or a form
-    return originChecks[elem.nodeName](elem)
+    if (!originChecks[elem.nodeName.toLowerCase()]) return true // the elem is neither a link or a form
+    return originChecks[elem.nodeName.toLowerCase()](elem)
   }
 
   /**
