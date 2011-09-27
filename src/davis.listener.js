@@ -38,8 +38,8 @@ Davis.listener = (function () {
    * @private
    */
   var differentOrigin = function (elem) {
-    if (!originChecks[elem.nodeName]) return true // the elem is neither a link or a form
-    return originChecks[elem.nodeName](elem)
+    if (!originChecks[elem.nodeName.toUpperCase()]) return true // the elem is neither a link or a form
+    return originChecks[elem.nodeName.toUpperCase()](elem)
   }
 
   /**
