@@ -78,17 +78,10 @@ Davis.listener = (function () {
    * @private
    */
   var submitHandler = handler(function () {
-    var extractFormParams = function (form) {
-      return Davis.utils.map(form.serializeArray(), function (attr) {
-        return [attr.name, attr.value].join('=')
-      }).join('&')
-    }
-
     var self = this
-
     return {
       method: this.attr('method'),
-      fullPath: [this.attr('action'), extractFormParams(this)].join("?"),
+      fullPath: decodeURI(this.serialize() ? [this.attr('action'), this.serialize()].join("?") : this.attr('action')),
       title: this.attr('title'),
       delegateToServer: function () {
         self.submit()
