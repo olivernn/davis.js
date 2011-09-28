@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.1
+
+* Normalise node name when checking link and form origins, fixes [bug](https://github.com/olivernn/davis.js/pull/12) when used in xhtml documents.  Reported by [sabberworm](https://github.com/sabberworm).
+* Fix [issue](https://github.com/olivernn/davis.js/issues/14) when submitting forms with only file inputs or with no inputs.  Reported by [hleinone](https://github.com/hleinone).
+
 ## 0.6.0
 
 * Ignore any links or forms that are not on the same origin, only listen to clicks on links and forms with a href or action from the same domain.
