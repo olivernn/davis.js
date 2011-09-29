@@ -156,7 +156,7 @@ Davis.Request.prototype.makeStale = function (req) {
  * @returns {String} string The location that the url bar should display and should be pushed onto the history stack for this request.
  */
 Davis.Request.prototype.location = function () {
-  return (this.method === 'get') ? this.path : ''
+  return (this.method === 'get') ? this.path + (this.queryString ? '?' + this.queryString : '') : ''
 }
 
 /**
