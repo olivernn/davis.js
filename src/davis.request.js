@@ -5,7 +5,7 @@
  */
 
 /**
- * Daivs.Requests are created from click and submit events.  Davis.Requests are passed to Davis.Routes
+ * Davis.Requests are created from click and submit events.  Davis.Requests are passed to Davis.Routes
  * and are stored in the history stack.  They are instantiated by the Davis.listener module.
  *
  * A request will have a params object which will contain all query params and form params, any named
