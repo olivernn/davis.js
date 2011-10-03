@@ -74,6 +74,8 @@ Davis.Request = function (opts) {
   this.path = raw.fullPath
     .replace(/\?.+$/, "")  // Remove the query string
     .replace(/^https?:\/\/[^\/]+/, ""); // Remove the protocol and host parts
+  
+  this.fullPath = raw.fullPath;
 
   this.delegateToServer = raw.delegateToServer || Davis.noop;
   this.isForPageLoad = raw.forPageLoad || false;
@@ -156,7 +158,7 @@ Davis.Request.prototype.makeStale = function (req) {
  * @returns {String} string The location that the url bar should display and should be pushed onto the history stack for this request.
  */
 Davis.Request.prototype.location = function () {
-  return (this.method === 'get') ? this.path + (this.queryString ? '?' + this.queryString : '') : ''
+  return (this.method === 'get') ? this.fullPath : ''
 }
 
 /**
