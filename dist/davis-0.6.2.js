@@ -1284,13 +1284,13 @@ Davis.Request.prototype.location = function () {
 
 /**
  * ## request.toString
- * Converts the request to a string representation of itself by combining the method and path
+ * Converts the request to a string representation of itself by combining the method and fullPath
  * attributes.
  *
  * @returns {String} string representation of the request
  */
 Davis.Request.prototype.toString = function () {
-  return [this.method.toUpperCase(), this.path].join(" ")
+  return [this.method.toUpperCase(), this.fullPath].join(" ")
 };
 
 /**
