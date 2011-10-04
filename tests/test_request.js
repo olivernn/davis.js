@@ -5,6 +5,7 @@ test("request without any params", function () {
 
   equal('get', request.method, "should store the request method");
   equal('/foo', request.path, "should store the request path");
+  equal('/foo', request.fullPath, "should store the full request path");
   equal('foo', request.title, "should store the title for the request");
   ok(!request.queryString, "should have no query string");
   same({}, request.params, "should have no params");
@@ -13,6 +14,11 @@ test("request without any params", function () {
 test("request with a full url", function() {
   var request = factory('request', {fullPath: 'http://www-1.example.com:80/users/john-smith.html'});
   equal(request.location(), '/users/john-smith.html', "should remove the host and protocol parts");
+});
+
+test("request with a full url with params", function() {
+  var request = factory('request', {fullPath: 'http://www-1.example.com:80/users?name=john-smith'});
+  equal(request.location(), '/users?name=john-smith', "should remove the host and protocol parts");
 });
 
 test("request with params", function () {
@@ -25,6 +31,7 @@ test("request with params", function () {
   equal('/foo', request.path, "should store the path without any of the query params");
   equal('foo', request.title, "should store the title for the request");
   equal('bar=baz', request.queryString, "should store the query string");
+  equal('/foo?bar=baz', request.fullPath, "should store the full request path");
   same({bar: "baz"}, request.params, "should add any params to the request params object");
 });
 
@@ -34,7 +41,7 @@ test("convert request to readable string", function () {
     fullPath: '/foo?bar=baz'
   })
 
-  equal('POST /foo', request.toString(), "should include the method and the fullPath")
+  equal('POST /foo?bar=baz', request.toString(), "should include the method and the fullPath")
 })
 
 test("using _method param will set the method of the request", function () {
