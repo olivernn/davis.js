@@ -26,7 +26,18 @@ test("url should be changed to the requests url on pushState", function () {
   })
 
   Davis.history.assign(req1)
-  currentPathname(req1.location(), "location pathname should be equal to request location")
+  currentFullPath(req1.location(), "location pathname should be equal to request location")
+
+  resetLocation()
+})
+
+test("url should be changed to the requests url on pushState", function () {
+  var req1= factory('request', {
+    fullPath: "/eggs?and=ham"
+  })
+
+  Davis.history.assign(req1)
+  currentFullPath(req1.location(), "location pathname should be equal to request location")
 
   resetLocation()
 })
@@ -37,7 +48,7 @@ test("url should be changed to the requests url on replace state", function () {
   })
 
   Davis.history.replace(req2)
-  currentPathname(req2.location(), "location pathname should be equal to request location")
+  currentFullPath(req2.location(), "location pathname should be equal to request location")
 
   resetLocation()
 })
@@ -60,3 +71,4 @@ test("binding and triggering the pop state event", function () {
     resetLocation()
   }, 101)
 })
+
