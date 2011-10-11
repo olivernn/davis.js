@@ -5,7 +5,7 @@
  */
 
 /**
- * Daivs.Requests are created from click and submit events.  Davis.Requests are passed to Davis.Routes
+ * Davis.Requests are created from click and submit events.  Davis.Requests are passed to Davis.Routes
  * and are stored in the history stack.  They are instantiated by the Davis.listener module.
  *
  * A request will have a params object which will contain all query params and form params, any named
@@ -74,6 +74,8 @@ Davis.Request = function (opts) {
   this.path = raw.fullPath
     .replace(/\?.+$/, "")  // Remove the query string
     .replace(/^https?:\/\/[^\/]+/, ""); // Remove the protocol and host parts
+  
+  this.fullPath = raw.fullPath;
 
   this.delegateToServer = raw.delegateToServer || Davis.noop;
   this.isForPageLoad = raw.forPageLoad || false;
@@ -156,18 +158,18 @@ Davis.Request.prototype.makeStale = function (req) {
  * @returns {String} string The location that the url bar should display and should be pushed onto the history stack for this request.
  */
 Davis.Request.prototype.location = function () {
-  return (this.method === 'get') ? this.path : ''
+  return (this.method === 'get') ? this.fullPath : ''
 }
 
 /**
  * ## request.toString
- * Converts the request to a string representation of itself by combining the method and path
+ * Converts the request to a string representation of itself by combining the method and fullPath
  * attributes.
  *
  * @returns {String} string representation of the request
  */
 Davis.Request.prototype.toString = function () {
-  return [this.method.toUpperCase(), this.path].join(" ")
+  return [this.method.toUpperCase(), this.fullPath].join(" ")
 };
 
 /**

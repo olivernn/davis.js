@@ -131,7 +131,7 @@ Davis.history = (function () {
    * Davis.location delegates to this method for getting the apps current location.
    */
   var current = function () {
-    return window.location.pathname
+    return window.location.pathname + (window.location.search ? window.location.search : '')
   }
 
   /**
