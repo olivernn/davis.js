@@ -27,7 +27,7 @@ http.createServer(function (req, res) {
 
     fs.readFile(filename, 'binary', function (err, file) {
       if (err) return respondWith500(err)
-
+      res.setHeader('Cache-Control', 'no-cache')
       res.writeHead(200)
       res.write(file, 'binary')
       res.end()
