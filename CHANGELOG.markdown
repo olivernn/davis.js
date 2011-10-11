@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.2
+
+* Fix [issue](https://github.com/olivernn/davis.js/pull/16) so that a requests' location includes any query params.  Fixed by [hleinone](https://github.com/hleinone).
+
 ## 0.6.1
 
 * Normalise node name when checking link and form origins, fixes [bug](https://github.com/olivernn/davis.js/pull/12) when used in xhtml documents.  Reported by [sabberworm](https://github.com/sabberworm).
