@@ -169,7 +169,7 @@ Davis.Request.prototype.location = function () {
  * @returns {String} string representation of the request
  */
 Davis.Request.prototype.toString = function () {
-  return [this.method.toUpperCase(), this.fullPath].join(" ")
+  return [this.method.toUpperCase(), this.path].join(" ")
 };
 
 /**

@@ -41,7 +41,7 @@ test("convert request to readable string", function () {
     fullPath: '/foo?bar=baz'
   })
 
-  equal('POST /foo?bar=baz', request.toString(), "should include the method and the fullPath")
+  equal('POST /foo', request.toString(), "should include the method and the path")
 })
 
 test("using _method param will set the method of the request", function () {
