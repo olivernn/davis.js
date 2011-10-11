@@ -53,8 +53,14 @@ To use Davis your html file must be loaded from a server rather than just openin
 
 [Example](http://davis-example.heroku.com/notes) using davis.js and a mustache templates shared between the client and the server, [code](http://github.com/olivernn/notepad)
 
+## Contributing
 
+Contributions are more than welcome, to make the process easier and quicker please follow these guidelines:
+
+* Open an issue detailing the bug fix or feature in your patch.
+* Add test cases for your code.
+* Don't change the version or build new versions as part of you patch.
 
 ## Feedback
 
-This is a very young library and any feedback or suggestions are welcome via [issues](https://github.com/olivernn/davis.js/issues).
+Any feedback or suggestions are welcome via [issues](https://github.com/olivernn/davis.js/issues).
