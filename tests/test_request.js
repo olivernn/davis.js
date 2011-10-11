@@ -46,7 +46,7 @@ test("convert request to readable string", function () {
 
 test("using _method param will set the method of the request", function () {
   var request = factory('request', {
-    fullPath: '/foo?_method=put&name=bob',
+    fullPath: '/foo?_method=put&name=bob'
   });
 
   equal('put', request.method, "should use the _method param to set the requests method")
