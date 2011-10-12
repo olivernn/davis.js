@@ -33,6 +33,6 @@ http.createServer(function(req, res){
       fs.createReadStream(path).pipe(res);
     });
   })
-}).listen(port)
+}).listen(port);
 
-console.log("Static file server running at\n  => http://localhost:" + port + "/\nCTRL + C to shutdown");
+console.log("Static file server running at\n  => http://localhost:" + port);
