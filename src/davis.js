@@ -13,7 +13,7 @@
  */
 Davis = function (config) {
   var app = new Davis.App ();
-  config.call(app);
+  config && config.call(app);
   return app
 };
 
