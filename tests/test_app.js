@@ -1,5 +1,9 @@
 module("Davis.App")
 
+test('Davis() fn should be optional', function(){
+  ok(Davis() instanceof Davis.App, 'Davis() should return an app');
+});
+
 test("using a simple plugin", function () {
   var app = factory('app')
   var plugin = function () {
