@@ -11,6 +11,7 @@ var http = require('http')
   , port = process.argv[2] || 8003;
 
 http.createServer(function(req, res){
+  console.log('  \033[90m%s \033[36m%s\033[m', req.method, req.url);
   var pathname = url.parse(req.url).pathname
     , path = join(process.cwd(), pathname);
 
@@ -35,4 +36,4 @@ http.createServer(function(req, res){
   })
 }).listen(port);
 
-console.log("Static file server running at\n  => http://localhost:" + port);
+console.log('\n  Server listening on %d\n', port);
