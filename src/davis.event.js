@@ -20,7 +20,6 @@ Davis.event = (function(){
    */
 
   function bind(event, fn){
-    this.callbacks = this.callbacks || {};
     (this.callbacks[event] = this.callbacks[event] || [])
       .push(fn);
     return this;
@@ -34,7 +33,6 @@ Davis.event = (function(){
    */
 
   function trigger(event){
-    this.callbacks = this.callbacks || {};
     var args = slice.call(arguments, 1)
       , callbacks = this.callbacks[event];
 
@@ -52,6 +50,7 @@ Davis.event = (function(){
     , bind: bind
     , trigger: trigger
     , emit: trigger
+    , callbacks: {}
   };
 
 })();
