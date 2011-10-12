@@ -111,41 +111,6 @@ Davis.utils = (function () {
     };
   };
 
-
-  /**
-   * ## Davis.utils.map
-   * A wrapper around native Array.prototype.map that falls back to a pure JavaScript implementation
-   * in browsers that do not support Array.prototype.map.  For more details see the full docs on MDC
-   * https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/map
-   *
-   * @private
-   * @param {array} the array to map through
-   * @param {fn} the function to do the mapping
-   * @param {thisp} an optional param that will be set as fn's this value
-   * @returns {Array}
-   */
-  if (Array.prototype.map) {
-    var map = function (array, fn) {
-      return array.map(fn, arguments[2])
-    }
-  } else {
-    var map = function(array, fn) {
-      if (array === void 0 || array === null) throw new TypeError();
-      var t = Object(array);
-      var len = t.length >>> 0;
-      if (typeof fn !== "function") throw new TypeError();
-      
-
-      var res = new Array(len);
-      var thisp = arguments[2];
-      for (var i = 0; i < len; i++) {
-        if (i in t) res[i] = fn.call(thisp, t[i], i, t);
-      }
-
-      return res;
-    };
-  };
-
   /**
    * ## Davis.utils.toArray
    * A convinience function for converting arguments to a proper array
@@ -168,7 +133,6 @@ Davis.utils = (function () {
     every: every,
     forEach: forEach,
     filter: filter,
-    map: map,
     toArray: toArray
   }
 })()
