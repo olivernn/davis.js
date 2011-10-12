@@ -39,14 +39,12 @@
 <!--     <script src="/dist/davis-0.1.0.min.js" type="text/javascript" charset="utf-8"></script> -->
 
     <script type="text/javascript" charset="utf-8">
-      app = Davis();
+      app = davis();
 
       app.post('/todo/item', function(req){
         $('ul').append('<li>' + req.params.item + '</li>');
         $('[name=item]').val('');
       });
-
-      app.start();
     </script>
 
   </head>
