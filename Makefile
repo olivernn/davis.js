@@ -19,10 +19,15 @@ davis.js: $(SRC)
 davis.min.js: davis.js
 	uglifyjs < $< > $@
 
+docs:
+	dox --title 'Davis' src/davis.*.js > docs/index.html
+	dox --title 'Davis Plugins' src/plugins/davis.*.js > docs/plugins.html
+	dox --title 'Davis Extensions' src/extensions/davis.*.js > docs/extensions.html
+
 clean:
 	rm -f davis{.min,}.js
 
 test:
 	@node server 3000
 
-.PHONY: test clean
+.PHONY: test clean docs
