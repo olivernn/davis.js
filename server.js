@@ -7,8 +7,15 @@ var http = require('http')
   , url = require('url')
   , join = require('path').join
   , exists = require('path').exists
+  , extname = require('path').extname
   , fs = require('fs')
   , port = process.argv[2] || 8003;
+
+var mime = {
+    '.html': 'text/html'
+  , '.css': 'text/css'
+  , '.js': 'application/javascript'
+};
 
 http.createServer(function(req, res){
   console.log('  \033[90m%s \033[36m%s\033[m', req.method, req.url);
@@ -31,6 +38,7 @@ http.createServer(function(req, res){
       if (err) return error();
       if (stat.isDirectory()) path += '/index.html';
       res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Content-Type', mime[extname(req.url)] || 'application/octet-stream');
       fs.createReadStream(path).pipe(res);
     });
   })
