@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Davis todo list</title>
+
+    <style>
+      body {
+        font: 14px "Helvetica Neue", Helvetica, arial, sans-serif;
+        padding: 50px;
+      }
+      input[type=text] {
+        padding: 5px;
+        border-width: 1px;
+        outline: none;
+        -webkit-border-radius: 3px;
+      }
+      ul li {
+        padding: 3px 0;
+      }
+    </style>
+
+    <!-- dependencies -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+
+    <!-- davis -->
+    <script src="/src/davis.js"></script>
+    <script src="/src/davis.history.js"></script>
+    <script src="/src/davis.location.js"></script>
+    <script src="/src/extensions/davis.hashRouting.js"></script>
+    <script src="/src/davis.utils.js"></script>
+    <script src="/src/davis.listener.js"></script>
+    <script src="/src/davis.event.js"></script>
+    <script src="/src/davis.logger.js"></script>
+    <script src="/src/davis.route.js"></script>
+    <script src="/src/davis.router.js"></script>
+    <script src="/src/davis.request.js"></script>
+    <script src="/src/davis.app.js"></script>
+
+<!--     <script src="/dist/davis-0.1.0.min.js" type="text/javascript" charset="utf-8"></script> -->
+
+    <script type="text/javascript" charset="utf-8">
+      app = Davis();
+
+      app.post('/todo/item', function(req){
+        $('ul').append('<li>' + req.params.item + '</li>');
+        $('[name=item]').val('');
+      });
+
+      app.start();
+    </script>
+
+  </head>
+  <body>
+    <h1>Todo List</h1>
+
+    <ul id="todos">
+    </ul>
+
+    <form action="/todo/item" method="post">
+      <input type="text" name="item" placeholder="Enter an item" autocomplete="off" />
+      <input type="submit" name="submit" value="Add">
+    </form>
+  </body>
+</html>
