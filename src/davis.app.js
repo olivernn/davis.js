@@ -21,11 +21,15 @@ Davis.App = (function () {
    * @constructor
    * @returns {Davis.App}
    */
-  var App = function () {
+  function App() {
     this.id = [new Date().valueOf(), appCounter++].join("-");
     this.running = false;
     this.boundToInternalEvents = false;
+    Davis.Emitter.call(this);
   };
+
+  App.prototype = new Davis.Emitter;
+  App.prototype.constructor = App;
 
   /**
    * creating the prototype for the app from modules listener and event
