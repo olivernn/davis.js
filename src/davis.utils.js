@@ -12,38 +12,6 @@
 Davis.utils = (function () {
 
   /**
-   * ## Davis.utils.every
-   * A wrapper around native Array.prototype.every that falls back to a pure JavaScript implementation
-   * in browsers that do not support Array.prototype.every.  For more details see the full docs on MDC
-   * https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/every
-   *
-   * @private
-   * @param {array} the array to loop through
-   * @param {fn} the function to that performs the every check
-   * @param {thisp} an optional param that will be set as fn's this value
-   * @returns {Array}
-   */
-  if (Array.prototype.every) {
-    var every = function (array, fn) {
-      return array.every(fn, arguments[2])
-    }
-  } else {
-    var every = function (array, fn) {
-      if (array === void 0 || array === null) throw new TypeError();
-      var t = Object(array);
-      var len = t.length >>> 0;
-      if (typeof fn !== "function") throw new TypeError();
-
-      var thisp = arguments[2];
-      for (var i = 0; i < len; i++) {
-        if (i in t && !fn.call(thisp, t[i], i, t)) return false;
-      }
-
-      return true;
-    }
-  };
-
-  /**
    * ## Davis.utils.forEach
    * A wrapper around native Array.prototype.forEach that falls back to a pure JavaScript implementation
    * in browsers that do not support Array.prototype.forEach.  For more details see the full docs on MDC
@@ -165,7 +133,6 @@ Davis.utils = (function () {
    * @private
    */
   return {
-    every: every,
     forEach: forEach,
     filter: filter,
     map: map,
