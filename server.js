@@ -14,22 +14,20 @@ http.createServer(function(req, res){
   var pathname = url.parse(req.url).pathname
     , path = join(process.cwd(), pathname);
 
-  var respondWith404 = function () {
-    res.writeHead(404, {"Content-Type": "text/plain"})
-    res.write("404 Not Found\n")
-    res.end()
+  function notFound() {
+    res.statusCode = 404;
+    res.end("404 Not Found\n")
   }
 
-  var respondWith500 = function (err) {
-    res.writeHead(500, {"Content-Type": "text/plain"})
-    res.write(err + "\n")
-    res.end()
+  function error(err) {
+    res.statusCode = 500;
+    res.end(err.message + "\n");
   }
 
   exists(path, function(exists){
-    if (!exists) return respondWith404()
+    if (!exists) return notFound()
     fs.stat(path, function(err, stat){
-      if (err) return respondWith500();
+      if (err) return error();
       if (stat.isDirectory()) path += '/index.html';
       res.setHeader('Cache-Control', 'no-cache');
       fs.createReadStream(path).pipe(res);
