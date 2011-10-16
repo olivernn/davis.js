@@ -36,7 +36,7 @@ Davis.location = (function () {
    *
    * @param {Object} the location delegate to use.
    */
-  var setLocationDelegate = function (delegate) {
+  function setLocationDelegate(delegate) {
     locationDelegate = delegate
   }
 
@@ -45,7 +45,7 @@ Davis.location = (function () {
    *
    * Delegates to the locationDelegate.current method.  This should return the current location of the app.
    */
-  var current = function () {
+  function current() {
     return locationDelegate.current()
   }
 
@@ -58,7 +58,7 @@ Davis.location = (function () {
    * @param {Request} the request to set the current location to.
    * @see Davis.Request
    */
-  var assign = function (req) {
+  function assign(req) {
     locationDelegate.assign(req)
   }
 
@@ -71,7 +71,7 @@ Davis.location = (function () {
    * @param {Request} the request to replace the current location with.
    * @see Davis.Request
    */
-  var replace = function (req) {
+  function replace(req) {
     locationDelegate.replace(req)
   }
 
@@ -86,7 +86,7 @@ Davis.location = (function () {
    * @see Davis.Request
    *
    */
-  var onChange = function (handler) {
+  function onChange(handler) {
     locationDelegate.onChange(handler)
   }
 
