@@ -4,12 +4,6 @@
  * MIT Licensed
  */
 
-davis = function(){
-  var app = new Davis.App;
-  jQuery(function(){ app.start(); });
-  return app;
-};
-
 /**
  * Convinience method for instantiating a new Davis app and configuring it to use the passed
  * routes and subscriptions.
@@ -18,8 +12,10 @@ davis = function(){
  * should be used to set up app routes, subscriptions and settings etc.
  */
 Davis = function (config) {
-  var app = new Davis.App ();
+  var app = Davis.currentApp || new Davis.App ();
+  Davis.currentApp = app
   config && config.call(app);
+  jQuery(function () { app.start() })
   return app
 };
 
@@ -32,6 +28,8 @@ Davis = function (config) {
 Davis.supported = function () {
   return (typeof window.history.pushState == 'function')
 }
+
+Davis.currentApp = null
 
 /**
  * ## Davis.noop

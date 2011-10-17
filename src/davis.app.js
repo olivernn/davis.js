@@ -128,6 +128,8 @@ Davis.App = (function () {
     start: function () {
       var self = this;
 
+      if (this.running) return
+
       if (!Davis.supported()) {
         this.trigger('unsupported')
         return
