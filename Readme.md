@@ -61,6 +61,12 @@ Contributions are more than welcome, to make the process easier and quicker plea
 * Add test cases for your code.
 * Don't change the version or build new versions as part of you patch.
 
+## Running examples
+
+  First you'll need [node](http://nodejs.org) installed for the server. Then execute the following command and visit one of the examples: `http://localhost:3000/examples/todo.html`.
+  
+    $ make test
+
 ## Feedback
 
 Any feedback or suggestions are welcome via [issues](https://github.com/olivernn/davis.js/issues).
