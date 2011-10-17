@@ -12,8 +12,10 @@
  * should be used to set up app routes, subscriptions and settings etc.
  */
 Davis = function (config) {
-  var app = new Davis.App ();
-  config.call(app);
+  var app = Davis.currentApp || new Davis.App ();
+  Davis.currentApp = app
+  config && config.call(app);
+  jQuery(function () { app.start() })
   return app
 };
 
@@ -26,6 +28,8 @@ Davis = function (config) {
 Davis.supported = function () {
   return (typeof window.history.pushState == 'function')
 }
+
+Davis.currentApp = null
 
 /**
  * ## Davis.noop

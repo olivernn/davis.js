@@ -1,38 +1,48 @@
-var http = require("http"),
-    url = require("url"),
-    path = require("path"),
-    fs = require("fs")
-    port = process.argv[2] || 8003;
 
-http.createServer(function (req, res) {
-  var uri = url.parse(req.url).pathname,
-      filename = path.join(process.cwd(), uri);
+/**
+ * Module dependencies.
+ */
 
-  var respondWith404 = function () {
-    res.writeHead(404, {"Content-Type": "text/plain"})
-    res.write("404 Not Found\n")
-    res.end()
+var http = require('http')
+  , url = require('url')
+  , join = require('path').join
+  , exists = require('path').exists
+  , extname = require('path').extname
+  , join = require('path').join
+  , fs = require('fs')
+  , port = process.argv[2] || 8003;
+
+var mime = {
+    'html': 'text/html'
+  , 'css': 'text/css'
+  , 'js': 'application/javascript'
+};
+
+http.createServer(function(req, res){
+  console.log('  \033[90m%s \033[36m%s\033[m', req.method, req.url);
+  var pathname = url.parse(req.url).pathname
+    , path = join(process.cwd(), pathname);
+
+  function notFound() {
+    res.statusCode = 404;
+    res.end("404 Not Found\n")
   }
 
-  var respondWith500 = function (err) {
-    res.writeHead(500, {"Content-Type": "text/plain"})
-    res.write(err + "\n")
-    res.end()
+  function error(err) {
+    res.statusCode = 500;
+    res.end(err.message + "\n");
   }
 
-  path.exists(filename, function (exists) {
-    if (!exists) return respondWith404()
-
-    if (fs.statSync(filename).isDirectory()) filename += '/index.html'
-
-    fs.readFile(filename, 'binary', function (err, file) {
-      if (err) return respondWith500(err)
-      res.setHeader('Cache-Control', 'no-cache')
-      res.writeHead(200)
-      res.write(file, 'binary')
-      res.end()
-    })
+  exists(path, function(exists){
+    if (!exists) return notFound()
+    fs.stat(path, function(err, stat){
+      if (err) return error();
+      if (stat.isDirectory()) path = join(path, 'index.html');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Content-Type', mime[path.split('.')[1]] || 'application/octet-stream');
+      fs.createReadStream(path).pipe(res);
+    });
   })
-}).listen(port)
+}).listen(port);
 
-console.log("Static file server running at\n  => http://localhost:" + port + "/\nCTRL + C to shutdown");
+console.log('\n  Server listening on %d\n', port);

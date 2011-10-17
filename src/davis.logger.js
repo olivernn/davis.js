@@ -18,7 +18,7 @@ Davis.logger = (function () {
    * Generating the timestamp portion of the log message
    * @private
    */
-  var timestamp = function (){
+  function timestamp(){
     return "[" + Date() + "]";
   }
 
@@ -26,7 +26,7 @@ Davis.logger = (function () {
    * Pushing the timestamp onto the front of the arguments to log
    * @private
    */
-  var prepArgs = function (args) {
+  function prepArgs(args) {
     var a = Davis.utils.toArray(args)
     a.unshift(timestamp())
     return a.join(' ');
@@ -38,7 +38,7 @@ Davis.logger = (function () {
    *
    * @params {String} All arguments are combined and logged to the console.
    */
-  var error = function () {
+  function error() {
     if (window.console) console.error(prepArgs(arguments));
   }
 
@@ -48,7 +48,7 @@ Davis.logger = (function () {
    *
    * @params {String} All arguments are combined and logged to the console.
    */
-  var info = function () {
+  function info() {
     if (window.console) console.info(prepArgs(arguments));
   }
 
@@ -58,7 +58,7 @@ Davis.logger = (function () {
    *
    * @params {String} All arguments are combined and logged to the console.
    */
-  var warn = function () {
+  function warn() {
     if (window.console) console.warn(prepArgs(arguments));
   }
 
