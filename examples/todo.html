@@ -35,11 +35,14 @@
     <script src="/lib/davis.app.js"></script>
 
     <script type="text/javascript" charset="utf-8">
-      app = davis();
+      app = Davis();
+
+      app.get('/examples/todo.html', Davis.noop);
 
       app.post('/todo/item', function(req){
         $('ul').append('<li>' + req.params.item + '</li>');
         $('[name=item]').val('');
+        req.redirect('/examples/todo.html');
       });
     </script>
 
