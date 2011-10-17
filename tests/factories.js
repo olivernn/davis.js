@@ -22,9 +22,8 @@ factories = {
   },
 
   router: function () {
-    var r = {}
-    Davis.router.call(r)
-    return r
+    Davis.router.removeAllRoutes()
+    return Davis.router
   },
 
   app: function () {
