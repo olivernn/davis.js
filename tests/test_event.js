@@ -1,5 +1,10 @@
 module("events")
 
+test('method aliases', function(){
+  ok(Davis.event.on == Davis.event.bind, '.on alias of .bind');
+  ok(Davis.event.emit == Davis.event.trigger, '.emit alias of .trigger');
+});
+
 test("binding to an event", function () {
 
   var callbackCalled = false;
