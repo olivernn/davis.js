@@ -11,10 +11,13 @@ SRC = lib/davis.js \
 	lib/davis.request.js \
 	lib/davis.app.js
 
+VERSION = $(shell cat VERSION)
+
 all: davis.js davis.min.js
 
 davis.js: $(SRC)
-	cat $^ > $@
+	cat $^ | \
+	sed "s/@VERSION/${VERSION}/" > $@
 
 davis.min.js: davis.js
 	uglifyjs < $< > $@
