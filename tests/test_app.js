@@ -9,13 +9,6 @@ test("should auto start the application", function () {
   ok(app.running, 'Davis() should auto start the app')
 })
 
-test("should only ever be one application", function () {
-  var app1 = Davis(),
-      app2 = Davis()
-
-  same(app1, app2, 'davis app should be a singleton')
-})
-
 test("can only start an app that is stopped", function () {
   var startCount = 0,
       app = new Davis.App ()
