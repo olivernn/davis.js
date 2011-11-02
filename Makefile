@@ -13,7 +13,7 @@ SRC = lib/davis.js \
 
 VERSION = $(shell cat VERSION)
 
-all: davis.js davis.min.js
+all: davis.js davis.min.js docs
 
 davis.js: $(SRC)
 	cat $^ | \
@@ -23,9 +23,8 @@ davis.min.js: davis.js
 	uglifyjs < $< > $@
 
 docs:
-	dox --title 'Davis' lib/davis.*.js > docs/index.html
-	dox --title 'Davis Plugins' lib/plugins/davis.*.js > docs/plugins.html
-	dox --title 'Davis Extensions' lib/extensions/davis.*.js > docs/extensions.html
+	~/code/dox/bin/dox < davis.js | node docs/doc_builder.js > docs/index.html
+	~/code/dox/bin/dox < davis.js > docs/index.json
 
 clean:
 	rm -f davis{.min,}.js
