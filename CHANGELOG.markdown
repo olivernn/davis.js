@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.7.0
+
+* Refactor of internals, many components now implemented as Davis plugins, making it easier to extend the library.
+* Simplify build tools, removed dependencies on ruby and java.  Now all you need is make and node.js.  Thanks [visionmedia](http://github.com/visionmedia).
+* The `Davis` convenience function no longer requires a config function to be passed in when creating an app.  [visionmedia](http://github.com/visionmedia)
+* The `Davis` convenience function auto starts the app as soon as possible. [visionmedia](http://github.com/visionmedia).
+* Changed default setting `generateRequestOnPageLoad`, now it is false by default.
+* `Davis.logger` is now implemented as a plugin not a setting.
+* Renamed `Davis.Request.prototype.asJSON` to `Davis.Request.prototype.toJSON`. [visionmedia](http://github.com/visionmedia).
+* Fix browser inconsistency bug where Firefox would not fire a popstate event on page load.
+
 ## 0.6.2
 
 * Fix [issue](https://github.com/olivernn/davis.js/pull/16) so that a requests' location includes any query params.  Fixed by [hleinone](https://github.com/hleinone).
