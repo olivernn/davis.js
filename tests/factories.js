@@ -22,9 +22,15 @@ factories = {
   },
 
   router: function () {
-    var r = {}
-    Davis.router.call(r)
-    return r
+    var obj = {}
+    Davis.router.call(obj)
+    return obj
+  },
+
+  events: function () {
+    var obj = {}
+    Davis.event.call(obj)
+    return obj
   },
 
   app: function () {

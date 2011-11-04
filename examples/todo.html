@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Davis todo list</title>
+
+    <style>
+      body {
+        font: 14px "Helvetica Neue", Helvetica, arial, sans-serif;
+        padding: 50px;
+      }
+      input[type=text] {
+        padding: 5px;
+        border-width: 1px;
+        outline: none;
+        -webkit-border-radius: 3px;
+      }
+      ul li {
+        padding: 3px 0;
+      }
+    </style>
+
+    <script src="jquery.js" type="text/javascript" charset="utf-8"></script>
+
+    <script src="/lib/davis.js"></script>
+    <script src="/lib/davis.history.js"></script>
+    <script src="/lib/davis.location.js"></script>
+    <script src="/lib/extensions/davis.hashRouting.js"></script>
+    <script src="/lib/davis.utils.js"></script>
+    <script src="/lib/davis.listener.js"></script>
+    <script src="/lib/davis.event.js"></script>
+    <script src="/lib/davis.logger.js"></script>
+    <script src="/lib/davis.route.js"></script>
+    <script src="/lib/davis.router.js"></script>
+    <script src="/lib/davis.request.js"></script>
+    <script src="/lib/davis.app.js"></script>
+
+    <script type="text/javascript" charset="utf-8">
+      app = Davis();
+
+      app.get('/examples/todo.html', Davis.noop);
+
+      app.post('/todo/item', function(req){
+        $('ul').append('<li>' + req.params.item + '</li>');
+        $('[name=item]').val('');
+        req.redirect('/examples/todo.html');
+      });
+    </script>
+
+  </head>
+  <body>
+    <h1>Todo List</h1>
+
+    <ul id="todos">
+    </ul>
+
+    <form action="/todo/item" method="post">
+      <input type="text" name="item" placeholder="Enter an item" autocomplete="off" />
+      <input type="submit" name="submit" value="Add">
+    </form>
+  </body>
+</html>

@@ -2,13 +2,9 @@ module("Davis.router")
 
 test("looking up a route", function () {
   var router = factory('router')
-  router._routeCollection = [];
 
-  router.get('/foo')
-  router.post('/foo')
-
-  var getRoute = router._routeCollection[0]
-  var postRoute = router._routeCollection[1]
+  var getRoute = router.get('/foo'),
+      postRoute = router.post('/foo')
 
   equal(router.lookupRoute('get', '/foo'), getRoute, 'should match routes based on method and path')
   equal(router.lookupRoute('post', '/foo'), postRoute, 'should match routes based on method and path')
@@ -17,30 +13,24 @@ test("looking up a route", function () {
 test("shortcuts for verbs", function () {
   var router = factory('router')
 
-  router._routeCollection.length = 0;
-  router.get('/foo', $.noop);
-  router.post('/foo', $.noop);
-  router.put('/foo', $.noop);
-  router.del('/foo', $.noop);
-
-  same(router._routeCollection[0].method, /^get$/i)
-  same(router._routeCollection[1].method, /^post$/i)
-  same(router._routeCollection[2].method, /^put$/i)
-  same(router._routeCollection[3].method, /^delete$/i)
+  same(router.get('/foo').method, /^get$/i)
+  same(router.post('/foo').method, /^post$/i)
+  same(router.put('/foo').method, /^put$/i)
+  same(router.del('/foo').method, /^delete$/i)
 })
 
 test("keeping a collection of before filters", function () {
   var router = factory('router')
 
-  router.before($.noop)
-  equal(router._filterCollection.before.length, 1, "should keep a collection of every before filter")
+  var beforeFilter = router.before($.noop)
+  equal(router.lookupBeforeFilter().length, 1, "should keep a collection of every before filter")
 })
 
 test("keeping a collection of after filters", function () {
   var router = factory('router')
 
-  router.after($.noop)
-  equal(router._filterCollection.after.length, 1, "should keep a collection of every before filter")
+  var afterFilter = router.after($.noop)
+  equal(router.lookupAfterFilter().length, 1, "should keep a collection of every before filter")
 })
 
 test("looking up a before filter with no path condition", function () {
@@ -50,16 +40,16 @@ test("looking up a before filter with no path condition", function () {
 
   empty(filters, "should return an empty array if there are no filters")
 
-  router.before(function () {
+  var beforeFilter = router.before(function () {
     callbackCalled = true;
   });
 
   var filters = router.lookupBeforeFilter('get', '/foo')
 
   equal(filters.length, 1, "should have found the filter")
-  same(router._filterCollection.before[0], filters[0], "should return the filter that was added")
+  same(beforeFilter, filters[0], "should return the filter that was added")
 
-  filters[0].run({path: ""})
+  beforeFilter.run({path: ""})
 
   ok(callbackCalled, "calling the route shoul invoke its callback")
 })
@@ -71,7 +61,7 @@ test("looking up a before filter with a path condition", function () {
 
   empty(filters, "should return an empty array if there are no filters")
 
-  router.before('/foo', function () {
+  var beforeFilter = router.before('/foo', function () {
     callbackCalled = true;
   });
 
@@ -81,9 +71,9 @@ test("looking up a before filter with a path condition", function () {
   filters = router.lookupBeforeFilter('get', '/foo')
 
   equal(filters.length, 1, "should have found the filter")
-  same(router._filterCollection.before[0], filters[0], "should return the filter that was added")
+  same(beforeFilter, filters[0], "should return the filter that was added")
 
-  filters[0].run({path: ""})
+  beforeFilter.run({path: ""})
 
   ok(callbackCalled, "calling the route should invoke its callback")
 })
@@ -95,16 +85,16 @@ test("looking up a after filter with no path condition", function () {
 
   equal(filters.length, 0, "should return an empty array if there are no filters")
 
-  router.after(function () {
+  var afterFilter = router.after(function () {
     callbackCalled = true;
   });
 
   var filters = router.lookupAfterFilter('get', '/foo')
 
   equal(filters.length, 1, "should have found the filter")
-  same(router._filterCollection.after[0], filters[0], "should return the filter that was added")
+  same(afterFilter, filters[0], "should return the filter that was added")
 
-  filters[0].run({path: ""})
+  afterFilter.run({path: ""})
 
   ok(callbackCalled, "calling the route shoul invoke its callback")
 })
@@ -116,7 +106,7 @@ test("looking up a before filter with a path condition", function () {
 
   empty(filters, "should return an empty array if there are no filters")
 
-  router.after('/foo', function () {
+  var afterFilter = router.after('/foo', function () {
     callbackCalled = true;
   });
 
@@ -126,21 +116,17 @@ test("looking up a before filter with a path condition", function () {
   filters = router.lookupAfterFilter('get', '/foo')
 
   equal(filters.length, 1, "should have found the filter")
-  same(router._filterCollection.after[0], filters[0], "should return the filter that was added")
+  same(afterFilter, filters[0], "should return the filter that was added")
 
-  filters[0].run({path: ""})
+  afterFilter.run({path: ""})
 
   ok(callbackCalled, "calling the route should invoke its callback")
 })
 
 test("registering a state", function () {
   var router = factory('router')
+  var state = router.state('/foo/:id', $.noop)
 
-  router._routeCollection = []
-
-  router.state('/foo/:id', $.noop)
-
-  var state = router._routeCollection[0]
   same(state, router.lookupRoute('state', '/foo/1'), "should store states as routes")
 })
 
@@ -161,8 +147,7 @@ test("transitioning to a state", function () {
 test("methods should be case insensitive", function () {
   var router = factory('router')
 
-  router.get('/foo', $.noop)
-  var route = router._routeCollection[0]
+  var route = router.get('/foo', $.noop)
 
   same(route, router.lookupRoute('GET', '/foo'), "should match regardless of the case of the route method")
 })
@@ -170,8 +155,7 @@ test("methods should be case insensitive", function () {
 test("path should be case insensitive", function () {
   var router = factory('router')
 
-  router.get('/foo', $.noop)
-  var route = router._routeCollection[0]
+  var route = router.get('/foo', $.noop)
 
   same(route, router.lookupRoute('get', '/FOO'), "should match regardless of the case of the route path")
 })
