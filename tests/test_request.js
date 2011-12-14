@@ -75,6 +75,19 @@ test("parsing rails style nested params with arrays", function () {
   }}, request.params, "should combine the nested params into a single array")
 })
 
+test("parsing top level rails style nested params with arrays", function () {
+  var request = factory('request', {
+    fullPath: '/foo?ids[]=123&ids[]=asdf&bars[]=1&bars[]=2&foo=li'
+  })
+
+  same({
+    ids: ['123', 'asdf'],
+    bars: ['1', '2'],
+    foo: 'li'
+  }, request.params, "should combine the nested params into a single array")
+
+})
+
 test("generating a request for the initial page load", function () {
   var request = Davis.Request.forPageLoad()
 
