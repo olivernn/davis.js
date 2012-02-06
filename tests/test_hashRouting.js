@@ -49,7 +49,7 @@ test("location delegate", function() {
 
   ok(onChangeCallback.wasCalled);
   ok(mockLocation.assign.wasCalled);
-  equal(mockLocation.assign.mostRecentCall.args[0], '/#/hello_assign_test');
+  equal(mockLocation.assign.mostRecentCall.args[0], '#/hello_assign_test');
 
   /**
     * Test replace
@@ -62,7 +62,7 @@ test("location delegate", function() {
 
   ok(onChangeCallback.wasCalled);
   ok(mockLocation.replace.wasCalled);
-  equal(mockLocation.replace.mostRecentCall.args[0], '/#/hello_replace_test');
+  equal(mockLocation.replace.mostRecentCall.args[0], '#/hello_replace_test');
 });
 
 test("normalizing the initial value of window.location", function() {
