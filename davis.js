@@ -1,5 +1,5 @@
 /*!
- * Davis - http://davisjs.com - JavaScript Routing - 0.7.0
+ * Davis - http://davisjs.com - JavaScript Routing - 0.8.0
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
  */
@@ -16,8 +16,17 @@
 Davis = function (config) {
   var app = new Davis.App
   config && config.call(app)
-  jQuery(function () { app.start() })
+  Davis.$(function () { app.start() })
   return app
+};
+
+/**
+ * Stores the DOM library that Davis will use.  Can be overriden to use libraries other than jQuery.
+ */
+if (window.jQuery) {
+  Davis.$ = jQuery
+} else {
+  Davis.$ = null
 };
 
 /**
@@ -56,7 +65,7 @@ Davis.extend = function (extension) {
 /*!
  * the version
  */
-Davis.version = "0.7.0";/*!
+Davis.version = "0.8.0";/*!
  * Davis - utils
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
@@ -217,7 +226,7 @@ Davis.listener = function () {
    */
   var originChecks = {
     A: function (elem) {
-      return elem.host !== window.location.host
+      return elem.hostname !== window.location.host || elem.protocol !== window.location.protocol
     },
 
     FORM: function (elem) {
@@ -247,7 +256,7 @@ Davis.listener = function () {
   var handler = function (targetExtractor) {
     return function (event) {
       if (differentOrigin(this)) return true
-      var request = new Davis.Request (targetExtractor.call(jQuery(this)));
+      var request = new Davis.Request (targetExtractor.call(Davis.$(this)));
       Davis.location.assign(request)
       return false;
     };
@@ -294,8 +303,8 @@ Davis.listener = function () {
    * @memberOf listener
    */
   this.listen = function () {
-    jQuery(document).delegate(this.settings.formSelector, 'submit', submitHandler)
-    jQuery(document).delegate(this.settings.linkSelector, 'click', clickHandler)
+    Davis.$(document).delegate(this.settings.formSelector, 'submit', submitHandler)
+    Davis.$(document).delegate(this.settings.linkSelector, 'click', clickHandler)
   }
 
   /**
@@ -308,8 +317,8 @@ Davis.listener = function () {
    * @memberOf listener
    */
   this.unlisten = function () {
-    jQuery(document).undelegate(this.settings.linkSelector, 'click', clickHandler)
-    jQuery(document).undelegate(this.settings.formSelector, 'submit', submitHandler)
+    Davis.$(document).undelegate(this.settings.linkSelector, 'click', clickHandler)
+    Davis.$(document).undelegate(this.settings.formSelector, 'submit', submitHandler)
   }
 }/*!
  * Davis - event
@@ -792,7 +801,7 @@ Davis.router = function () {
    */
   this.trans = function (path, data) {
     if (data) {
-      var fullPath = [path, decodeURIComponent(jQuery.param(data))].join('?')
+      var fullPath = [path, decodeURIComponent(Davis.$.param(data))].join('?')
     } else {
       var fullPath = path
     };
@@ -923,12 +932,23 @@ Davis.history = (function () {
   var pushStateHandlers = [];
 
   /*!
+   * keep track of whether or not webkit like browsers have fired their initial
+   * page load popstate
+   * @private
+   */
+  var popped = false
+
+  /*!
    * method to check whether or not this is the first pop state event received
    * @private
    */
-  function hasPopped () {
-   return !window.history.state
-  }
+   function hasPopped () {
+     if ('state' in window.history) {
+       return true
+     } else {
+       return popped
+     };
+   }
 
   /*!
    * Add a handler to the push state event.  This event is not a native event but is fired
@@ -966,6 +986,7 @@ Davis.history = (function () {
         handler(new Davis.Request(event.state._davis))
       } else {
         if (hasPopped()) handler(Davis.Request.forPageLoad())
+        popped = true
       };
     }
   }
@@ -1195,7 +1216,7 @@ Davis.Request = (function () {
  *     })
  */
   var Request = function (opts) {
-    var raw = jQuery.extend({}, {
+    var raw = Davis.$.extend({}, {
       title: "",
       fullPath: "",
       method: "get"
@@ -1212,18 +1233,22 @@ Davis.Request = (function () {
       Davis.utils.forEach(this.queryString.split("&"), function (keyval) {
         var paramName = keyval.split("=")[0],
             paramValue = keyval.split("=")[1],
-            nestedParamRegex = /^(\w+)\[(\w+)\](\[\])?/,
+            nestedParamRegex = /^(\w+)\[(\w+)?\](\[\])?/,
             nested;
         if (nested = nestedParamRegex.exec(paramName)) {
           var paramParent = nested[1];
           var paramName = nested[2];
           var isArray = !!nested[3];
           var parentParams = self.params[paramParent] || {};
-        
+
           if (isArray) {
             parentParams[paramName] = parentParams[paramName] || [];
             parentParams[paramName].push(paramValue);
             self.params[paramParent] = parentParams;
+          } else if (!paramName && !isArray) {
+            parentParams = self.params[paramParent] || []
+            parentParams.push(paramValue)
+            self.params[paramParent] = parentParams
           } else {
             parentParams[paramName] = paramValue;
             self.params[paramParent] = parentParams;
