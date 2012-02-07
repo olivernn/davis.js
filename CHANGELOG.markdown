@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.8.0
+
+* Davis is no longer dependent on jQuery, can be used with any or no DOM library with the use of extensions.
+* Added Zepto extension to allow Davis to be used with Zepto.
+* More robust checking of link origins, protocols must match to be caught by Davis, thanks [jacobcoens](http://github.com/jacobcoens)
+* Added Mixpanel plugin, thanks [hleinone](https://github.com/hleinone)
+* Added Facebook Like plugin, thanks [hleinone](https://github.com/hleinone)
+* Fixed several bugs with the hashRouting extension.
+
 ## 0.7.0
 
 * Refactor of internals, many components now implemented as Davis plugins, making it easier to extend the library.
