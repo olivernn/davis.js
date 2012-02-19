@@ -186,3 +186,11 @@ test("flagging a request as a page load request", function () {
   ok(!request.isForPageLoad, "request should not be for the page load")
   ok(pageLoad.isForPageLoad, "request should be for the page load")
 })
+
+test("can construct a request from a string", function () {
+  var request = new Davis.Request ('/posts/12')
+
+  equal(request.method, 'get', 'should default the method to get')
+  equal(request.title, '', 'should leave the title empty')
+  equal(request.fullPath, '/posts/12', 'should set the fullPath to the string passed to the constructor')
+})
