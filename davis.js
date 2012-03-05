@@ -1,5 +1,5 @@
 /*!
- * Davis - http://davisjs.com - JavaScript Routing - 0.8.0
+ * Davis - http://davisjs.com - JavaScript Routing - 0.8.1
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
  */
@@ -65,7 +65,7 @@ Davis.extend = function (extension) {
 /*!
  * the version
  */
-Davis.version = "0.8.0";/*!
+Davis.version = "0.8.1";/*!
  * Davis - utils
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
@@ -226,7 +226,7 @@ Davis.listener = function () {
    */
   var originChecks = {
     A: function (elem) {
-      return elem.hostname !== window.location.host || elem.protocol !== window.location.protocol
+      return elem.hostname !== window.location.hostname || elem.protocol !== window.location.protocol
     },
 
     FORM: function (elem) {
