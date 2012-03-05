@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.1
+
+* Fix issue with Davis.listener fixes [issue 32](https://github.com/olivernn/davis.js/issues/32)
+* Move davis.fblike and davis.mixpanel into the correct directory
+
 ## 0.8.0
 
 * Davis is no longer dependent on jQuery, can be used with any or no DOM library with the use of extensions.
