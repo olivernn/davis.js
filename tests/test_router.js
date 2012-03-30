@@ -159,3 +159,43 @@ test("path should be case insensitive", function () {
 
   same(route, router.lookupRoute('get', '/FOO'), "should match regardless of the case of the route path")
 })
+
+test("using the a scope when creating routes", function () {
+  var router = factory('router')
+
+  router.scope('/base')
+  var route = router.get('/foo', $.noop)
+  same(route, router.lookupRoute('GET', '/base/foo'))
+})
+
+test("using the a scope when creating a route with the route method", function () {
+  var router = factory('router')
+
+  router.scope('/base')
+  var route = router.route('PATCH', '/foo', $.noop)
+  same(route, router.lookupRoute('PATCH', '/base/foo'))
+})
+
+test("passing a function to scope to create routes", function () {
+  var router = factory('router'),
+      route = null
+
+  router.scope('/base', function () {
+    route = this.get('/foo', $.noop)
+  })
+
+  same(route, router.lookupRoute('GET', '/base/foo'))
+})
+
+test("nesting scopes calls", function () {
+  var router = factory('router'),
+      route = null
+
+  router.scope('/base', function () {
+    this.scope('/nested', function () {
+      route = this.get('/foo')
+    })
+  })
+
+  same(route, router.lookupRoute('GET', '/base/nested/foo'))
+})
