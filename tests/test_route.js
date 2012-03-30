@@ -83,3 +83,35 @@ test("middleware can halt execution by not calling next", function () {
   route.run({path: '/foo'})
   ok(!routeComplete)
 })
+
+test("wildcard matches", function () {
+  var route = new Davis.Route('get', '/foo/*splat', $.noop)
+  ok(route.path.test('/foo/bar/baz'))
+  ok(!route.path.test('/foo'))
+  ok(route.path.test('/foo/bar'))
+})
+
+test("wildcard param names", function () {
+  var params = null,
+      request = new Davis.Request ('/foo/bar/baz')
+
+  var route = new Davis.Route ('get', '/foo/*splat', function (req) {
+    params = req.params
+  })
+
+  route.run(request)
+  equal(params.splat, 'bar/baz')
+})
+
+test("wildcard and normal param names", function () {
+  var params = null,
+      request = new Davis.Request ('/foo/bar/baz/qwerty_123')
+
+  var route = new Davis.Route ('get', '/foo/:bar/*splat', function (req) {
+    params = req.params
+  })
+
+  route.run(request)
+  equal(params.bar, 'bar')
+  equal(params.splat, 'baz/qwerty_123')
+})
