@@ -194,3 +194,11 @@ test("can construct a request from a string", function () {
   equal(request.title, '', 'should leave the title empty')
   equal(request.fullPath, '/posts/12', 'should set the fullPath to the string passed to the constructor')
 })
+
+test("all params should be decoded from uri params", function () {
+  var request = factory('request', {
+    fullPath: '/foo?email=oliver%40mail.com'
+  })
+
+  equal(request.params.email, 'oliver@mail.com', 'should decodeURIComponent')
+})
