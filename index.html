@@ -8,6 +8,7 @@
 
     <!-- QUnit -->
     <script src="/tests/javascripts/qunit.js"></script>
+    <script src="/tests/javascripts/load.js"></script>
     <link rel="stylesheet" href="/tests/stylesheets/qunit.css" type="text/css" media="screen" />
 
     <script src="/tests/factories.js" type="text/javascript" charset="utf-8"></script>
@@ -27,17 +28,6 @@
     <script src="/lib/davis.app.js"></script>
     <script src="/lib/extensions/davis.hashRouting.js"></script>
 
-    <!-- Tests -->
-    <script src="/tests/test_route.js"></script>
-    <script src="/tests/test_router.js"></script>
-    <script src="/tests/test_history.js"></script>
-    <script src="/tests/test_hashRouting.js"></script>
-    <script src="/tests/test_request.js"></script>
-    <script src="/tests/test_event.js"></script>
-    <script src="/tests/test_app.js"></script>
-    <script src="/tests/test_utils.js"></script>
-    <script src="/tests/test_location.js"></script>
-
   </head>
   <body>
     <h1 id="qunit-header">Davis Tests</h1>
@@ -46,5 +36,23 @@
     <ol id="qunit-tests"></ol>
 
     <div id="qunit-fixture"></div>
+
+    <!-- Tests -->
+    <script type="text/javascript">
+      load(
+        '/tests/test_route.js',
+        '/tests/test_router.js',
+        '/tests/test_hashRouting.js',
+        '/tests/test_request.js',
+        '/tests/test_event.js',
+        '/tests/test_app.js',
+        '/tests/test_utils.js',
+        '/tests/test_location.js'
+      )
+
+      load('/tests/test_history.js', function () {
+        return (typeof window.history.pushState == 'function')
+      })
+    </script>
   </body>
 </html>
