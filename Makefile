@@ -23,8 +23,7 @@ davis.min.js: davis.js
 	uglifyjs < $< > $@
 
 docs:
-	~/code/dox/bin/dox < davis.js | node docs/doc_builder.js > docs/index.html
-	~/code/dox/bin/dox < davis.js > docs/index.json
+	dox < davis.js | dox-template -r ${VERSION} > docs/index.html
 
 clean:
 	rm -f davis{.min,}.js

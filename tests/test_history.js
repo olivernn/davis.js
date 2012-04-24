@@ -72,3 +72,34 @@ test("binding and triggering the pop state event", function () {
   }, 101)
 })
 
+test("silent assigns should not call onpushstate handlers", function () {
+  var callbackCalled = false,
+      req = factory('request', {fullPath: '/foo'})
+
+  Davis.history.onChange(function () {
+    callbackCalled = true
+  })
+
+  Davis.history.assign(req, {silent: true})
+
+  ok(!callbackCalled, "should not call any of the callbacks")
+  currentFullPath("/foo", "location pathname should be equal to request location")
+
+  resetLocation()
+})
+
+test("silent replaces should not call onpushstate handlers", function () {
+  var callbackCalled = false,
+      req = factory('request', {fullPath: '/foo'})
+
+  Davis.history.onChange(function () {
+    callbackCalled = true
+  })
+
+  Davis.history.replace(req, {silent: true})
+
+  ok(!callbackCalled, "should not call any of the callbacks")
+  currentFullPath("/foo", "location pathname should be equal to request location")
+
+  resetLocation()
+})

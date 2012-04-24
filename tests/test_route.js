@@ -39,3 +39,79 @@ test('inoking a routes callback', function () {
   ok(routeRan, 'should run route callback when calling run');
   equal(response, "foo", "should return whatever the callback returns")
 })
+
+test("handling route middleware", function () {
+  var handler = function () {},
+      middleware = function () {}
+      route = new Davis.Route('get', '/foo', middleware, handler)
+
+  ok(route.handlers instanceof Array)
+  equal(2, route.handlers.length)
+})
+
+test("calling all handlers for a route", function () {
+  var handlerCalled = false,
+      middlewareCalled1 = false,
+      middlewareCalled2 = false,
+      handler = function (req) { handlerCalled = true },
+      middleware1 = function (req, next) { middlewareCalled1 = true ; next(req) },
+      middleware2 = function (req, next) { middlewareCalled2 = true ; next(req) },
+      route = new Davis.Route('get', '/foo', middleware1, middleware2, handler)
+
+  route.run({path: '/foo'})
+  ok(handlerCalled)
+  ok(middlewareCalled1)
+  ok(middlewareCalled2)
+})
+
+test("middleware can modify the request for a route", function () {
+  var middleware = function (req, next) { req.foo = 'bar' ; next(req) }
+      route = new Davis.Route('get', '/foo', middleware, function (req) {
+        equal(req.foo, 'bar')
+      })
+
+  route.run({path: '/foo'})
+})
+
+test("middleware can halt execution by not calling next", function () {
+  var routeComplete = false,
+      middleware = function () {},
+      route = new Davis.Route('get', '/foo', middleware, function (req) {
+        routeComplete = true
+      })
+
+  route.run({path: '/foo'})
+  ok(!routeComplete)
+})
+
+test("wildcard matches", function () {
+  var route = new Davis.Route('get', '/foo/*splat', $.noop)
+  ok(route.path.test('/foo/bar/baz'))
+  ok(!route.path.test('/foo'))
+  ok(route.path.test('/foo/bar'))
+})
+
+test("wildcard param names", function () {
+  var params = null,
+      request = new Davis.Request ('/foo/bar/baz')
+
+  var route = new Davis.Route ('get', '/foo/*splat', function (req) {
+    params = req.params
+  })
+
+  route.run(request)
+  equal(params.splat, 'bar/baz')
+})
+
+test("wildcard and normal param names", function () {
+  var params = null,
+      request = new Davis.Request ('/foo/bar/baz/qwerty_123')
+
+  var route = new Davis.Route ('get', '/foo/:bar/*splat', function (req) {
+    params = req.params
+  })
+
+  route.run(request)
+  equal(params.bar, 'bar')
+  equal(params.splat, 'baz/qwerty_123')
+})

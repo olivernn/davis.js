@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.9.0
+
+* Add support for scoped definition of routes using `scope`.
+* Add support for route level middleware.
+* Add support for splat params in route definition.
+* Davis.location now accepts an options param, allowing to assign/replace routes silently.
+* Changed the signature for creating Davis.Routes, can now just pass a string as the path.
+* Closer adherence to the same origin policy when binding to links and forms.
+* Fix bug where params in the request object were still URI encoded.
+* Explicitly prevent default when binding to links and forms, allows better integration with ender.
+
 ## 0.8.1
 
 * Fix issue with Davis.listener fixes [issue 32](https://github.com/olivernn/davis.js/issues/32)

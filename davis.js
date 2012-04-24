@@ -1,5 +1,5 @@
 /*!
- * Davis - http://davisjs.com - JavaScript Routing - 0.8.1
+ * Davis - http://davisjs.com - JavaScript Routing - 0.9.0
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
  */
@@ -52,10 +52,10 @@ Davis.noop = function () {}
  * An extension is just a function that will modify the Davis framework in some way,
  * for example changing how the routing works or adjusting where Davis thinks it is supported.
  *
- * @param {Function} extension the function that will extend Davis
- *
  * Example:
  *     Davis.extend(Davis.hashBasedRouting)
+ *
+ * @param {Function} extension the function that will extend Davis
  *
  */
 Davis.extend = function (extension) {
@@ -65,7 +65,7 @@ Davis.extend = function (extension) {
 /*!
  * the version
  */
-Davis.version = "0.8.1";/*!
+Davis.version = "0.9.0";/*!
  * Davis - utils
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
@@ -178,6 +178,43 @@ Davis.utils = (function () {
   };
 
   /*!
+   * A wrapper around native Array.prototype.map.
+   * Falls back to a pure JavaScript implementation in browsers that do not support Array.prototype.map.
+   * For more details see the full docs on MDC https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/map
+   *
+   * @private
+   * @param {array} the array to map
+   * @param {fn} the function to do the mapping
+   * @param {thisp} an optional param that will be set as fn's this value
+   * @returns {Array}
+   */
+
+  if (Array.prototype.map) {
+    var map = function (array, fn) {
+      return array.map(fn, arguments[2])
+    }
+  } else {
+    var map = function(array, fn) {
+      if (array === void 0 || array === null)
+        throw new TypeError();
+
+      var t = Object(array);
+      var len = t.length >>> 0;
+      if (typeof fn !== "function")
+        throw new TypeError();
+
+      var res = new Array(len);
+      var thisp = arguments[2];
+      for (var i = 0; i < len; i++) {
+        if (i in t)
+          res[i] = fn.call(thisp, t[i], i, t);
+      }
+
+      return res;
+    };
+  };
+
+  /*!
    * A convinience function for converting arguments to a proper array
    *
    * @private
@@ -198,7 +235,8 @@ Davis.utils = (function () {
     every: every,
     forEach: forEach,
     filter: filter,
-    toArray: toArray
+    toArray: toArray,
+    map: map
   }
 })()
 
@@ -213,9 +251,10 @@ Davis.utils = (function () {
  * into instances of Davis.Request.  These request objects are then pushed onto the history stack
  * using the Davis.history module.
  *
- * This module requires jQuery for its event binding and event object normalization.  To use Davis
- * with any, or no, JavaScript framework this module should be replaced with one using your framework
- * of choice.
+ * This module uses Davis.$, which by defualt is jQuery for its event binding and event object normalization.
+ * To use Davis with any, or no, JavaScript framework be sure to provide support for all the methods called
+ * on Davis.$.
+ *
  * @module
  */
 Davis.listener = function () {
@@ -226,7 +265,7 @@ Davis.listener = function () {
    */
   var originChecks = {
     A: function (elem) {
-      return elem.hostname !== window.location.hostname || elem.protocol !== window.location.protocol
+      return elem.host !== window.location.host || elem.protocol !== window.location.protocol
     },
 
     FORM: function (elem) {
@@ -258,6 +297,8 @@ Davis.listener = function () {
       if (differentOrigin(this)) return true
       var request = new Davis.Request (targetExtractor.call(Davis.$(this)));
       Davis.location.assign(request)
+      event.stopPropagation()
+      event.preventDefault()
       return false;
     };
   };
@@ -327,7 +368,7 @@ Davis.listener = function () {
  */
 
  /**
-  * A module that can be mixed into any object to provide basic event functionality.
+  * A plugin that adds basic event capabilities to a Davis app, it is included by default.
   *
   * @module
   */
@@ -392,8 +433,8 @@ Davis.event = function () {
  */
 
 /**
- * A module for enhancing the standard logging available through the console object.
- * Used internally in Davis and available for use outside of Davis.
+ * A plugin for enhancing the standard logging available through the console object.
+ * Automatically included in all Davis apps.
  *
  * Generates log messages of varying severity in the format
  *
@@ -472,29 +513,64 @@ Davis.Route = (function () {
   var pathNameRegex = /:([\w\d]+)/g;
   var pathNameReplacement = "([^\/]+)";
 
+  var splatNameRegex = /\*([\w\d]+)/g;
+  var splatNameReplacement = "(.*)";
+
+  var nameRegex = /[:|\*]([\w\d]+)/g
+
 /**
  * Davis.Routes are the main part of a Davis application.  They consist of an HTTP method, a path
  * and a callback function.  When a link or a form that Davis has bound to are clicked or submitted
  * a request is pushed on the history stack and a route that matches the path and method of the
  * generated request is run.
  *
+ * The path for the route can consist of placeholders for attributes, these will then be available
+ * on the request.  Simple variables should be prefixed with a colan, and for splat style params use
+ * an asterisk.
+ *
  * Inside the callback function 'this' is bound to the request.
  *
- * @constructor
- * @param {String} method This should be one of either 'get', 'post', 'put', 'delete', 'before', 'after' or 'state'
- * @param {String} path This string can contain place holders for variables, e.g. '/user/:id'
- * @param {Function} callback A callback that will be called when a request matching both the path and method is triggered.
- *
  * Example:
+ *
  *     var route = new Davis.Route ('get', '/foo/:id', function (req) {
  *       var id = req.params['id']
  *       // do something interesting!
  *     })
+ *
+ *     var route = new Davis.Route ('get', '/foo/*splat', function (req) {
+ *       var id = req.params['splat']
+ *       // splat will contain everything after the /foo/ in the path.
+ *     })
+ *
+ * You can include any number of route level 'middleware' when defining routes.  These middlewares are
+ * run in order and need to explicitly call the next handler in the stack.  Using route middleware allows
+ * you to share common logic between routes and is also a good place to load any data or do any async calls
+ * keeping your main handler simple and focused.
+ *
+ * Example:
+ *
+ *     var loadUser = function (req, next) {
+ *       $.get('/users/current', function (user) {
+ *         req.user = user
+ *         next(req)
+ *       })
+ *     }
+ *
+ *     var route = new Davis.Route ('get', '/foo/:id', loadUser, function (req) {
+ *       renderUser(req.user)
+ *     })
+ *
+ * @constructor
+ * @param {String} method This should be one of either 'get', 'post', 'put', 'delete', 'before', 'after' or 'state'
+ * @param {String} path This string can contain place holders for variables, e.g. '/user/:id' or '/user/*splat'
+ * @param {Function} callback One or more callbacks that will be called in order when a request matching both the path and method is triggered.
  */
-  var Route = function (method, path, callback) {
+  var Route = function (method, path) {
     var convertPathToRegExp = function () {
       if (!(path instanceof RegExp)) {
-        var str = path.replace(pathNameRegex, pathNameReplacement);
+        var str = path
+          .replace(pathNameRegex, pathNameReplacement)
+          .replace(splatNameRegex, splatNameReplacement);
 
         // Most browsers will reset this to zero after a replace call.  IE will
         // set it to the index of the last matched character.
@@ -516,26 +592,26 @@ Davis.Route = (function () {
 
     var capturePathParamNames = function () {
       var names = [], a;
-      while ((a = pathNameRegex.exec(path))) names.push(a[1]);
+      while ((a = nameRegex.exec(path))) names.push(a[1]);
       return names;
     };
 
     this.paramNames = capturePathParamNames();
     this.path = convertPathToRegExp();
     this.method = convertMethodToRegExp();
-    this.callback = callback;
+    this.handlers = Davis.utils.toArray(arguments, 2);
   }
 
   /**
    * Tests whether or not a route matches a particular request.
    *
-   * @param {String} method the method to match against
-   * @param {String} path the path to match against
-   * @returns {Boolean}
-   *
    * Example:
    *
    *     route.match('get', '/foo/12')
+   *
+   * @param {String} method the method to match against
+   * @param {String} path the path to match against
+   * @returns {Boolean}
    */
   Route.prototype.match = function (method, path) {
     this.reset();
@@ -556,12 +632,12 @@ Davis.Route = (function () {
    * Any named params in the request path are extracted, as per the routes path, and
    * added onto the requests params object.
    *
-   * @params {Davis.Request} request
-   * @returns {Object} whatever the routes callback returns
-   *
    * Example:
    *
    *     route.run(request)
+   *
+   * @params {Davis.Request} request
+   * @returns {Object} whatever the routes callback returns
    */
   Route.prototype.run = function (request) {
     this.reset();
@@ -572,8 +648,14 @@ Davis.Route = (function () {
         request.params[this.paramNames[i]] = matches[i];
       };
     };
-    return this.callback.call(request, request);
-    
+
+    var handlers = Davis.utils.map(this.handlers, function (handler, i) {
+      return function (req) {
+        return handler.call(req, req, handlers[i+1])
+      }
+    })
+
+    return handlers[0](request)
   }
 
   /**
@@ -591,7 +673,8 @@ Davis.Route = (function () {
    * @private
    */
   return Route;
-})()/*!
+})()
+/*!
  * Davis - router
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
@@ -661,6 +744,17 @@ Davis.Route = (function () {
  *
  * Using the `trans` method an app can transition to these kind of states without changing the url location.
  *
+ * For convinience routes can be defined within a common base scope, this is useful for keeping your route
+ * definitions simpler and DRYer.  A scope can either cover the whole app, or just a subset of the routes.
+ *
+ * ### Example
+ *
+ *     app.scope('/foo', function () {
+ *       this.get('/:id', function () {
+ *         // will run for routes that match '/foo/:id'
+ *       })
+ *     })
+ *
  * @module
  */
 Davis.router = function () {
@@ -675,11 +769,6 @@ Davis.router = function () {
    * You normally want to use the higher level methods such as get and post, but this can be useful for extending
    * Davis to work with other kinds of requests.
    *
-   * @param {String} method The method for this route.
-   * @param {String} path The path for this route.
-   * @param {Function} handler The handler for this route, will be called with the request that triggered the route.
-   * @returns {Davis.Route} the route that has just been created and added to the route list.
-   *
    * Example:
    *
    *     app.route('get', '/foo', function (req) {
@@ -691,16 +780,21 @@ Davis.router = function () {
    *       // will run when a patch request is made to '/bar'
    *     })
    *
+   * @param {String} method The method for this route.
+   * @param {String} path The path for this route.
+   * @param {Function} handler The handler for this route, will be called with the request that triggered the route.
+   * @returns {Davis.Route} the route that has just been created and added to the route list.
    * @memberOf router
    */
   this.route = function (method, path, handler) {
     var createRoute = function (path, handler) {
-      var route = new Davis.Route (method, path, handler)
+      var scope = scopePaths.join('')
+      var route = new Davis.Route (method, scope + path, handler)
       routeCollection.push(route)
       return route
     }
 
-    return (arguments.length == 1) ? createRoute : createRoute(path, handler)
+    return (arguments.length == 1) ? createRoute : createRoute.call(this, path, handler)
   }
 
   /**
@@ -758,18 +852,64 @@ Davis.router = function () {
    * Routes added using the state method act in the same way as other routes except that they generate
    * a route that is listening for requests that will not change the page location.
    *
-   * @param {String} path The path for this route, this will never be seen in the url bar.
-   * @param {Function} handler The handler for this route, will be called with the request that triggered the route
-   * @memberOf router
-   *
    * Example:
    *
    *     app.state('/foo/:id', function (req) {
    *       // will run when the app transitions into the '/foo/:id' state.
    *     })
    *
+   * @param {String} path The path for this route, this will never be seen in the url bar.
+   * @param {Function} handler The handler for this route, will be called with the request that triggered the route
+   * @memberOf router
+   *
    */
   this.state = this.route('state');
+
+  /**
+   * Modifies the scope of the router.
+   *
+   * If you have many routes that share a common path prefix you can use scope to reduce repeating
+   * that path prefix.
+   *
+   * You can use `scope` in two ways, firstly you can set the scope for the whole app by calling scope
+   * before defining routes.  You can also provide a function to the scope method, and the scope will
+   * only apply to those routes defined within this function. It is  also possible to nest scopes within
+   * other scopes.
+   *
+   * Example
+   *
+   *     // using scope with a function
+   *     app.scope('/foo', function () {
+   *       this.get('/bar', function (req) {
+   *         // this route will have a path of '/foo/bar'
+   *       })
+   *     })
+   *
+   *     // setting a global scope for the rest of the application
+   *     app.scope('/bar')
+   *
+   *     // using scope with a function
+   *     app.scope('/foo', function () {
+   *       this.scope('/bar', function () {
+   *         this.get('/baz', function (req) {
+   *           // this route will have a path of '/foo/bar/baz'
+   *         })
+   *       })
+   *     })
+   *
+   * @memberOf router
+   * @param {String} path The prefix to use as the scope
+   * @param {Function} fn A function that will be executed with the router as its context and the path
+   * as a prefix
+   *
+   */
+  this.scope = function (path, fn) {
+    scopePaths.push(path)
+    if (arguments.length == 1) return
+
+    fn.call(this, this)
+    scopePaths.pop()
+  }
 
   /**
    * Transitions the app into the state identified by the passed path parameter.
@@ -786,11 +926,7 @@ Davis.router = function () {
    * An optional second parameter can be passed which will be available to any handlers in the requests
    * params object.
    *
-   * @param {String} path The path that represents this state.  This will not be seen in the url bar.
-   * @param {Object} data Any additional data that should be sent with the request as params.
-   * @memberOf router
-   *
-   * Example:
+   * Example
    *
    *     app.trans('/foo/1')
    *     
@@ -798,6 +934,10 @@ Davis.router = function () {
    *       "bar": "baz"
    *     })
    *     
+   *
+   * @param {String} path The path that represents this state.  This will not be seen in the url bar.
+   * @param {Object} data Any additional data that should be sent with the request as params.
+   * @memberOf router
    */
   this.trans = function (path, data) {
     if (data) {
@@ -894,6 +1034,7 @@ Davis.router = function () {
     before: [],
     after: []
   };
+  var scopePaths = []
 
   /**
    * Looks for the first route that matches the method and path from a request.
@@ -1005,10 +1146,9 @@ Davis.history = (function () {
    *
    * This is not a native event but is fired any time a new state is pushed onto the history stack,
    * the current history is replaced or a state is popped off the history stack.
+   * The handler function will be called with a request param which is an instance of Davis.Request.
    *
    * @param {Function} handler a function that will be called on push and pop state.
-   *
-   * The handler function will be called with a request param which is an instance of Davis.Request.
    * @see Davis.Request
    * @memberOf history
    */
@@ -1017,6 +1157,23 @@ Davis.history = (function () {
     onPopState(wrapped(handler));
   };
 
+  /*!
+   * returns a function for manipulating the history state and optionally calling any associated
+   * pushStateHandlers
+   *
+   * @param {String} methodName the name of the method to manipulate the history state with.
+   * @private
+   */
+  function changeStateWith (methodName) {
+    return function (request, opts) {
+      history[methodName](wrapStateData(request.toJSON()), request.title, request.location());
+      if (opts && opts.silent) return
+      Davis.utils.forEach(pushStateHandlers, function (handler) {
+        handler(request);
+      });
+    }
+  }
+
   /**
    * Pushes a request onto the history stack.
    *
@@ -1024,37 +1181,26 @@ Davis.history = (function () {
    * resulting from either a form submit or a link click onto the history stack, it will also trigger
    * the onpushstate event.
    *
-   * @param {Davis.Request} request the location to be assinged as the current location.
-   * @memberOf history
-   *
    * An instance of Davis.Request is expected to be passed, however any object that has a title
    * and a path property will also be accepted.
+   *
+   * @param {Davis.Request} request the location to be assinged as the current location.
+   * @memberOf history
    */
-  function assign(request) {
-    history.pushState(wrapStateData(request.toJSON()), request.title, request.location());
-    Davis.utils.forEach(pushStateHandlers, function (handler) {
-      handler(request);
-    });
-  };
+  var assign = changeStateWith('pushState')
 
   /**
    * Replace the current state on the history stack.
    *
    * This is used internally by Davis when performing a redirect.  This will trigger an onpushstate event.
    *
-   * @param {Davis.Request} request the location to replace the current location with.
-   * @memberOf history
-   *
    * An instance of Davis.Request is expected to be passed, however any object that has a title
    * and a path property will also be accepted.
+   *
+   * @param {Davis.Request} request the location to replace the current location with.
+   * @memberOf history
    */
-  function replace(request) {
-    history.replaceState(wrapStateData(request.toJSON()), request.title, request.location());
-    Davis.utils.forEach(pushStateHandlers, function (handler) {
-      handler(request);
-    });
-  };
-
+  var replace = changeStateWith('replaceState')
 
   /**
    * Returns the current location for the application.
@@ -1131,19 +1277,35 @@ Davis.location = (function () {
     return locationDelegate.current()
   }
 
+  /*!
+   * Creates a function which sends the location delegate the passed message name.
+   * It handles converting a string path to an actual request
+   *
+   * @returns {Function} a function that calls the location delegate with the supplied method name
+   * @memberOf location
+   * @private
+   */
+  function sendLocationDelegate (methodName) {
+    return function (req) {
+      if (typeof req == 'string') req = new Davis.Request (req)
+      locationDelegate[methodName](req)
+    }
+  }
+
   /**
    * Delegates to the locationDelegate.assign method.
    *
-   * This should set the current location for the app to
-   * that of the passed request object.
+   * This should set the current location for the app to that of the passed request object.
    *
-   * @param {Request} req the request to set the current location to.
+   * Can take either a Davis.Request or a string representing the path of the request to assign.
+   *
+   *
+   *
+   * @param {Request} req the request to replace the current location with, either a string or a Davis.Request.
    * @see Davis.Request
    * @memberOf location
    */
-  function assign(req) {
-    locationDelegate.assign(req)
-  }
+  var assign = sendLocationDelegate('assign')
 
   /**
    * Delegates to the locationDelegate.replace method.
@@ -1151,13 +1313,13 @@ Davis.location = (function () {
    * This should replace the current location with that of the passed request.
    * Ideally it should not create a new entry in the browsers history.
    *
-   * @param {Request} req the request to replace the current location with.
+   * Can take either a Davis.Request or a string representing the path of the request to assign.
+   *
+   * @param {Request} req the request to replace the current location with, either a string or a Davis.Request.
    * @see Davis.Request
    * @memberOf location
    */
-  function replace(req) {
-    locationDelegate.replace(req)
-  }
+  var replace = sendLocationDelegate('replace')
 
   /**
    * Delegates to the locationDelegate.onChange method.
@@ -1205,20 +1367,36 @@ Davis.Request = (function () {
  * to 'get' for links, however there is support for using a hidden field called _method in your forms
  * to set the correct reqeust method.
  *
- * @constructor
- * @param {Object} raw An object that at least contains a title, fullPath and method proprty.
+ * Simple get requests can be created by just passing a path when initializing a request, to set the method
+ * or title you have to pass in an object.
  *
  * Example
+ *
+ *     var request = new Davis.Request ("/foo/12")
+ *
+ *     var request = new Davis.Request ("/foo/12", {title: 'foo', method: 'POST'})
+ *     
  *     var request = new Davis.Request({
  *       title: "foo",
  *       fullPath: "/foo/12",
  *       method: "get"
  *     })
+ *
+ * @constructor
+ * @param {String} fullPath
+ * @param {Object} opts An optional object with a title or method proprty
+ *
  */
-  var Request = function (opts) {
+  var Request = function (fullPath, opts) {
+    if (typeof fullPath == 'object') {
+      opts = fullPath
+      fullPath = opts.fullPath
+      delete opts.fullPath
+    }
+
     var raw = Davis.$.extend({}, {
       title: "",
-      fullPath: "",
+      fullPath: fullPath,
       method: "get"
     }, opts)
 
@@ -1243,18 +1421,18 @@ Davis.Request = (function () {
 
           if (isArray) {
             parentParams[paramName] = parentParams[paramName] || [];
-            parentParams[paramName].push(paramValue);
+            parentParams[paramName].push(decodeURIComponent(paramValue));
             self.params[paramParent] = parentParams;
           } else if (!paramName && !isArray) {
             parentParams = self.params[paramParent] || []
-            parentParams.push(paramValue)
+            parentParams.push(decodeURIComponent(paramValue))
             self.params[paramParent] = parentParams
           } else {
-            parentParams[paramName] = paramValue;
+            parentParams[paramName] = decodeURIComponent(paramValue);
             self.params[paramParent] = parentParams;
           }
         } else {
-          self.params[paramName] = paramValue;
+          self.params[paramName] = decodeURIComponent(paramValue);
         };
 
       });
@@ -1290,14 +1468,15 @@ Davis.Request = (function () {
    * navigating through the history with the back or forward buttons because the request that the
    * submit generated has been replaced in the history stack.
    *
-   * @param {String} path The path to redirect the current request to
-   * @memberOf Request
-   *
    * Example
+   *
    *     this.post('/foo', function (req) {
    *       processFormRequest(req.params)  // do something with the form request
    *       req.redirect('/bar');
    *     })
+   *
+   * @param {String} path The path to redirect the current request to
+   * @memberOf Request
    */
   Request.prototype.redirect = function (path) {
     Davis.location.replace(new Request ({
@@ -1316,10 +1495,8 @@ Davis.Request = (function () {
    * Use the whenStale callback to 'teardown' the objects required for the current route, this gives
    * a chance for views to hide themselves and unbind any event handlers etc.
    *
-   * @param {Function} callback A single callback that will be called when the request becomes stale.
-   * @memberOf Request
-   *
    * Example
+   *
    *     this.get('/foo', function (req) {
    *       var fooView = new FooView ()
    *       fooView.render() // display the foo view
@@ -1327,6 +1504,9 @@ Davis.Request = (function () {
    *         fooView.remove() // stop displaying foo view and unbind any events
    *       })
    *     })
+   *
+   * @param {Function} callback A single callback that will be called when the request becomes stale.
+   * @memberOf Request
    *
    */
   Request.prototype.whenStale = function (callback) {
@@ -1444,14 +1624,14 @@ Davis.App = (function () {
    * Should be used before starting the app to ensure any new settings
    * are picked up and used.
    *
-   * @param {Function} config This function will be executed with the context bound to the apps setting object, this will also be passed as the first argument to the function.
-   *
    * Example:
    *
    *     app.configure(function (config) {
    *       config.linkSelector = 'a.davis'
    *       config.formSelector = 'form.davis'
    *     })
+   *
+   * @param {Function} config This function will be executed with the context bound to the apps setting object, this will also be passed as the first argument to the function.
    */
   App.prototype.configure = function(config) {
     config.call(this.settings, this.settings);
@@ -1462,10 +1642,10 @@ Davis.App = (function () {
    *
    * A plugin is just a function that will be evaluated in the context of the app.
    *
-   * @param {Function} plugin The plugin to use
-   *
    * Example:
    *     app.use(Davis.title)
+   *
+   * @param {Function} plugin The plugin to use
    *
    */
   App.prototype.use = function(plugin) {
