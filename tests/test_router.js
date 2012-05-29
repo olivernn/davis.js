@@ -199,3 +199,14 @@ test("nesting scopes calls", function () {
 
   same(route, router.lookupRoute('GET', '/base/nested/foo'))
 })
+
+test("setting up a route with middleware", function () {
+  var router = factory('router'),
+      route = null
+
+  var middleware = function (req, next) { next(req) },
+      handler = function (req) { }
+
+  route = router.get('/foo', middleware, handler)
+  equal(route.handlers.length, 2)
+})

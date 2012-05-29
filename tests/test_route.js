@@ -43,7 +43,7 @@ test('inoking a routes callback', function () {
 test("handling route middleware", function () {
   var handler = function () {},
       middleware = function () {}
-      route = new Davis.Route('get', '/foo', middleware, handler)
+      route = new Davis.Route('get', '/foo', [middleware, handler])
 
   ok(route.handlers instanceof Array)
   equal(2, route.handlers.length)
@@ -56,7 +56,7 @@ test("calling all handlers for a route", function () {
       handler = function (req) { handlerCalled = true },
       middleware1 = function (req, next) { middlewareCalled1 = true ; next(req) },
       middleware2 = function (req, next) { middlewareCalled2 = true ; next(req) },
-      route = new Davis.Route('get', '/foo', middleware1, middleware2, handler)
+      route = new Davis.Route('get', '/foo', [middleware1, middleware2, handler])
 
   route.run({path: '/foo'})
   ok(handlerCalled)
@@ -66,9 +66,9 @@ test("calling all handlers for a route", function () {
 
 test("middleware can modify the request for a route", function () {
   var middleware = function (req, next) { req.foo = 'bar' ; next(req) }
-      route = new Davis.Route('get', '/foo', middleware, function (req) {
+      route = new Davis.Route('get', '/foo', [middleware, function (req) {
         equal(req.foo, 'bar')
-      })
+      }])
 
   route.run({path: '/foo'})
 })
