@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.1
+
+* Fix bug with using route level middleware with routing shortcut methods.
+* Fix bug with decoding url encoded parameters [issue 39](https://github.com/olivernn/davis.js/issues/39)
+
 ## 0.9.0
 
 * Add support for scoped definition of routes using `scope`.
