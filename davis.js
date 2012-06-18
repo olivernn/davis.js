@@ -1,5 +1,5 @@
 /*!
- * Davis - http://davisjs.com - JavaScript Routing - 0.9.0
+ * Davis - http://davisjs.com - JavaScript Routing - 0.9.1
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
  */
@@ -65,7 +65,7 @@ Davis.extend = function (extension) {
 /*!
  * the version
  */
-Davis.version = "0.9.0";/*!
+Davis.version = "0.9.1";/*!
  * Davis - utils
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
@@ -320,6 +320,14 @@ Davis.listener = function () {
   });
 
   /*!
+   * Decodes the url, including + characters.
+   * @private
+   */
+  var decodeUrl = function (str) {
+    return decodeURIComponent(str.replace(/\+/g, '%20'))
+  };
+
+  /*!
    * A handler specialized for submit events.  Gets the request details from a form elem
    * @private
    */
@@ -327,7 +335,7 @@ Davis.listener = function () {
     var self = this
     return {
       method: this.attr('method'),
-      fullPath: decodeURI(this.serialize() ? [this.attr('action'), this.serialize()].join("?") : this.attr('action')),
+      fullPath: decodeUrl(this.serialize() ? [this.attr('action'), this.serialize()].join("?") : this.attr('action')),
       title: this.attr('title'),
       delegateToServer: function () {
         self.submit()
@@ -361,7 +369,8 @@ Davis.listener = function () {
     Davis.$(document).undelegate(this.settings.linkSelector, 'click', clickHandler)
     Davis.$(document).undelegate(this.settings.formSelector, 'submit', submitHandler)
   }
-}/*!
+}
+/*!
  * Davis - event
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
@@ -565,7 +574,7 @@ Davis.Route = (function () {
  * @param {String} path This string can contain place holders for variables, e.g. '/user/:id' or '/user/*splat'
  * @param {Function} callback One or more callbacks that will be called in order when a request matching both the path and method is triggered.
  */
-  var Route = function (method, path) {
+  var Route = function (method, path, handlers) {
     var convertPathToRegExp = function () {
       if (!(path instanceof RegExp)) {
         var str = path
@@ -599,7 +608,12 @@ Davis.Route = (function () {
     this.paramNames = capturePathParamNames();
     this.path = convertPathToRegExp();
     this.method = convertMethodToRegExp();
-    this.handlers = Davis.utils.toArray(arguments, 2);
+
+    if (typeof handlers === 'function') {
+      this.handlers = [handlers]
+    } else {
+      this.handlers = handlers;
+    }
   }
 
   /**
@@ -786,15 +800,17 @@ Davis.router = function () {
    * @returns {Davis.Route} the route that has just been created and added to the route list.
    * @memberOf router
    */
-  this.route = function (method, path, handler) {
-    var createRoute = function (path, handler) {
-      var scope = scopePaths.join('')
-      var route = new Davis.Route (method, scope + path, handler)
+  this.route = function (method, path) {
+    var createRoute = function (path) {
+      var handlers = Davis.utils.toArray(arguments, 1),
+          scope = scopePaths.join(''),
+          route = new Davis.Route (method, scope + path, handlers)
+
       routeCollection.push(route)
       return route
     }
 
-    return (arguments.length == 1) ? createRoute : createRoute.call(this, path, handler)
+    return (arguments.length == 1) ? createRoute : createRoute.apply(this, Davis.utils.toArray(arguments, 1))
   }
 
   /**
@@ -1050,7 +1066,8 @@ Davis.router = function () {
       return route.match(method, path)
     })[0];
   };
-}/*!
+}
+/*!
  * Davis - history
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
