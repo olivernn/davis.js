@@ -23,12 +23,12 @@ davis.min.js: davis.js
 	uglifyjs < $< > $@
 
 docs:
-	dox < davis.js | dox-template -r ${VERSION} > docs/index.html
+	dox < davis.js | dox-template -n Davis.js -r ${VERSION} > docs/index.html
 
 clean:
 	rm -f davis{.min,}.js
 
 test:
-	@node server 3000
+	@node server 4000
 
 .PHONY: test clean docs
