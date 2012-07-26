@@ -1,5 +1,5 @@
 /*!
- * Davis - http://davisjs.com - JavaScript Routing - 0.9.1
+ * Davis - http://davisjs.com - JavaScript Routing - 0.9.2
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
  */
@@ -65,7 +65,7 @@ Davis.extend = function (extension) {
 /*!
  * the version
  */
-Davis.version = "0.9.1";/*!
+Davis.version = "0.9.2";/*!
  * Davis - utils
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
@@ -1101,11 +1101,7 @@ Davis.history = (function () {
    * @private
    */
    function hasPopped () {
-     if ('state' in window.history) {
-       return true
-     } else {
-       return popped
-     };
+     return !!window.history.state || popped
    }
 
   /*!
@@ -1144,8 +1140,8 @@ Davis.history = (function () {
         handler(new Davis.Request(event.state._davis))
       } else {
         if (hasPopped()) handler(Davis.Request.forPageLoad())
-        popped = true
       };
+      popped = true
     }
   }
 
