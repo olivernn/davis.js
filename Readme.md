@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/olivernn/davis.js.png)](http://travis-ci.org/olivernn/davis.js)
 # Davis.js
 
 ## Description
