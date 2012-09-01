@@ -1,5 +1,5 @@
 /*!
- * Davis - http://davisjs.com - JavaScript Routing - 0.9.2
+ * Davis - http://davisjs.com - JavaScript Routing - 0.9.3
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
  */
@@ -65,7 +65,7 @@ Davis.extend = function (extension) {
 /*!
  * the version
  */
-Davis.version = "0.9.2";/*!
+Davis.version = "0.9.3";/*!
  * Davis - utils
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
@@ -314,7 +314,7 @@ Davis.listener = function () {
       fullPath: this.attr('href'),
       title: this.attr('title'),
       delegateToServer: function () {
-        window.location.pathname = self.attr('href')
+        window.location = self.attr('href')
       }
     };
   });
@@ -1097,14 +1097,6 @@ Davis.history = (function () {
   var popped = false
 
   /*!
-   * method to check whether or not this is the first pop state event received
-   * @private
-   */
-   function hasPopped () {
-     return !!window.history.state || popped
-   }
-
-  /*!
    * Add a handler to the push state event.  This event is not a native event but is fired
    * every time a call to pushState is called.
    * 
@@ -1139,7 +1131,7 @@ Davis.history = (function () {
       if (event.state && event.state._davis) {
         handler(new Davis.Request(event.state._davis))
       } else {
-        if (hasPopped()) handler(Davis.Request.forPageLoad())
+        if (popped) handler(Davis.Request.forPageLoad())
       };
       popped = true
     }
@@ -1179,6 +1171,7 @@ Davis.history = (function () {
    */
   function changeStateWith (methodName) {
     return function (request, opts) {
+      popped = true
       history[methodName](wrapStateData(request.toJSON()), request.title, request.location());
       if (opts && opts.silent) return
       Davis.utils.forEach(pushStateHandlers, function (handler) {
@@ -1383,6 +1376,9 @@ Davis.Request = (function () {
  * Simple get requests can be created by just passing a path when initializing a request, to set the method
  * or title you have to pass in an object.
  *
+ * Each request will have a timestamp property to make it easier to determine if the application is moving
+ * forward or backward through the history stack.
+ *
  * Example
  *
  *     var request = new Davis.Request ("/foo/12")
@@ -1410,7 +1406,8 @@ Davis.Request = (function () {
     var raw = Davis.$.extend({}, {
       title: "",
       fullPath: fullPath,
-      method: "get"
+      method: "get",
+      timestamp: +new Date ()
     }, opts)
 
     var self = this;
@@ -1418,6 +1415,7 @@ Davis.Request = (function () {
     this.params = {};
     this.title = raw.title;
     this.queryString = raw.fullPath.split("?")[1];
+    this.timestamp = raw.timestamp;
     this._staleCallback = function () {};
 
     if (this.queryString) {
@@ -1574,7 +1572,8 @@ Davis.Request = (function () {
     return {
       title: this.raw.title,
       fullPath: this.raw.fullPath,
-      method: this.raw.method
+      method: this.raw.method,
+      timestamp: this.raw.timestamp
     }
   }
 
