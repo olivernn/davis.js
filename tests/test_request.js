@@ -202,3 +202,13 @@ test("all params should be decoded from uri params", function () {
 
   equal(request.params.email, 'oliver@mail.com', 'should decodeURIComponent')
 })
+
+test("requests should have a timestamp property", function () {
+  var request = factory('request')
+
+  ok(request.timestamp)
+  setTimeout(function () {
+    var laterRequest = factory('request')
+    ok(request.timestamp < laterRequest.timestamp)
+  }, 30)
+})
