@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.9.3
+
+* More fixes for initial popstate bug [issue 52](https://github.com/olivernn/davis.js/issues/52)
+* Fix issue with noIOS extension [issue 51](https://github.com/olivernn/davis.js/issues/51)
+* Fix issue when delegating to server with query params [issue 43](https://github.com/olivernn/davis.js/issues/43)
+* Add a timestamp to request objects.
+
+## 0.9.2
+
+* Fix initial popstate bug
+
 ## 0.9.1
 
 * Fix bug with using route level middleware with routing shortcut methods.
