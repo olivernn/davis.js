@@ -200,6 +200,17 @@ test("nesting scopes calls", function () {
   same(route, router.lookupRoute('GET', '/base/nested/foo'))
 })
 
+test("scopes not applied when routes are defined with regexps", function () {
+  var router = factory('router'),
+      route = null
+
+  router.scope('/base')
+  route = router.get(/^\/regexp_route/, function () {})
+
+  same(route, router.lookupRoute('GET', '/regexp_route'))
+  equal(undefined, router.lookupRoute('GET', '/base/regexp_route'))
+})
+
 test("scope affects filters", function () {
   var router = factory('router'),
       beforeFilter = afterFilter = null
