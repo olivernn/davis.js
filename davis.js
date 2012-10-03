@@ -1,5 +1,5 @@
 /*!
- * Davis - http://davisjs.com - JavaScript Routing - 0.9.3
+ * Davis - http://davisjs.com - JavaScript Routing - 0.9.4
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
  */
@@ -65,7 +65,7 @@ Davis.extend = function (extension) {
 /*!
  * the version
  */
-Davis.version = "0.9.3";/*!
+Davis.version = "0.9.4";/*!
  * Davis - utils
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
@@ -804,7 +804,11 @@ Davis.router = function () {
     var createRoute = function (path) {
       var handlers = Davis.utils.toArray(arguments, 1),
           scope = scopePaths.join(''),
-          route = new Davis.Route (method, scope + path, handlers)
+          fullPath, route
+
+      (typeof path == 'string') ? fullPath = scope + path : fullPath = path
+
+      route = new Davis.Route (method, fullPath, handlers)
 
       routeCollection.push(route)
       return route
@@ -983,7 +987,7 @@ Davis.router = function () {
         var path = /.+/;
         var handler = arguments[0];
       } else if (arguments.length == 2) {
-        var path = arguments[0];
+        var path = scopePaths.join('') + arguments[0];
         var handler = arguments[1];
       };
 

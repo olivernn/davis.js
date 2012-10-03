@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.4
+
+* Router scopes should apply to before and after filters [issue 54](https://github.com/olivernn/davis.js/issues/54)
+* Scopes shouldn't be applied to routes defined with RegExp paths.
+
 ## 0.9.3
 
 * More fixes for initial popstate bug [issue 52](https://github.com/olivernn/davis.js/issues/52)
