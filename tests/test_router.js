@@ -200,6 +200,43 @@ test("nesting scopes calls", function () {
   same(route, router.lookupRoute('GET', '/base/nested/foo'))
 })
 
+test("scope affects filters", function () {
+  var router = factory('router'),
+      beforeFilter = afterFilter = null
+
+  router.scope('/base')
+  beforeFilter = router.before('/foo', function () {})
+  afterFilter = router.after('/bar', function () {})
+
+  same(beforeFilter, router.lookupBeforeFilter('GET', '/base/foo')[0])
+  same(afterFilter, router.lookupAfterFilter('GET', '/base/bar')[0])
+})
+
+test("nested scope works with filters also", function () {
+  var router = factory('router'),
+      beforeFilter = afterFilter = null
+
+  router.scope('/base', function () {
+    beforeFilter = this.before('/foo', function () {})
+    afterFilter = this.after('/bar', function () {})
+  })
+
+  same(beforeFilter, router.lookupBeforeFilter('GET', '/base/foo')[0])
+  same(afterFilter, router.lookupAfterFilter('GET', '/base/bar')[0])
+})
+
+test("catch all filters are not affected by scopes", function () {
+  var router = factory('router'),
+      beforeFilter = afterFilter = null
+
+  router.scope('/base')
+  beforeFilter = router.before(function () {})
+  afterFilter = router.after(function () {})
+
+  same(beforeFilter, router.lookupBeforeFilter('GET', '/not_base')[0])
+  same(afterFilter, router.lookupAfterFilter('GET', '/not_base')[0])
+})
+
 test("setting up a route with middleware", function () {
   var router = factory('router'),
       route = null
