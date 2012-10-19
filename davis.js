@@ -1,5 +1,5 @@
 /*!
- * Davis - http://davisjs.com - JavaScript Routing - 0.9.4
+ * Davis - http://davisjs.com - JavaScript Routing - 0.9.4.modifier-key
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
  */
@@ -65,7 +65,7 @@ Davis.extend = function (extension) {
 /*!
  * the version
  */
-Davis.version = "0.9.4";/*!
+Davis.version = "0.9.4.modifier-key";/*!
  * Davis - utils
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
@@ -286,6 +286,10 @@ Davis.listener = function () {
     return originChecks[elem.nodeName.toUpperCase()](elem)
   }
 
+  var hasModifier = function (event) {
+    return (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey)
+  }
+
   /*!
    * A handler that creates a new Davis.Request and pushes it onto the history stack using Davis.history.
    * 
@@ -294,7 +298,9 @@ Davis.listener = function () {
    */
   var handler = function (targetExtractor) {
     return function (event) {
+      if (hasModifier(event)) return true
       if (differentOrigin(this)) return true
+
       var request = new Davis.Request (targetExtractor.call(Davis.$(this)));
       Davis.location.assign(request)
       event.stopPropagation()
