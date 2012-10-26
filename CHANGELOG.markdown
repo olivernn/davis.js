@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.5
+
+* Stop trapping click events with modifier keys [issue 40](https://github.com/olivernn/davis.js/pull/40), thanks [manuel-woelker](https://github.com/manuel-woelker) and [Valloric](https://github.com/Valloric)
+
 ## 0.9.4
 
 * Router scopes should apply to before and after filters [issue 54](https://github.com/olivernn/davis.js/issues/54)
