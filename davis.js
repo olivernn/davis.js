@@ -223,8 +223,7 @@ Davis.utils = (function () {
    * @returns {Array}
    */
   var toArray = function (args, start) {
-    var start = start || 0
-    return Array.prototype.slice.call(args, start)
+    return Array.prototype.slice.call(args, start || 0);
   }
 
   /*!
