@@ -5,7 +5,7 @@
   var loadScript = function (src) {
     var script = document.createElement('script')
     script.src = src
-    document.head.appendChild(script)
+    document.getElementsByTagName('head')[0].appendChild(script)
   }
 
   var load = function () {
