@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.6
+
+* Proper handling of relative paths using $.prop instead of $.attr [issue 58](https://github.com/olivernn/davis.js/issues/58)
+* Remove redundent redeclaration inside utils.toArray [issue 60](https://github.com/olivernn/davis.js/pull/60)
+
 ## 0.9.5
 
 * Stop trapping click events with modifier keys [issue 40](https://github.com/olivernn/davis.js/pull/40), thanks [manuel-woelker](https://github.com/manuel-woelker) and [Valloric](https://github.com/Valloric)

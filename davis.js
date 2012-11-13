@@ -1,5 +1,5 @@
 /*!
- * Davis - http://davisjs.com - JavaScript Routing - 0.9.5
+ * Davis - http://davisjs.com - JavaScript Routing - 0.9.6
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
  */
@@ -65,7 +65,7 @@ Davis.extend = function (extension) {
 /*!
  * the version
  */
-Davis.version = "0.9.5";/*!
+Davis.version = "0.9.6";/*!
  * Davis - utils
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
@@ -223,8 +223,7 @@ Davis.utils = (function () {
    * @returns {Array}
    */
   var toArray = function (args, start) {
-    var start = start || 0
-    return Array.prototype.slice.call(args, start)
+    return Array.prototype.slice.call(args, start || 0)
   }
 
   /*!
@@ -315,12 +314,13 @@ Davis.listener = function () {
    */
   var clickHandler = handler(function () {
     var self = this
+
     return {
       method: 'get',
-      fullPath: this.attr('href'),
+      fullPath: this.prop('href'),
       title: this.attr('title'),
       delegateToServer: function () {
-        window.location = self.attr('href')
+        window.location = self.prop('href')
       }
     };
   });
@@ -341,7 +341,7 @@ Davis.listener = function () {
     var self = this
     return {
       method: this.attr('method'),
-      fullPath: decodeUrl(this.serialize() ? [this.attr('action'), this.serialize()].join("?") : this.attr('action')),
+      fullPath: decodeUrl(this.serialize() ? [this.prop('action'), this.serialize()].join("?") : this.prop('action')),
       title: this.attr('title'),
       delegateToServer: function () {
         self.submit()
