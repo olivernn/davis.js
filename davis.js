@@ -358,8 +358,9 @@ Davis.listener = function () {
    * @memberOf listener
    */
   this.listen = function () {
-    Davis.$(document).delegate(this.settings.formSelector, 'submit', submitHandler)
-    Davis.$(document).delegate(this.settings.linkSelector, 'click', clickHandler)
+    // Commenting these out because they are causing issues when we use 'forceHashRouting=true'
+    //Davis.$(document).delegate(this.settings.formSelector, 'submit', submitHandler)
+    //Davis.$(document).delegate(this.settings.linkSelector, 'click', clickHandler)
   }
 
   /**
@@ -372,8 +373,9 @@ Davis.listener = function () {
    * @memberOf listener
    */
   this.unlisten = function () {
-    Davis.$(document).undelegate(this.settings.linkSelector, 'click', clickHandler)
-    Davis.$(document).undelegate(this.settings.formSelector, 'submit', submitHandler)
+    // Commenting these out because they are causing issues when we use 'forceHashRouting=true'
+    //Davis.$(document).undelegate(this.settings.linkSelector, 'click', clickHandler)
+    //Davis.$(document).undelegate(this.settings.formSelector, 'submit', submitHandler)
   }
 }
 /*!
