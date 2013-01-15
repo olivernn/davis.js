@@ -1787,7 +1787,7 @@ Davis.App = (function () {
     var bindToInternalEvents = function () {
       self
         .bind('runRoute', function (request) {
-          self.logger.info("runRoute: " + request.toString());
+          self.logger.debug("runRoute: " + request.toString());
         })
         .bind('routeNotFound', function (request) {
           if (!self.settings.handleRouteNotFound && !request.isForPageLoad) {
@@ -1797,10 +1797,10 @@ Davis.App = (function () {
           self.logger.warn("routeNotFound: " + request.toString());
         })
         .bind('start', function () {
-          self.logger.info("application started")
+          self.logger.debug("application started")
         })
         .bind('stop', function () {
-          self.logger.info("application stopped")
+          self.logger.debug("application stopped")
         })
         .bind('routeError', function (request, route, error) {
           if (self.settings.throwErrors) throw(error)
