@@ -38,3 +38,17 @@ test("passing data to an event handler", function () {
   same({blah: 'halb'}, moreCallbackData, "should pass the callback data through to the handler");
   same(events, callbackContext, "should have this set to the app object");
 })
+
+test("Unbindind an event", function () {
+  var events = factory('events'),
+      callbackCalled = false;
+
+  events.bind('foo', function () {
+    callbackCalled = true;
+  });
+
+  events.unbind('foo');
+  events.trigger('foo');
+
+  ok(!callbackCalled, "callback should have been unbound and not called when triggered");
+});

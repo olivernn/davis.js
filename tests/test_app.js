@@ -58,3 +58,18 @@ test("adding helpers to requests", function () {
   var req = factory('request')
   equal('bar', req.foo)
 })
+
+test("should cleanup internal events when stopped", function () {
+  var app = factory('app'),
+      unbindCount = 0;
+
+  app.unbind = function () {
+    unbindCount += 1;
+	return app;
+  }
+  
+  app.start();
+  app.destroy();
+  ok(!app.boundToInternalEvents, "should set the internal events flag to false");
+  equals(unbindCount, 5, "should unbind every internal events");
+})
