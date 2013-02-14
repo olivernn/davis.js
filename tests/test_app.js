@@ -69,7 +69,7 @@ test("should cleanup internal events when stopped", function () {
   }
   
   app.start();
-  app.stop();
+  app.destroy();
   ok(!app.boundToInternalEvents, "should set the internal events flag to false");
   equals(unbindCount, 5, "should unbind every internal events");
 })
