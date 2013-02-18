@@ -1,5 +1,5 @@
 /*!
- * Davis - http://davisjs.com - JavaScript Routing - 0.9.6
+ * Davis - http://davisjs.com - JavaScript Routing - 0.9.7
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
  */
@@ -65,7 +65,7 @@ Davis.extend = function (extension) {
 /*!
  * the version
  */
-Davis.version = "0.9.6";/*!
+Davis.version = "0.9.7";/*!
  * Davis - utils
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
@@ -1302,9 +1302,9 @@ Davis.location = (function () {
    * @private
    */
   function sendLocationDelegate (methodName) {
-    return function (req) {
+    return function (req, opts) {
       if (typeof req == 'string') req = new Davis.Request (req)
-      locationDelegate[methodName](req)
+      locationDelegate[methodName](req, opts)
     }
   }
 
@@ -1318,6 +1318,7 @@ Davis.location = (function () {
    *
    *
    * @param {Request} req the request to replace the current location with, either a string or a Davis.Request.
+   * @param {Object} opts the optional options object that will be passed to the location delegate
    * @see Davis.Request
    * @memberOf location
    */
@@ -1332,6 +1333,7 @@ Davis.location = (function () {
    * Can take either a Davis.Request or a string representing the path of the request to assign.
    *
    * @param {Request} req the request to replace the current location with, either a string or a Davis.Request.
+   * @param {Object} opts the optional options object that will be passed to the location delegate
    * @see Davis.Request
    * @memberOf location
    */
@@ -1363,7 +1365,8 @@ Davis.location = (function () {
     replace: replace,
     onChange: onChange
   }
-})()/*!
+})()
+/*!
  * Davis - Request
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
@@ -1497,14 +1500,15 @@ Davis.Request = (function () {
    *     })
    *
    * @param {String} path The path to redirect the current request to
+   * @param {Object} opts The optional options object that will be passed through to the location
    * @memberOf Request
    */
-  Request.prototype.redirect = function (path) {
+  Request.prototype.redirect = function (path, opts) {
     Davis.location.replace(new Request ({
       method: 'get',
       fullPath: path,
       title: this.title
-    }));
+    }), opts);
   };
 
   /**

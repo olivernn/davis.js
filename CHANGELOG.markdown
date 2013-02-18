@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.7
+
+* Pass request options through the location delegate to the location handling object.
+* Pass request options through the request redirect method.
+* Add a simpler hash routing plugin.
+
 ## 0.9.6
 
 * Proper handling of relative paths using $.prop instead of $.attr [issue 58](https://github.com/olivernn/davis.js/issues/58)
