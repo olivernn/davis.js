@@ -35,6 +35,15 @@ test("request with params", function () {
   same({bar: "baz"}, request.params, "should add any params to the request params object");
 });
 
+test("request with params including new lines", function () {
+  var request = factory('request', {
+    method: 'post',
+    fullPath: '/foo?bar=baz\nzab'
+  })
+
+  equal('/foo', request.path)
+})
+
 test("convert request to readable string", function () {
   var request = factory('request', {
     method: 'post',
