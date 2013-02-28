@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.8
+
+* Fix an issue that prevented params with new lines from being handled properly the hash routing plugin, thanks [maxthelion](https://github.com/maxthelion)
+* Fix an issue with the way params are encoded and decoded [issue 70](https://github.com/olivernn/davis.js/issues/70), thanks [Valloric](https://github.com/Valloric)
+
 ## 0.9.7
 
 * Pass request options through the location delegate to the location handling object.

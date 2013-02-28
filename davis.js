@@ -1,5 +1,5 @@
 /*!
- * Davis - http://davisjs.com - JavaScript Routing - 0.9.7
+ * Davis - http://davisjs.com - JavaScript Routing - 0.9.8
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
  */
@@ -65,7 +65,7 @@ Davis.extend = function (extension) {
 /*!
  * the version
  */
-Davis.version = "0.9.7";/*!
+Davis.version = "0.9.8";/*!
  * Davis - utils
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
@@ -326,14 +326,6 @@ Davis.listener = function () {
   });
 
   /*!
-   * Decodes the url, including + characters.
-   * @private
-   */
-  var decodeUrl = function (str) {
-    return decodeURIComponent(str.replace(/\+/g, '%20'))
-  };
-
-  /*!
    * A handler specialized for submit events.  Gets the request details from a form elem
    * @private
    */
@@ -341,7 +333,7 @@ Davis.listener = function () {
     var self = this
     return {
       method: this.attr('method'),
-      fullPath: decodeUrl(this.serialize() ? [this.prop('action'), this.serialize()].join("?") : this.prop('action')),
+      fullPath: (this.serialize() ? [this.prop('action'), this.serialize()].join("?") : this.prop('action')),
       title: this.attr('title'),
       delegateToServer: function () {
         self.submit()
@@ -1423,6 +1415,8 @@ Davis.Request = (function () {
       timestamp: +new Date ()
     }, opts)
 
+    raw.fullPath = raw.fullPath.replace(/\+/g, '%20')
+
     var self = this;
     this.raw = raw;
     this.params = {};
@@ -1467,7 +1461,7 @@ Davis.Request = (function () {
     this.method = (this.params._method || raw.method).toLowerCase();
 
     this.path = raw.fullPath
-      .replace(/\?.+$/, "")  // Remove the query string
+      .replace(/\?(.|[\r\n])+$/, "")  // Remove the query string
       .replace(/^https?:\/\/[^\/]+/, ""); // Remove the protocol and host parts
   
     this.fullPath = raw.fullPath;
