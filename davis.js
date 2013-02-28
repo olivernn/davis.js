@@ -1,5 +1,5 @@
 /*!
- * Davis - http://davisjs.com - JavaScript Routing - 0.9.8
+ * Davis - http://davisjs.com - JavaScript Routing - 0.9.9
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
  */
@@ -65,7 +65,7 @@ Davis.extend = function (extension) {
 /*!
  * the version
  */
-Davis.version = "0.9.8";/*!
+Davis.version = "0.9.9";/*!
  * Davis - utils
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
@@ -1427,7 +1427,7 @@ Davis.Request = (function () {
 
     if (this.queryString) {
       Davis.utils.forEach(this.queryString.split("&"), function (keyval) {
-        var paramName = keyval.split("=")[0],
+        var paramName = decodeURIComponent(keyval.split("=")[0]),
             paramValue = keyval.split("=")[1],
             nestedParamRegex = /^(\w+)\[(\w+)?\](\[\])?/,
             nested;
@@ -1554,7 +1554,7 @@ Davis.Request = (function () {
    * @memberOf Request
    */
   Request.prototype.location = function () {
-    return (this.method === 'get') ? this.fullPath : ''
+    return (this.method === 'get') ? decodeURI(this.fullPath) : ''
   }
 
   /**
