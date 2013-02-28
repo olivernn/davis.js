@@ -45,15 +45,16 @@ test("request with params including new lines", function () {
 })
 
 test("handling escaped params properly", function () {
-  var escapedPath = '/search?query=foo+bar%20%26zoo%3Dgoo'
+  var escapedPath = '/search?query=foo+bar+%26zoo%3Dgoo&search%5Bbody%5D=herp'
   var request = factory('request', {
     method: 'get',
     fullPath: escapedPath
   })
 
   equal('/search', request.path)
-  equal('/search?query=foo%20bar%20%26zoo%3Dgoo', request.location())
+  equal('/search?query=foo bar %26zoo%3Dgoo&search[body]=herp', request.location())
   equal('foo bar &zoo=goo', request.params.query)
+  equal('herp', request.params.search.body)
 })
 
 test("convert request to readable string", function () {
