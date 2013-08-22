@@ -1,5 +1,5 @@
 /*!
- * Davis - http://davisjs.com - JavaScript Routing - 0.9.6
+ * Davis - http://davisjs.com - JavaScript Routing - 0.9.9
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
  */
@@ -65,7 +65,7 @@ Davis.extend = function (extension) {
 /*!
  * the version
  */
-Davis.version = "0.9.6";/*!
+Davis.version = "0.9.9";/*!
  * Davis - utils
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
@@ -326,14 +326,6 @@ Davis.listener = function () {
   });
 
   /*!
-   * Decodes the url, including + characters.
-   * @private
-   */
-  var decodeUrl = function (str) {
-    return decodeURIComponent(str.replace(/\+/g, '%20'))
-  };
-
-  /*!
    * A handler specialized for submit events.  Gets the request details from a form elem
    * @private
    */
@@ -341,7 +333,7 @@ Davis.listener = function () {
     var self = this
     return {
       method: this.attr('method'),
-      fullPath: decodeUrl(this.serialize() ? [this.prop('action'), this.serialize()].join("?") : this.prop('action')),
+      fullPath: (this.serialize() ? [this.prop('action'), this.serialize()].join("?") : this.prop('action')),
       title: this.attr('title'),
       delegateToServer: function () {
         self.submit()
@@ -1304,9 +1296,9 @@ Davis.location = (function () {
    * @private
    */
   function sendLocationDelegate (methodName) {
-    return function (req) {
+    return function (req, opts) {
       if (typeof req == 'string') req = new Davis.Request (req)
-      locationDelegate[methodName](req)
+      locationDelegate[methodName](req, opts)
     }
   }
 
@@ -1320,6 +1312,7 @@ Davis.location = (function () {
    *
    *
    * @param {Request} req the request to replace the current location with, either a string or a Davis.Request.
+   * @param {Object} opts the optional options object that will be passed to the location delegate
    * @see Davis.Request
    * @memberOf location
    */
@@ -1334,6 +1327,7 @@ Davis.location = (function () {
    * Can take either a Davis.Request or a string representing the path of the request to assign.
    *
    * @param {Request} req the request to replace the current location with, either a string or a Davis.Request.
+   * @param {Object} opts the optional options object that will be passed to the location delegate
    * @see Davis.Request
    * @memberOf location
    */
@@ -1365,7 +1359,8 @@ Davis.location = (function () {
     replace: replace,
     onChange: onChange
   }
-})()/*!
+})()
+/*!
  * Davis - Request
  * Copyright (C) 2011 Oliver Nightingale
  * MIT Licensed
@@ -1422,6 +1417,8 @@ Davis.Request = (function () {
       timestamp: +new Date ()
     }, opts)
 
+    raw.fullPath = raw.fullPath.replace(/\+/g, '%20')
+
     var self = this;
     this.raw = raw;
     this.params = {};
@@ -1432,7 +1429,7 @@ Davis.Request = (function () {
 
     if (this.queryString) {
       Davis.utils.forEach(this.queryString.split("&"), function (keyval) {
-        var paramName = keyval.split("=")[0],
+        var paramName = decodeURIComponent(keyval.split("=")[0]),
             paramValue = keyval.split("=")[1],
             nestedParamRegex = /^(\w+)\[(\w+)?\](\[\])?/,
             nested;
@@ -1466,7 +1463,7 @@ Davis.Request = (function () {
     this.method = (this.params._method || raw.method).toLowerCase();
 
     this.path = raw.fullPath
-      .replace(/\?.+$/, "")  // Remove the query string
+      .replace(/\?(.|[\r\n])+$/, "")  // Remove the query string
       .replace(/^https?:\/\/[^\/]+/, ""); // Remove the protocol and host parts
   
     this.fullPath = raw.fullPath;
@@ -1499,14 +1496,15 @@ Davis.Request = (function () {
    *     })
    *
    * @param {String} path The path to redirect the current request to
+   * @param {Object} opts The optional options object that will be passed through to the location
    * @memberOf Request
    */
-  Request.prototype.redirect = function (path) {
+  Request.prototype.redirect = function (path, opts) {
     Davis.location.replace(new Request ({
       method: 'get',
       fullPath: path,
       title: this.title
-    }));
+    }), opts);
   };
 
   /**
@@ -1558,7 +1556,7 @@ Davis.Request = (function () {
    * @memberOf Request
    */
   Request.prototype.location = function () {
-    return (this.method === 'get') ? this.fullPath : ''
+    return (this.method === 'get') ? decodeURI(this.fullPath) : ''
   }
 
   /**
