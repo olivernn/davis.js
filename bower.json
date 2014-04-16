@@ -1,0 +1,15 @@
+{
+  "name": "davis",
+  "homepage": "https://github.com/olivernn/davis.js",
+  "version": "0.9.9",
+  "_release": "0.9.9",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.9.9",
+    "commit": "4f610c640e3300311781d668280597249b4ec79e"
+  },
+  "_source": "git://github.com/olivernn/davis.js.git",
+  "_target": "~0.9.9",
+  "_originalSource": "davis",
+  "_direct": true
+}
