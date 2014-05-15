@@ -35,15 +35,20 @@ A very simple example of a Davis.js app:
     $(document).ready(function () {
       // append a link to trigger the route
       $('body').append('<a href="/welcome/bob">Greet</a>');
-      
-      app.start();
     })
 
 We create a new instance of a Davis.App using the Davis.js function, passing in a function that will draw the routes for the application.  Inside this function `this` is the instance of our application.
 
 We define a simple get route with a 'name' parameter and a callback that will append a message to the html body.  Inside the route callback `this` is set to the request that matches the route, this request is also passed as a parameter to the callback.
 
-Once the app is configure it needs to be started.  You start a Davis.js app by calling the `start` method, this must be done once the document is ready.  Now if you click on the link that we appended to the body our route should be called and a friendly greeting printed on the page.
+We defined the route using the `Davis()` function which means that the router starts automatically. Now if you click on the link that we appended to the body our route should be called and a friendly greeting printed on the page.
+
+If you require more control over when the router is activated then you can use your own instance of `Davis.App`:
+
+    var app = new Davis.App
+    app.get('/welcome/:name', function (req) { ... })
+    // whatever you need to do before starting the app
+    app.start()
 
 To use Davis your html file must be loaded from a server rather than just opening the file in your browser.
 
