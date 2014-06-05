@@ -350,8 +350,9 @@ Davis.listener = function () {
    * @memberOf listener
    */
   this.listen = function () {
-    Davis.$(document).delegate(this.settings.formSelector, 'submit', submitHandler)
-    Davis.$(document).delegate(this.settings.linkSelector, 'click', clickHandler)
+    // Commenting these out because they are causing issues when we use 'forceHashRouting=true'
+    //Davis.$(document).delegate(this.settings.formSelector, 'submit', submitHandler)
+    //Davis.$(document).delegate(this.settings.linkSelector, 'click', clickHandler)
   }
 
   /**
@@ -364,8 +365,9 @@ Davis.listener = function () {
    * @memberOf listener
    */
   this.unlisten = function () {
-    Davis.$(document).undelegate(this.settings.linkSelector, 'click', clickHandler)
-    Davis.$(document).undelegate(this.settings.formSelector, 'submit', submitHandler)
+    // Commenting these out because they are causing issues when we use 'forceHashRouting=true'
+    //Davis.$(document).undelegate(this.settings.linkSelector, 'click', clickHandler)
+    //Davis.$(document).undelegate(this.settings.formSelector, 'submit', submitHandler)
   }
 }
 /*!
@@ -1783,7 +1785,7 @@ Davis.App = (function () {
     var bindToInternalEvents = function () {
       self
         .bind('runRoute', function (request) {
-          self.logger.info("runRoute: " + request.toString());
+          //self.logger.info("runRoute: " + request.toString());
         })
         .bind('routeNotFound', function (request) {
           if (!self.settings.handleRouteNotFound && !request.isForPageLoad) {
@@ -1793,10 +1795,10 @@ Davis.App = (function () {
           self.logger.warn("routeNotFound: " + request.toString());
         })
         .bind('start', function () {
-          self.logger.info("application started")
+          //self.logger.debug("application started")
         })
         .bind('stop', function () {
-          self.logger.info("application stopped")
+          //self.logger.debug("application stopped")
         })
         .bind('routeError', function (request, route, error) {
           if (self.settings.throwErrors) throw(error)
