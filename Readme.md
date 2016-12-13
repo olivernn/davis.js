@@ -1,5 +1,7 @@
 # Davis.js
 
+[![CDNJS](https://img.shields.io/cdnjs/v/davis.js.svg)](https://cdnjs.com/libraries/davis.js)
+
 ## Description
 
 Davis.js is a small JavaScript library using HTML5 history.pushState that allows simple Sinatra style routing for your JavaScript apps.
