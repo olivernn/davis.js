@@ -215,7 +215,7 @@ Davis.utils = (function () {
   };
 
   /*!
-   * A convinience function for converting arguments to a proper array
+   * A convenience function for converting arguments to a proper array
    *
    * @private
    * @param {args} a functions arguments
@@ -693,7 +693,7 @@ Davis.Route = (function () {
  */
 
 /**
- * A decorator that adds convinience methods to a Davis.App for easily creating instances
+ * A decorator that adds convenience methods to a Davis.App for easily creating instances
  * of Davis.Route and looking up routes for a particular request.
  *
  * Provides get, post put and delete method shortcuts for creating instances of Davis.Routes
@@ -718,7 +718,7 @@ Davis.Route = (function () {
  *       // delete the instance of foo with id = req.params['id']
  *     })
  *
- * As well as providing convinience methods for creating instances of Davis.Routes the router
+ * As well as providing convenience methods for creating instances of Davis.Routes the router
  * also provides methods for creating special instances of routes called filters.  Before filters
  * run before any matching route is run, and after filters run after any matched route has run.
  * A before filter can return false to halt the running of any matched routes or other before filters.
@@ -756,7 +756,7 @@ Davis.Route = (function () {
  *
  * Using the `trans` method an app can transition to these kind of states without changing the url location.
  *
- * For convinience routes can be defined within a common base scope, this is useful for keeping your route
+ * For convenience routes can be defined within a common base scope, this is useful for keeping your route
  * definitions simpler and DRYer.  A scope can either cover the whole app, or just a subset of the routes.
  *
  * ### Example
@@ -816,7 +816,7 @@ Davis.router = function () {
   }
 
   /**
-   * A convinience wrapper around `app.route` for creating get routes.
+   * A convenience wrapper around `app.route` for creating get routes.
    *
    * @param {String} path The path for this route.
    * @param {Function} handler The handler for this route, will be called with the request that triggered the route.
@@ -827,7 +827,7 @@ Davis.router = function () {
   this.get  = this.route('get')
 
   /**
-   * A convinience wrapper around `app.route` for creating post routes.
+   * A convenience wrapper around `app.route` for creating post routes.
    *
    * @param {String} path The path for this route.
    * @param {Function} handler The handler for this route, will be called with the request that triggered the route.
@@ -838,7 +838,7 @@ Davis.router = function () {
   this.post = this.route('post')
 
   /**
-   * A convinience wrapper around `app.route` for creating put routes.
+   * A convenience wrapper around `app.route` for creating put routes.
    *
    * @param {String} path The path for this route.
    * @param {Function} handler The handler for this route, will be called with the request that triggered the route.
@@ -849,7 +849,7 @@ Davis.router = function () {
   this.put  = this.route('put')
 
   /**
-   * A convinience wrapper around `app.route` for creating delete routes.
+   * A convenience wrapper around `app.route` for creating delete routes.
    *
    * delete is a reserved word in javascript so use the `del` method when creating a Davis.Route with a method of delete.
    *
@@ -974,7 +974,7 @@ Davis.router = function () {
   }
 
   /*!
-   * Generating convinience methods for creating filters using Davis.Routes and methods to
+   * Generating convenience methods for creating filters using Davis.Routes and methods to
    * lookup filters.
    */
   this.filter = function (filterName) {
@@ -1004,7 +1004,7 @@ Davis.router = function () {
   }
 
   /**
-   * A convinience wrapper around `app.filter` for creating before filters.
+   * A convenience wrapper around `app.filter` for creating before filters.
    *
    * @param {String} path The optionl path for this filter.
    * @param {Function} handler The handler for this filter, will be called with the request that triggered the route.
@@ -1014,7 +1014,7 @@ Davis.router = function () {
   this.before = this.filter('before')
 
   /**
-   * A convinience wrapper around `app.filter` for creating after filters.
+   * A convenience wrapper around `app.filter` for creating after filters.
    *
    * @param {String} path The optionl path for this filter.
    * @param {Function} handler The handler for this filter, will be called with the request that triggered the route.
@@ -1024,7 +1024,7 @@ Davis.router = function () {
   this.after = this.filter('after')
 
   /**
-   * A convinience wrapper around `app.lookupFilter` for looking up before filters.
+   * A convenience wrapper around `app.lookupFilter` for looking up before filters.
    *
    * @param {String} path The optionl path for this filter.
    * @param {Function} handler The handler for this filter, will be called with the request that triggered the route.
@@ -1034,7 +1034,7 @@ Davis.router = function () {
   this.lookupBeforeFilter = this.lookupFilter('before')
 
   /**
-   * A convinience wrapper around `app.lookupFilter` for looking up after filters.
+   * A convenience wrapper around `app.lookupFilter` for looking up after filters.
    *
    * @param {String} path The optionl path for this filter.
    * @param {Function} handler The handler for this filter, will be called with the request that triggered the route.
@@ -1639,7 +1639,7 @@ Davis.App = (function () {
   };
 
   /**
-   * A convinience function for changing the apps default settings.
+   * A convenience function for changing the apps default settings.
    *
    * Should be used before starting the app to ensure any new settings
    * are picked up and used.
@@ -1688,7 +1688,7 @@ Davis.App = (function () {
 
   /**
    * Settings for the app.  These may be overriden directly or by using the configure
-   * convinience method.
+   * convenience method.
    *
    * `linkSelector` is the jquery selector for all the links on the page that you want
    * Davis to respond to.  These links will not trigger a normal http request.
@@ -1722,7 +1722,7 @@ Davis.App = (function () {
   /**
    * Starts the app's routing.
    *
-   * Apps created using the convinience Davis() function are automatically started.
+   * Apps created using the convenience Davis() function are automatically started.
    *
    * Starting the app binds all links and forms, so clicks and submits
    * create Davis requests that will be pushed onto the browsers history stack.  Browser history change
